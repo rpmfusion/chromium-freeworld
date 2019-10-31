@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Referenced from https://www.freedesktop.org/software/appstream/docs/chap-Quickstart.html#sect-Quickstart-DesktopApps -->
+<component type="desktop">
+  <id>chromium-freeworld.desktop</id>
+  <update_contact>chromium-freeworld-owner@rpmfusion.org</update_contact>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>BSD-3-Clause and LGPL-2.1+ and Apache-2.0 and IJG and MIT and GPL-2.0+ and ISC and OpenSSL and (MPL-1.1 or GPL-2.0 or LGPL-2.0)</project_license>
+  <name>Chromium Freeworld</name>
+  <summary>Web Browser</summary>
+  <description>
+   <p>
+    Chromium is an open-source browser project that aims to build a safer, faster,
+    and more stable way to experience the web.
+    </p>
+    <p>
+    We invite you to join our effort to build a powerful platform for developing a
+    new generation of web applications.
+    </p>
+    <p>
+    Chromium supports Vorbis, Theora, WebM and HTML5 audio and video standards, but
+    does not include the non-free AAC, H.264, MP3 or Adobe Flash code that is found
+    in Chrome.
+    </p>
+    <p>
+    This package comes with all freeworld codecs and vaapi acceleration enabled!
+    </p>
+  </description>
+  <url type="homepage">https://www.chromium.org/Home</url>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://www.gstatic.com/chrome/appstream/chrome-2.png</image>
+      <caption/>
+    </screenshot>
+    </screenshots>
+  <developer_name>Google</developer_name>
+  <url type="bugtracker">https://bugzilla.rpmfusion.org</url>
+  <url type="help">https://chromium.googlesource.com/chromium/src/+/master/docs/linux_debugging.md</url>
+</component>
