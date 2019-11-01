@@ -545,6 +545,11 @@ export CXXFLAGS="$(echo '%{?__global_cxxflags}%{!?__global_cxxflags:%{__global_c
                                                                                                -e 's/-g1record-g1cc-switches//' )"
                                                                                              
 export CXXFLAGS="$CXXFLAGS -fpermissive"
+%if !%{debug_logs}
+# Disable useless warning on non debug log builds
+export CFLAGS="$CFLAGS -w"
+export CXXFLAGS="$CXXFLAGS -w"
+%endif
 %if 0%{?fedora} <= 29
 export CXXFLAGS="$CXXFLAGS -fno-ipa-cp-clone"
 %endif
