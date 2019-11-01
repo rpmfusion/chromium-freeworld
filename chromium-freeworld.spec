@@ -533,18 +533,9 @@ export CC=gcc CXX=g++
 # GN needs gold to bootstrap
 export LDFLAGS="$LDFLAGS -fuse-ld=gold"
 # Set proper cflags, cxxflags 
-export CFLAGS="$(echo '%{__global_cflags}' |sed -e 's/-fexceptions//' \
-                                                -e 's/-Werror=format-security//' \
-                                                -e 's/-pipe//' \
-                                                -e 's/-g/-g1/g' \
-                                                -e 's/-g1record-g1cc-switches//' )"
-export CXXFLAGS="$(echo '%{?__global_cxxflags}%{!?__global_cxxflags:%{__global_cflags}}' | sed -e 's/-fexceptions//' \
-                                                                                               -e 's/-Werror=format-security//' \
-                                                                                               -e 's/-pipe//' \
-                                                                                               -e 's/-g/-g1/g' \
-                                                                                               -e 's/-g1record-g1cc-switches//' )"
+export CFLAGS="$CFLAGS -w"
                                                                                              
-export CXXFLAGS="$CXXFLAGS -fpermissive"
+export CXXFLAGS="$CXXFLAGS -fpermissive -w"
 %if 0%{?fedora} <= 29
 export CXXFLAGS="$CXXFLAGS -fno-ipa-cp-clone"
 %endif
