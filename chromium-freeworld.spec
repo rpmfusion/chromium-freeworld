@@ -608,7 +608,7 @@ gn_args+=(
 gn_args+=(
 %if %{jumbo}
     use_jumbo_build=true
-    jumbo_file_merge_limit=8
+    jumbo_file_merge_limit=6
     concurrent_links=1
 %endif
 )
