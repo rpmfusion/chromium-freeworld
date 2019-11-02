@@ -70,7 +70,7 @@
 %global ozone 0
 ##############################Package Definitions######################################
 Name:       chromium-freeworld
-Version:    78.0.3904.70
+Version:    78.0.3904.87
 Release:    1%{?dist}
 Summary:    Chromium-freeworld is an open-source web browser, powered by WebKit (Blink). It comes with all freeworld codecs and video acceleration enabled.
 License:    BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -736,6 +736,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libvk_swiftshader.so
 #########################################changelogs#################################################
 %changelog
+* Sat Nov 02 2019 Akarshan Biswas <akarshanbiswas@fedoraproject.org> - 78.0.3904.87-1
+- Update to 78.0.3904.87
+
 * Thu Oct 31 2019 Akarshan Biswas <akarshanbiswas@fedoraproject.org> - 78.0.3904.70-1
 - IMPORT: rename package; add back Fedora build flags
 
