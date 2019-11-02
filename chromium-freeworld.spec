@@ -530,9 +530,8 @@ sed -i.orig -e 's/getenv("CHROME_VERSION_EXTRA")/"%{name}"/' $FILE
 export AR=ar NM=nm AS=as
 export CC=gcc CXX=g++
 
-# GN needs gold to bootstrap
-export LDFLAGS="$LDFLAGS -fuse-ld=gold"
 # Set proper cflags, cxxflags 
+%if 0%{?fedora} >= 31
 export CFLAGS="$(echo '%{__global_cflags}' |sed -e 's/-fexceptions//' \
                                                 -e 's/-Werror=format-security//' \
                                                 -e 's/-pipe//' \
@@ -543,12 +542,22 @@ export CXXFLAGS="$(echo '%{?__global_cxxflags}%{!?__global_cxxflags:%{__global_c
                                                                                                -e 's/-pipe//' \
                                                                                                -e 's/-g/-g1/g' \
                                                                                                -e 's/-g1record-g1cc-switches//' )"
-                                                                                             
+
+export LDFLAGS='%{__global_ldflags}'
+%endif
+
+# GN needs gold to bootstrap 
+export LDFLAGS="$LDFLAGS -fuse-ld=gold" 
+
 export CXXFLAGS="$CXXFLAGS -fpermissive"
 %if !%{debug_logs}
 # Disable useless warning on non debug log builds
 export CFLAGS="$CFLAGS -w"
 export CXXFLAGS="$CXXFLAGS -w"
+%endif
+%if !%{debug_pkg}
+export CFLAGS="$CFLAGS -g0"
+export CXXFLAGS="$CXXFLAGS -g0"
 %endif
 %if 0%{?fedora} <= 29
 export CXXFLAGS="$CXXFLAGS -fno-ipa-cp-clone"
