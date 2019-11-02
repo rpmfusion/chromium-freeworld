@@ -70,7 +70,7 @@
 %global ozone 0
 ##############################Package Definitions######################################
 Name:       chromium-freeworld
-Version:    78.0.3904.70
+Version:    78.0.3904.87
 Release:    1%{?dist}
 Summary:    Chromium-freeworld is an open-source web browser, powered by WebKit (Blink). It comes with all freeworld codecs and video acceleration enabled.
 License:    BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -530,9 +530,6 @@ sed -i.orig -e 's/getenv("CHROME_VERSION_EXTRA")/"%{name}"/' $FILE
 export AR=ar NM=nm AS=as
 export CC=gcc CXX=g++
 
-# GN needs gold to bootstrap
-export LDFLAGS="$LDFLAGS -fuse-ld=gold"
-
 # Set proper cflags, cxxflags 
 %if 0%{?fedora} >= 31
 export CFLAGS="$(echo '%{__global_cflags}' |sed -e 's/-fexceptions//' \
@@ -545,13 +542,22 @@ export CXXFLAGS="$(echo '%{?__global_cxxflags}%{!?__global_cxxflags:%{__global_c
                                                                                                -e 's/-pipe//' \
                                                                                                -e 's/-g/-g1/g' \
                                                                                                -e 's/-g1record-g1cc-switches//' )"
+
+export LDFLAGS='%{__global_ldflags}'
 %endif
-                                                                                             
+
+# GN needs gold to bootstrap 
+export LDFLAGS="$LDFLAGS -fuse-ld=gold" 
+
 export CXXFLAGS="$CXXFLAGS -fpermissive"
 %if !%{debug_logs}
 # Disable useless warning on non debug log builds
 export CFLAGS="$CFLAGS -w"
 export CXXFLAGS="$CXXFLAGS -w"
+%endif
+%if !%{debug_pkg}
+export CFLAGS="$CFLAGS -g0"
+export CXXFLAGS="$CXXFLAGS -g0"
 %endif
 %if 0%{?fedora} <= 29
 export CXXFLAGS="$CXXFLAGS -fno-ipa-cp-clone"
@@ -739,6 +745,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libvk_swiftshader.so
 #########################################changelogs#################################################
 %changelog
+* Sat Nov 02 2019 Akarshan Biswas <akarshanbiswas@fedoraproject.org> - 78.0.3904.87-1
+- Update to 78.0.3904.87
+
 * Thu Oct 31 2019 Akarshan Biswas <akarshanbiswas@fedoraproject.org> - 78.0.3904.70-1
 - IMPORT: rename package; add back Fedora build flags
 
