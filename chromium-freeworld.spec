@@ -532,7 +532,9 @@ export CC=gcc CXX=g++
 
 # GN needs gold to bootstrap
 export LDFLAGS="$LDFLAGS -fuse-ld=gold"
+
 # Set proper cflags, cxxflags 
+%if 0%{?fedora} >= 31
 export CFLAGS="$(echo '%{__global_cflags}' |sed -e 's/-fexceptions//' \
                                                 -e 's/-Werror=format-security//' \
                                                 -e 's/-pipe//' \
@@ -543,6 +545,7 @@ export CXXFLAGS="$(echo '%{?__global_cxxflags}%{!?__global_cxxflags:%{__global_c
                                                                                                -e 's/-pipe//' \
                                                                                                -e 's/-g/-g1/g' \
                                                                                                -e 's/-g1record-g1cc-switches//' )"
+%endif
                                                                                              
 export CXXFLAGS="$CXXFLAGS -fpermissive"
 %if !%{debug_logs}
