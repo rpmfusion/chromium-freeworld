@@ -65,7 +65,7 @@
 %global jumbo 1
 #------------------------------------------------------
 #Build debug packages for debugging
-%global debug_pkg 1
+%global debug_pkg 0
 # Enable building with ozone support
 %global ozone 0
 ##############################Package Definitions######################################
