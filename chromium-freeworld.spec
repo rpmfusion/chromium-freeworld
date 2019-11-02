@@ -16,7 +16,11 @@
 #######################################CONFIGS###########################################
 # Fedora's Python 2 stack is being removed, we use the bundled Python libraries	
 # This can be revisited once we upgrade to Python 3	
+%if 0%{?fedora} >= 30
 %global bundlepylibs 1
+%else
+%global bundlepylibs 0
+%endif
 %if 0%{bundlepylibs}
 %bcond_with system_ply
 %else
