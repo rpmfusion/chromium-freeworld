@@ -60,9 +60,6 @@
 
 #Turn on verbose mode
 %global debug_logs 0
-#Allow jumbo builds
-# Enabled by default
-%global jumbo 1
 #------------------------------------------------------
 #Build debug packages for debugging
 %global debug_pkg 0
@@ -611,15 +608,6 @@ gn_args+=(
 
 gn_args+=(
     is_clang=false
-)
-
-#Jumbo stuff
-gn_args+=(
-%if %{jumbo}
-    use_jumbo_build=true
-    jumbo_file_merge_limit=6
-    concurrent_links=1
-%endif
 )
 
 #Pipewire
