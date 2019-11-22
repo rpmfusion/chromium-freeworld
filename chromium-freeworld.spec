@@ -60,9 +60,6 @@
 
 #Turn on verbose mode
 %global debug_logs 0
-#Allow jumbo builds
-# Enabled by default
-%global jumbo 1
 #------------------------------------------------------
 #Build debug packages for debugging
 %global debug_pkg 0
@@ -70,7 +67,7 @@
 %global ozone 0
 ##############################Package Definitions######################################
 Name:       chromium-freeworld
-Version:    78.0.3904.97
+Version:    78.0.3904.108
 Release:    1%{?dist}
 Summary:    Chromium-freeworld is an open-source web browser, powered by WebKit (Blink). It comes with all freeworld codecs and video acceleration enabled.
 License:    BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -233,6 +230,7 @@ Patch75: chromium-gcc9-r696834.patch
 Patch76: chromium-gcc9-r706467.patch
 Patch77: chromium-v8-gcc9.patch
 Patch78: chromium-gcc9-dns_util-ambiguous-ctor.patch
+Patch79: add-missing-include-for-unique_ptr.patch
 
 %description
 %{name} is an open-source web browser, powered by WebKit (Blink)
@@ -613,15 +611,6 @@ gn_args+=(
     is_clang=false
 )
 
-#Jumbo stuff
-gn_args+=(
-%if %{jumbo}
-    use_jumbo_build=true
-    jumbo_file_merge_limit=6
-    concurrent_links=1
-%endif
-)
-
 #Pipewire
 gn_args+=(
 %if 0%{?fedora} >= 29
@@ -745,6 +734,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libvk_swiftshader.so
 #########################################changelogs#################################################
 %changelog
+* Thu Nov 21 2019 Vasiliy Glazov <vascom2@gmail.com> - 78.0.3904.108-1
+- Update to 78.0.3904.108
+
 * Tue Nov 12 2019 Vasiliy Glazov <vascom2@gmail.com> - 78.0.3904.97-1
 - Update to 78.0.3904.97
 
