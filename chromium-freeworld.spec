@@ -528,21 +528,6 @@ sed -i.orig -e 's/getenv("CHROME_VERSION_EXTRA")/"%{name}"/' $FILE
 export AR=ar NM=nm AS=as
 export CC=gcc CXX=g++
 
-# Set proper cflags, cxxflags 
-%if 0%{?fedora} >= 31
-export CFLAGS="$(echo '%{__global_cflags}' |sed -e 's/-fexceptions//' \
-                                                -e 's/-Werror=format-security//' \
-                                                -e 's/-pipe//' \
-                                                -e 's/-g/-g1/g' \
-                                                -e 's/-g1record-g1cc-switches//' )"
-export CXXFLAGS="$(echo '%{?__global_cxxflags}%{!?__global_cxxflags:%{__global_cflags}}' | sed -e 's/-fexceptions//' \
-                                                                                               -e 's/-Werror=format-security//' \
-                                                                                               -e 's/-pipe//' \
-                                                                                               -e 's/-g/-g1/g' \
-                                                                                               -e 's/-g1record-g1cc-switches//' )"
-
-export LDFLAGS='%{__global_ldflags}'
-%endif
 
 # GN needs gold to bootstrap 
 export LDFLAGS="$LDFLAGS -fuse-ld=gold" 
@@ -633,6 +618,8 @@ gn_args+=(
 gn_args+=(
 %if %{debug_pkg}
     symbol_level=1
+%else
+    symbol_level=0
 %endif
 )
 tools/gn/bootstrap/bootstrap.py  --gn-gen-args "${gn_args[*]}"
