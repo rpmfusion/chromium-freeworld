@@ -34,6 +34,8 @@
 # Require libxml2 > 2.9.4 for XML_PARSE_NOXXE
 %bcond_without system_libxml2
 
+# Clang toggle
+%global clang 1
 
 # Allow testing whether icu can be unbundled
 # A patch fix building so enabled by default for Fedora 30
@@ -101,7 +103,11 @@ Source15:  LICENSE
 ########################################################################################
 #Compiler settings
 # Make sure we don't encounter any bug
+%if %{clang}
+BuildRequires: clang, llvm, lld
+%else
 BuildRequires: gcc-c++
+%endif
 # Basic tools and libraries needed for building
 BuildRequires: ninja-build, nodejs, bison, gperf, hwdata
 BuildRequires: libgcc, glibc, libatomic
@@ -519,12 +525,20 @@ ln -s %{python2_sitelib}/ply third_party/ply
 # Fix the path to nodejs binary
 mkdir -p third_party/node/linux/node-linux-x64/bin
 ln -s %{_bindir}/node third_party/node/linux/node-linux-x64/bin/node
-# Hard code extra version
-FILE=chrome/common/channel_info_posix.cc
-sed -i.orig -e 's/getenv("CHROME_VERSION_EXTRA")/"%{name}"/' $FILE
 #####################################BUILD#############################################
 %build
 #export compilar variables
+
+%if %{clang}
+
+export AR=llvm-ar NM=llvm-nm AS=llvm-as
+export CC=clang CXX=clang++
+
+# Add required compiler flags here
+export CXXFLAGS="$CXXFLAGS -Wno-unknown-warning-option"
+export CFLAGS="$CFLAGS -Wno-unknown-warning-option"
+
+%else
 export AR=ar NM=nm AS=as
 export CC=gcc CXX=g++
 
@@ -545,6 +559,8 @@ export CXXFLAGS="$CXXFLAGS -g0"
 %if 0%{?fedora} <= 29
 export CXXFLAGS="$CXXFLAGS -fno-ipa-cp-clone"
 %endif
+#end compiler part
+%endif 
 
 gn_args=(
     is_debug=false
@@ -593,7 +609,14 @@ gn_args+=(
 
 
 gn_args+=(
+%if %{clang}
+    is_clang=true
+    'clang_base_path="/usr"'
+    clang_use_chrome_plugins=false
+    use_lld=true
+%else 
     is_clang=false
+%endif 
 )
 
 #Pipewire
@@ -620,6 +643,7 @@ gn_args+=(
     symbol_level=1
 %else
     symbol_level=0
+    blink_symbol_level=0
 %endif
 )
 tools/gn/bootstrap/bootstrap.py  --gn-gen-args "${gn_args[*]}"
