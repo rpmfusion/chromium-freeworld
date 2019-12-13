@@ -40,12 +40,12 @@
 # Allow testing whether icu can be unbundled
 # A patch fix building so enabled by default for Fedora 30
 # Need icu version >= 64
-%bcond_with system_libicu
-%if 0%{?fedora} >= 30
+%bcond_without system_libicu
+%if 0%{?fedora} >= 31
 # Allow testing whether libvpx can be unbundled
 %bcond_with system_libvpx
 # Allow testing whether ffmpeg can be unbundled
-%bcond_with system_ffmpeg
+%bcond_without system_ffmpeg
 #Allow minizip to be unbundled
 #mini-compat is going to be removed from fedora 30!
 %bcond_without system_minizip
@@ -69,8 +69,8 @@
 %global ozone 0
 ##############################Package Definitions######################################
 Name:       chromium-freeworld
-Version:    78.0.3904.108
-Release:    2%{?dist}
+Version:    79.0.3945.79
+Release:    1%{?dist}
 Summary:    Chromium-freeworld is an open-source web browser, powered by WebKit (Blink). It comes with all freeworld codecs and video acceleration enabled.
 License:    BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:        https://www.chromium.org/Home
@@ -229,14 +229,15 @@ Patch65: chromium-73.0.3683.75-pipewire-cstring-fix.patch
 Patch68: Add-missing-header-to-fix-webrtc-build.patch
 Patch69: chromium-unbundle-zlib.patch
 Patch70: chromium-base-location.patch
-# GCC patches
-Patch73: chromium-gcc9-r688676.patch
-Patch74: chromium-gcc9-r694853.patch
-Patch75: chromium-gcc9-r696834.patch
-Patch76: chromium-gcc9-r706467.patch
-Patch77: chromium-v8-gcc9.patch
-Patch78: chromium-gcc9-dns_util-ambiguous-ctor.patch
-Patch79: add-missing-include-for-unique_ptr.patch
+Patch71: fix-spammy-unique-font-matching-log.patch
+# GCC
+Patch72: include-algorithm-to-use-std-lower_bound.patch
+Patch73: launch_manager.h-uses-std-vector.patch
+# Fix: STolen from Fedora
+Patch74: chromium-79.0.3945.56-glibc-clock-nanosleep.patch
+# ICU  ver. 65 support on Rawhide
+Patch75: icu65.patch
+
 
 %description
 %{name} is an open-source web browser, powered by WebKit (Blink)
@@ -248,6 +249,11 @@ Patch79: add-missing-include-for-unique_ptr.patch
 %endif
 %if !%{freeworld}
 %patch54 -p1 -R
+%endif
+%if 0%{?fedora} <= 31
+# Only on Rawhide
+%patch74 -p1 -R
+%patch75 -p1 -R
 %endif
 
 
@@ -442,6 +448,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/swiftshader \
     third_party/swiftshader/third_party/llvm-7.0 \
     third_party/swiftshader/third_party/llvm-subzero \
+    third_party/swiftshader/third_party/marl \
     third_party/swiftshader/third_party/subzero \
     third_party/swiftshader/third_party/SPIRV-Headers/include/spirv/unified1 \
     third_party/tcmalloc \
@@ -605,6 +612,9 @@ gn_args=(
 # Optimizations
 gn_args+=(
    enable_vr=false
+%if %{with system_libicu}
+   icu_use_data_file=false
+%endif
 )
 
 
@@ -745,6 +755,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libvk_swiftshader.so
 #########################################changelogs#################################################
 %changelog
+* Fri Dec 13 2019 Akarshan Biswas <akarshanbiswas@fedoraproject.org> - 79.0.3945.79-1
+- Update to 79.0.3945.79
+
 * Fri Dec 06 2019 Vasiliy Glazov <vascom2@gmail.com> - 78.0.3904.108-2
 - Disable fedora's build flags to reduce binary size
 
