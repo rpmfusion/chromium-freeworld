@@ -54,7 +54,7 @@
 %bcond_with system_ffmpeg
 #Allow minizip to be unbundled
 #mini-compat is going to be removed from fedora 30!
-%bcond_with system_minizip
+%bcond_without system_minizip
 %endif
 
 # Need re2 ver. 2016.07.21 for re2::LazyRE2 
