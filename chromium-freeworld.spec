@@ -237,6 +237,8 @@ Patch73: launch_manager.h-uses-std-vector.patch
 Patch74: chromium-79.0.3945.56-glibc-clock-nanosleep.patch
 # ICU  ver. 65 support on Rawhide
 Patch75: icu65.patch
+#Fix building with system harfbuzz
+Patch76:    chromium-fix-use_system_harfbuzz-ng.patch
 
 
 %description
@@ -752,7 +754,6 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %dir %{chromiumdir}/swiftshader
 %{chromiumdir}/swiftshader/libEGL.so
 %{chromiumdir}/swiftshader/libGLESv2.so
-%{chromiumdir}/swiftshader/libvk_swiftshader.so
 #########################################changelogs#################################################
 %changelog
 * Fri Dec 13 2019 Akarshan Biswas <akarshanbiswas@fedoraproject.org> - 79.0.3945.79-1
