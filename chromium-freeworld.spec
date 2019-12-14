@@ -34,16 +34,18 @@
 # Require libxml2 > 2.9.4 for XML_PARSE_NOXXE
 %bcond_without system_libxml2
 
+# Clang toggle
+%global clang 1
 
 # Allow testing whether icu can be unbundled
 # A patch fix building so enabled by default for Fedora 30
 # Need icu version >= 64
-%bcond_with system_libicu
-%if 0%{?fedora} >= 30
+%bcond_without system_libicu
+%if 0%{?fedora} >= 31
 # Allow testing whether libvpx can be unbundled
 %bcond_with system_libvpx
 # Allow testing whether ffmpeg can be unbundled
-%bcond_with system_ffmpeg
+%bcond_without system_ffmpeg
 #Allow minizip to be unbundled
 #mini-compat is going to be removed from fedora 30!
 %bcond_without system_minizip
@@ -67,7 +69,7 @@
 %global ozone 0
 ##############################Package Definitions######################################
 Name:       chromium-freeworld
-Version:    78.0.3904.108
+Version:    79.0.3945.79
 Release:    1%{?dist}
 Summary:    Chromium-freeworld is an open-source web browser, powered by WebKit (Blink). It comes with all freeworld codecs and video acceleration enabled.
 License:    BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -101,7 +103,11 @@ Source15:  LICENSE
 ########################################################################################
 #Compiler settings
 # Make sure we don't encounter any bug
+%if %{clang}
+BuildRequires: clang, llvm, lld
+%else
 BuildRequires: gcc-c++
+%endif
 # Basic tools and libraries needed for building
 BuildRequires: ninja-build, nodejs, bison, gperf, hwdata
 BuildRequires: libgcc, glibc, libatomic
@@ -223,14 +229,17 @@ Patch65: chromium-73.0.3683.75-pipewire-cstring-fix.patch
 Patch68: Add-missing-header-to-fix-webrtc-build.patch
 Patch69: chromium-unbundle-zlib.patch
 Patch70: chromium-base-location.patch
-# GCC patches
-Patch73: chromium-gcc9-r688676.patch
-Patch74: chromium-gcc9-r694853.patch
-Patch75: chromium-gcc9-r696834.patch
-Patch76: chromium-gcc9-r706467.patch
-Patch77: chromium-v8-gcc9.patch
-Patch78: chromium-gcc9-dns_util-ambiguous-ctor.patch
-Patch79: add-missing-include-for-unique_ptr.patch
+Patch71: fix-spammy-unique-font-matching-log.patch
+# GCC
+Patch72: include-algorithm-to-use-std-lower_bound.patch
+Patch73: launch_manager.h-uses-std-vector.patch
+# Fix: STolen from Fedora
+Patch74: chromium-79.0.3945.56-glibc-clock-nanosleep.patch
+# ICU  ver. 65 support on Rawhide
+Patch75: icu65.patch
+#Fix building with system harfbuzz
+Patch76:    chromium-fix-use_system_harfbuzz-ng.patch
+
 
 %description
 %{name} is an open-source web browser, powered by WebKit (Blink)
@@ -242,6 +251,11 @@ Patch79: add-missing-include-for-unique_ptr.patch
 %endif
 %if !%{freeworld}
 %patch54 -p1 -R
+%endif
+%if 0%{?fedora} <= 31
+# Only on Rawhide
+%patch74 -p1 -R
+%patch75 -p1 -R
 %endif
 
 
@@ -436,6 +450,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/swiftshader \
     third_party/swiftshader/third_party/llvm-7.0 \
     third_party/swiftshader/third_party/llvm-subzero \
+    third_party/swiftshader/third_party/marl \
     third_party/swiftshader/third_party/subzero \
     third_party/swiftshader/third_party/SPIRV-Headers/include/spirv/unified1 \
     third_party/tcmalloc \
@@ -519,30 +534,23 @@ ln -s %{python2_sitelib}/ply third_party/ply
 # Fix the path to nodejs binary
 mkdir -p third_party/node/linux/node-linux-x64/bin
 ln -s %{_bindir}/node third_party/node/linux/node-linux-x64/bin/node
-# Hard code extra version
-FILE=chrome/common/channel_info_posix.cc
-sed -i.orig -e 's/getenv("CHROME_VERSION_EXTRA")/"%{name}"/' $FILE
 #####################################BUILD#############################################
 %build
 #export compilar variables
+
+%if %{clang}
+
+export AR=llvm-ar NM=llvm-nm AS=llvm-as
+export CC=clang CXX=clang++
+
+# Add required compiler flags here
+export CXXFLAGS="$CXXFLAGS -Wno-unknown-warning-option"
+export CFLAGS="$CFLAGS -Wno-unknown-warning-option"
+
+%else
 export AR=ar NM=nm AS=as
 export CC=gcc CXX=g++
 
-# Set proper cflags, cxxflags 
-%if 0%{?fedora} >= 31
-export CFLAGS="$(echo '%{__global_cflags}' |sed -e 's/-fexceptions//' \
-                                                -e 's/-Werror=format-security//' \
-                                                -e 's/-pipe//' \
-                                                -e 's/-g/-g1/g' \
-                                                -e 's/-g1record-g1cc-switches//' )"
-export CXXFLAGS="$(echo '%{?__global_cxxflags}%{!?__global_cxxflags:%{__global_cflags}}' | sed -e 's/-fexceptions//' \
-                                                                                               -e 's/-Werror=format-security//' \
-                                                                                               -e 's/-pipe//' \
-                                                                                               -e 's/-g/-g1/g' \
-                                                                                               -e 's/-g1record-g1cc-switches//' )"
-
-export LDFLAGS='%{__global_ldflags}'
-%endif
 
 # GN needs gold to bootstrap 
 export LDFLAGS="$LDFLAGS -fuse-ld=gold" 
@@ -560,6 +568,8 @@ export CXXFLAGS="$CXXFLAGS -g0"
 %if 0%{?fedora} <= 29
 export CXXFLAGS="$CXXFLAGS -fno-ipa-cp-clone"
 %endif
+#end compiler part
+%endif 
 
 gn_args=(
     is_debug=false
@@ -604,11 +614,21 @@ gn_args=(
 # Optimizations
 gn_args+=(
    enable_vr=false
+%if %{with system_libicu}
+   icu_use_data_file=false
+%endif
 )
 
 
 gn_args+=(
+%if %{clang}
+    is_clang=true
+    'clang_base_path="/usr"'
+    clang_use_chrome_plugins=false
+    use_lld=true
+%else 
     is_clang=false
+%endif 
 )
 
 #Pipewire
@@ -633,6 +653,9 @@ gn_args+=(
 gn_args+=(
 %if %{debug_pkg}
     symbol_level=1
+%else
+    symbol_level=0
+    blink_symbol_level=0
 %endif
 )
 tools/gn/bootstrap/bootstrap.py  --gn-gen-args "${gn_args[*]}"
@@ -731,9 +754,14 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %dir %{chromiumdir}/swiftshader
 %{chromiumdir}/swiftshader/libEGL.so
 %{chromiumdir}/swiftshader/libGLESv2.so
-%{chromiumdir}/swiftshader/libvk_swiftshader.so
 #########################################changelogs#################################################
 %changelog
+* Fri Dec 13 2019 Akarshan Biswas <akarshanbiswas@fedoraproject.org> - 79.0.3945.79-1
+- Update to 79.0.3945.79
+
+* Fri Dec 06 2019 Vasiliy Glazov <vascom2@gmail.com> - 78.0.3904.108-2
+- Disable fedora's build flags to reduce binary size
+
 * Thu Nov 21 2019 Vasiliy Glazov <vascom2@gmail.com> - 78.0.3904.108-1
 - Update to 78.0.3904.108
 
