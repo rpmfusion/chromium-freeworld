@@ -40,7 +40,7 @@
 # Allow testing whether icu can be unbundled
 # A patch fix building so enabled by default for Fedora 30
 # Need icu version >= 64
-%bcond_without system_libicu
+%bcond_with system_libicu
 %if 0%{?fedora} >= 31
 # Allow testing whether libvpx can be unbundled
 %bcond_with system_libvpx
