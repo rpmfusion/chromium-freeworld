@@ -70,7 +70,7 @@
 ##############################Package Definitions######################################
 Name:       chromium-freeworld
 Version:    79.0.3945.130
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    Chromium-freeworld is an open-source web browser, powered by WebKit (Blink). It comes with all freeworld codecs and video acceleration enabled.
 License:    BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:        https://www.chromium.org/Home
@@ -756,6 +756,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Tue Feb 04 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 79.0.3945.130-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
 * Fri Jan 17 2020 Vasiliy Glazov <vascom2@gmail.com> - 79.0.3945.130-1
 - Update to 79.0.3945.130
 
