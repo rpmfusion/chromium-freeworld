@@ -35,7 +35,7 @@
 %bcond_without system_libxml2
 
 # Clang toggle
-%global clang 1
+%global clang 0
 
 # Allow testing whether icu can be unbundled
 # A patch fix building so enabled by default for Fedora 30
@@ -69,8 +69,8 @@
 %global ozone 0
 ##############################Package Definitions######################################
 Name:       chromium-freeworld
-Version:    79.0.3945.130
-Release:    2%{?dist}
+Version:    80.0.3987.122
+Release:    1%{?dist}
 Summary:    Chromium-freeworld is an open-source web browser, powered by WebKit (Blink). It comes with all freeworld codecs and video acceleration enabled.
 License:    BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:        https://www.chromium.org/Home
@@ -222,23 +222,32 @@ Patch51:  py2-bootstrap.patch
 Patch52:  chromium-system-icu.patch
 # Let's brand chromium!
 Patch54:  brand.patch
-#Stolen from Fedora to fix building with pipewire
-# https://src.fedoraproject.org/rpms/chromium/blob/master/f/chromium-73.0.3683.75-pipewire-cstring-fix.patch
-Patch65: chromium-73.0.3683.75-pipewire-cstring-fix.patch
 # Fix header
 Patch68: Add-missing-header-to-fix-webrtc-build.patch
 Patch69: chromium-unbundle-zlib.patch
 Patch70: chromium-base-location.patch
-Patch71: fix-spammy-unique-font-matching-log.patch
-# GCC
-Patch72: include-algorithm-to-use-std-lower_bound.patch
-Patch73: launch_manager.h-uses-std-vector.patch
-# Fix: STolen from Fedora
-Patch74: chromium-79.0.3945.56-glibc-clock-nanosleep.patch
-# ICU  ver. 65 support on Rawhide
-Patch75: icu65.patch
-#Fix building with system harfbuzz
-Patch76:    chromium-fix-use_system_harfbuzz-ng.patch
+
+# Gentoo:
+Patch400: chromium-80-include.patch
+Patch401: chromium-80-gcc-incomplete-type.patch
+Patch402: chromium-80-gcc-quiche.patch
+Patch403: chromium-80-gcc-permissive.patch
+Patch404: chromium-80-gcc-blink.patch
+Patch405: chromium-80-gcc-abstract.patch
+%if %{with system_libxml2}
+Patch406: chromium-80-unbundle-libxml.patch
+%endif
+
+# Fedora:
+Patch500: chromium-80.0.3987.87-missing-string-header.patch
+Patch501: chromium-80.0.3987.106-missing-cstddef-header.patch
+Patch502: chromium-80.0.3987.87-missing-cstdint-header.patch
+Patch503: chromium-77.0.3865.75-gcc-include-memory.patch
+Patch504: chromium-80.0.3987.106-missing-cstring-header.patch
+%if 0%{?fedora} >= 32
+Patch505: chromium-79.0.3945.130-gcc10-use-c++17-to-work-around-ugly-angle-code.patch
+Patch506: chromium-80.0.3987.87-fix-for-c++17.patch
+%endif
 
 
 %description
@@ -251,11 +260,6 @@ Patch76:    chromium-fix-use_system_harfbuzz-ng.patch
 %endif
 %if !%{freeworld}
 %patch54 -p1 -R
-%endif
-%if 0%{?fedora} <= 31
-# Only on Rawhide
-%patch74 -p1 -R
-%patch75 -p1 -R
 %endif
 
 
@@ -292,6 +296,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/angle/src/third_party/compiler \
     third_party/angle/src/third_party/libXNVCtrl \
     third_party/angle/src/third_party/trace_event \
+    third_party/libgifcodec \
     third_party/glslang \
     third_party/angle/third_party/spirv-headers \
     third_party/angle/third_party/spirv-tools \
@@ -303,9 +308,6 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/axe-core \
     third_party/boringssl \
     third_party/boringssl/src/third_party/fiat \
-    third_party/boringssl/src/third_party/sike \
-    third_party/boringssl/linux-aarch64/crypto/third_party/sike \
-    third_party/boringssl/linux-x86_64/crypto/third_party/sike \
     third_party/blink \
     third_party/breakpad \
     third_party/breakpad/breakpad/src/third_party/curl \
@@ -339,13 +341,14 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/depot_tools \
     third_party/dav1d \
     third_party/devscripts \
+    third_party/devtools-frontend \
+    third_party/devtools-frontend/src/third_party \
     third_party/dom_distiller_js \
     third_party/emoji-segmenter \
 %if !%{with system_ffmpeg}
     third_party/ffmpeg \
 %endif
     third_party/flatbuffers \
-    third_party/flot \
     third_party/freetype \
     third_party/google_input_tools \
     third_party/google_input_tools/third_party/closure_library \
@@ -439,7 +442,6 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/skia \
     third_party/skia/include/third_party/skcms \
     third_party/skia/include/third_party/vulkan \
-    third_party/skia/third_party/gif \
     third_party/skia/third_party/vulkan \
     third_party/skia/third_party/skcms \
     third_party/smhasher \
@@ -693,7 +695,6 @@ install -m 755 %{target}/chromedriver %{buildroot}%{chromiumdir}/
 %if !%{with system_libicu}
 install -m 644 %{target}/icudtl.dat %{buildroot}%{chromiumdir}/
 %endif
-install -m 644 %{target}/natives_blob.bin %{buildroot}%{chromiumdir}/
 install -m 644 %{target}/v8_context_snapshot.bin %{buildroot}%{chromiumdir}/
 install -m 644 %{target}/*.pak %{buildroot}%{chromiumdir}/
 install -m 644 %{target}/locales/*.pak %{buildroot}%{chromiumdir}/locales/
@@ -741,7 +742,6 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %if !%{with system_libicu}
 %{chromiumdir}/icudtl.dat
 %endif
-%{chromiumdir}/natives_blob.bin
 %{chromiumdir}/v8_context_snapshot.bin
 %{chromiumdir}/*.pak
 %{chromiumdir}/xdg-mime
@@ -756,6 +756,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Sun Mar 01 2020 qvint <dotqvint@gmail.com> - 80.0.3987.122-1
+- Update to 80.0.3987.122
+
 * Tue Feb 04 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 79.0.3945.130-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
 
@@ -785,6 +788,3 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 * Thu Oct 31 2019 Akarshan Biswas <akarshanbiswas@fedoraproject.org> - 78.0.3904.70-1
 - IMPORT: rename package; add back Fedora build flags
-
-
-
