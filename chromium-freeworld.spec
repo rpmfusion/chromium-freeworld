@@ -184,6 +184,7 @@ BuildRequires:  pkgconfig(libxslt)
 BuildRequires:  opus-devel
 BuildRequires:  snappy-devel
 BuildRequires:  yasm
+BuildRequires:  expat-devel
 BuildRequires:  pciutils-devel
 BuildRequires:  speech-dispatcher-devel
 BuildRequires:  pulseaudio-libs-devel
