@@ -3,12 +3,6 @@ From: Akarshan Biswas <akarshan.biswas@gmail.com>
 Date: Wed, 7 Nov 2018 16:29:01 +0530
 Subject: [PATCH] Let's brand chromium-vaapi
 
----
- components/version_ui_strings.grdp | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/components/version_ui_strings.grdp b/components/version_ui_strings.grdp
-index 6278a8a38..1611b4c80 100644
 --- a/components/version_ui_strings.grdp
 +++ b/components/version_ui_strings.grdp
 @@ -7,7 +7,7 @@
@@ -20,6 +14,3 @@ index 6278a8a38..1611b4c80 100644
    </message>
    <message name="IDS_VERSION_UI_32BIT" desc="32-bit on the chrome://version page">
      (32-bit)
--- 
-2.19.1
-

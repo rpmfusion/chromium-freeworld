@@ -1,0 +1,62 @@
+From 25e1634f6b7b052733b17c40f4f83aa59a14ab0f Mon Sep 17 00:00:00 2001
+From: Jose Dapena Paz <jdapena@igalia.com>
+Date: Mon, 24 Feb 2020 12:56:15 +0000
+Subject: [PATCH] GCC: workaround error resolving IsA template in DeleteSelectionCommand
+
+GCC fails to resolve IsA template as a function parameter in DeleteSelectionCommand.
+To avoid this we add a static function that uses it internally, with the expected
+function signature expected by EnclosingNodeOfType.
+
+Bug: 819294
+Change-Id: If9dfcfb4ca7e298d33545bfd870b6e3d05f9ce76
+Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/2052173
+Commit-Queue: José Dapena Paz <jdapena@igalia.com>
+Reviewed-by: Yoshifumi Inoue <yosin@chromium.org>
+Cr-Commit-Position: refs/heads/master@{#743910}
+---
+
+--- a/third_party/blink/renderer/core/editing/commands/delete_selection_command.cc
++++ b/third_party/blink/renderer/core/editing/commands/delete_selection_command.cc
+@@ -25,6 +25,7 @@
+ 
+ #include "third_party/blink/renderer/core/editing/commands/delete_selection_command.h"
+ 
++#include "build/build_config.h"
+ #include "third_party/blink/renderer/core/dom/document.h"
+ #include "third_party/blink/renderer/core/dom/element.h"
+ #include "third_party/blink/renderer/core/dom/node_traversal.h"
+@@ -225,6 +226,15 @@ static Position TrailingWhitespacePositi
+   return Position();
+ }
+ 
++// Workaround: GCC fails to resolve overloaded template functions, passed as
++// parameters of EnclosingNodeType. But it works wrapping that in a utility
++// function.
++#if defined(COMPILER_GCC)
++static bool IsHTMLTableRowElement(const blink::Node* node) {
++  return IsA<HTMLTableRowElement>(node);
++}
++#endif
++
+ void DeleteSelectionCommand::InitializePositionData(
+     EditingState* editing_state) {
+   DCHECK(!GetDocument().NeedsLayoutTreeUpdate());
+@@ -253,10 +263,18 @@ void DeleteSelectionCommand::InitializeP
+   start_root_ = RootEditableElementOf(start);
+   end_root_ = RootEditableElementOf(end);
+ 
++#if defined(COMPILER_GCC)
++  // Workaround. See declaration of IsHTMLTableRowElement
++  start_table_row_ = To<HTMLTableRowElement>(
++      EnclosingNodeOfType(start, &IsHTMLTableRowElement));
++  end_table_row_ =
++      To<HTMLTableRowElement>(EnclosingNodeOfType(end, &IsHTMLTableRowElement));
++#else
+   start_table_row_ = To<HTMLTableRowElement>(
+       EnclosingNodeOfType(start, &IsA<HTMLTableRowElement>));
+   end_table_row_ = To<HTMLTableRowElement>(
+       EnclosingNodeOfType(end, &IsA<HTMLTableRowElement>));
++#endif
+ 
+   // Don't move content out of a table cell.
+   // If the cell is non-editable, enclosingNodeOfType won't return it by

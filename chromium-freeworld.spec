@@ -69,7 +69,7 @@
 %global ozone 0
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        80.0.3987.163
+Version:        81.0.4044.92
 Release:        1%{?dist}
 Summary:        Chromium web browser built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -128,8 +128,8 @@ BuildRequires:  pkgconfig(gnome-keyring-1)
 BuildRequires:  pkgconfig(libffi)
 #for vaapi
 BuildRequires:  pkgconfig(libva)
-%if %{ozone}
 BuildRequires:  pkgconfig(gbm)
+%if %{ozone}
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(wayland-scanner)
@@ -208,61 +208,35 @@ Recommends:     libva-utils
 %endif
 # This build should be only available to amd64
 ExclusiveArch:  x86_64
-# Define Patches here ##
-# Enable video acceleration on chromium for Linux
-Patch1:         enable-vaapi.patch
-# Enable support for widevine
-Patch2:         widevine.patch
-# Fix vaapi on Intel
-Patch3:         fixvaapionintel.patch
-#Fix certificare transperancy error introduced by the current stable version of chromium
-Patch5:         cert-trans-google.patch
-# Bootstrap still uses python command
-Patch51:        py2-bootstrap.patch
-# Fix building with system icu
-Patch52:        chromium-system-icu.patch
-# Let's brand chromium!
-Patch54:        brand.patch
-# Fix header
-Patch68:        Add-missing-header-to-fix-webrtc-build.patch
-Patch69:        chromium-unbundle-zlib.patch
-Patch70:        chromium-base-location.patch
 
-# Gentoo:
-Patch400:       chromium-80-include.patch
-Patch401:       chromium-80-gcc-incomplete-type.patch
-Patch402:       chromium-80-gcc-quiche.patch
-Patch403:       chromium-80-gcc-permissive.patch
-Patch404:       chromium-80-gcc-blink.patch
-Patch405:       chromium-80-gcc-abstract.patch
-%if %{with system_libxml2}
-Patch406:       chromium-80-unbundle-libxml.patch
-%endif
+# Google patches (short-term fixes and backports):
+Patch150:       chromium-81-vaapi-r737459.patch
+Patch151:       chromium-81-vaapi-r738595.patch
+Patch152:       chromium-81-gcc-r742632.patch
+Patch153:       chromium-81-gcc-r742834.patch
+Patch154:       chromium-81-gcc-r743910.patch
 
-# Fedora:
-Patch500:       chromium-80.0.3987.87-missing-string-header.patch
-Patch501:       chromium-80.0.3987.106-missing-cstddef-header.patch
-Patch502:       chromium-80.0.3987.87-missing-cstdint-header.patch
-Patch503:       chromium-77.0.3865.75-gcc-include-memory.patch
-Patch504:       chromium-80.0.3987.106-missing-cstring-header.patch
+# Gentoo patches (short-term fixes):
 %if 0%{?fedora} >= 32
-Patch505:       chromium-79.0.3945.130-gcc10-use-c++17-to-work-around-ugly-angle-code.patch
-Patch506:       chromium-80.0.3987.87-fix-for-c++17.patch
+Patch250:       chromium-81-gcc-10.patch
 %endif
 
+# Fedora patches:
+Patch300:       chromium-71.0.3578.98-py2-bootstrap.patch
+
+# RPM Fusion patches [free/chromium-freeworld]:
+Patch400:       chromium-enable-vaapi.patch
+Patch401:       chromium-fix-vaapi-on-intel.patch
+Patch402:       chromium-enable-widevine.patch
+%if %{freeworld}
+Patch403:       chromium-rpm-fusion-brand.patch
+%endif
 
 %description
 %{name} is an open-source web browser, powered by WebKit (Blink)
 ############################################PREP###########################################################
 %prep
 %autosetup -n chromium-%{version} -p1
-%if !%{with system_libicu}
-%patch52 -p1  -R
-%endif
-%if !%{freeworld}
-%patch54 -p1 -R
-%endif
-
 
 #Let's change the default shebang of python files.
 find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__python2}=' {} +
@@ -297,6 +271,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/angle/src/third_party/compiler \
     third_party/angle/src/third_party/libXNVCtrl \
     third_party/angle/src/third_party/trace_event \
+    third_party/angle/src/third_party/volk \
     third_party/libgifcodec \
     third_party/glslang \
     third_party/angle/third_party/spirv-headers \
@@ -343,6 +318,8 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/dav1d \
     third_party/devscripts \
     third_party/devtools-frontend \
+    third_party/devtools-frontend/src/front_end/third_party/fabricjs \
+    third_party/devtools-frontend/src/front_end/third_party/wasmparser \
     third_party/devtools-frontend/src/third_party \
     third_party/dom_distiller_js \
     third_party/emoji-segmenter \
@@ -439,7 +416,6 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
 %endif
     third_party/rnnoise \
     third_party/s2cellid \
-    third_party/sfntly \
     third_party/skia \
     third_party/skia/include/third_party/skcms \
     third_party/skia/include/third_party/vulkan \
@@ -483,7 +459,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
 %if !%{with system_minizip}
     third_party/zlib \
 %endif
-    tools/gn/base/third_party/icu \
+    tools/gn/src/base/third_party/icu \
     url/third_party/mozilla \
     v8/src/third_party/siphash \
     v8/src/third_party/valgrind \
@@ -757,6 +733,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Thu Apr 09 2020 qvint <dotqvint@gmail.com> - 81.0.4044.92-1
+- Update to 81.0.4044.92
+
 * Sun Apr 05 2020 qvint <dotqvint@gmail.com> - 80.0.3987.163-1
 - Update to 80.0.3987.163
 
