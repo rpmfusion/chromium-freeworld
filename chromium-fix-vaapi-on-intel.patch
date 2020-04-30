@@ -5,7 +5,7 @@ Subject: [PATCH] Move offending function to chromeos only
 
 --- a/media/gpu/vaapi/vaapi_video_decode_accelerator.cc
 +++ b/media/gpu/vaapi/vaapi_video_decode_accelerator.cc
-@@ -63,6 +63,7 @@ void ReportToUMA(VAVDADecoderFailure fai
+@@ -64,6 +64,7 @@ void ReportToUMA(VAVDADecoderFailure fai
                              VAVDA_DECODER_FAILURES_MAX + 1);
  }
  
@@ -13,15 +13,15 @@ Subject: [PATCH] Move offending function to chromeos only
  // Returns true if the CPU is an Intel Gemini Lake or later (including Kaby
  // Lake) Cpu platform id's are referenced from the following file in kernel
  // source arch/x86/include/asm/intel-family.h
-@@ -75,6 +76,7 @@ bool IsGeminiLakeOrLater() {
+@@ -76,6 +77,7 @@ bool IsGeminiLakeOrLater() {
        cpuid.model() >= kGeminiLakeModelId;
    return is_geminilake_or_later;
  }
 +#endif 
  
- // Returns the size of a rectangle whose upper left corner is at the origin (0,
- // 0) and whose bottom right corner is the same as that of |rect|. This is
-@@ -1204,6 +1206,8 @@ VaapiVideoDecodeAccelerator::DecideBuffe
+ }  // namespace
+ 
+@@ -1171,6 +1173,8 @@ VaapiVideoDecodeAccelerator::DecideBuffe
    if (output_mode_ == VideoDecodeAccelerator::Config::OutputMode::IMPORT)
      return BufferAllocationMode::kNormal;
  
@@ -30,7 +30,7 @@ Subject: [PATCH] Move offending function to chromeos only
    // On Gemini Lake, Kaby Lake and later we can pass to libva the client's
    // PictureBuffers to decode onto, which skips the use of the Vpp unit and its
    // associated format reconciliation copy, avoiding all internal buffer
-@@ -1220,6 +1224,7 @@ VaapiVideoDecodeAccelerator::DecideBuffe
+@@ -1187,6 +1191,7 @@ VaapiVideoDecodeAccelerator::DecideBuffe
        num_extra_pics_ = 3;
      return BufferAllocationMode::kNone;
    }
