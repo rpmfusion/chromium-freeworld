@@ -223,6 +223,7 @@ Patch250:       chromium-81-gcc-10.patch
 
 # Fedora patches:
 Patch300:       chromium-71.0.3578.98-py2-bootstrap.patch
+Patch301:       chromium-58.0.3029.96-revert-b794998819088f76b4cf44c8db6940240c563cf4.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
 Patch400:       chromium-enable-vaapi.patch
@@ -735,6 +736,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %changelog
 * Wed May 06 2020 qvint <dotqvint@gmail.com> - 81.0.4044.138-1
 - Update to 81.0.4044.138
+- Fix touchpad scrolling under XWayland (rfbz#5621)
 
 * Thu Apr 30 2020 qvint <dotqvint@gmail.com> - 81.0.4044.129-1
 - Update to 81.0.4044.129
