@@ -69,7 +69,7 @@
 %global ozone 0
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        81.0.4044.138
+Version:        83.0.4103.97
 Release:        1%{?dist}
 Summary:        Chromium web browser built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -154,6 +154,7 @@ Buildrequires:  python2-six
 BuildRequires:  python2-ply
 %endif
 %endif
+BuildRequires:  python2-setuptools
 %if %{with system_re2}
 BuildRequires:  re2-devel
 %endif
@@ -210,15 +211,22 @@ Recommends:     libva-utils
 ExclusiveArch:  x86_64
 
 # Google patches (short-term fixes and backports):
-Patch150:       chromium-81-vaapi-r737459.patch
-Patch151:       chromium-81-vaapi-r738595.patch
-Patch152:       chromium-81-gcc-r742632.patch
-Patch153:       chromium-81-gcc-r742834.patch
-Patch154:       chromium-81-gcc-r743910.patch
+Patch150:       chromium-83-gcc-r756880.patch
+Patch151:       chromium-83-gcc-r760272.patch
+Patch152:       chromium-83-gcc-r760588.patch
+Patch153:       chromium-83-gcc-r762806.patch
+%if 0%{?fedora} >= 32
+Patch154:       chromium-83-gcc-10-r31184.patch
+Patch155:       chromium-83-gcc-10-r766427.patch
+%endif
 
 # Gentoo patches (short-term fixes):
+Patch250:       chromium-83-gcc-include.patch
+Patch251:       chromium-83-gcc-iterator.patch
+Patch252:       chromium-82-gcc-template.patch
+Patch253:       chromium-82-gcc-noexcept.patch
 %if 0%{?fedora} >= 32
-Patch250:       chromium-81-gcc-10.patch
+Patch254:       chromium-83-gcc-10.patch
 %endif
 
 # Fedora patches:
@@ -320,6 +328,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/devscripts \
     third_party/devtools-frontend \
     third_party/devtools-frontend/src/front_end/third_party/fabricjs \
+    third_party/devtools-frontend/src/front_end/third_party/lighthouse \
     third_party/devtools-frontend/src/front_end/third_party/wasmparser \
     third_party/devtools-frontend/src/third_party \
     third_party/dom_distiller_js \
@@ -336,6 +345,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
 %if !%{with system_harfbuzz}
     third_party/harfbuzz-ng \
 %endif
+    third_party/harfbuzz-ng/utils \
     third_party/hunspell \
     third_party/iccjpeg \
 %if !%{with system_libicu}
@@ -371,6 +381,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/libyuv \
     third_party/lss \
     third_party/lzma_sdk \
+    third_party/mako \
 %if 0%{?bundlepylibs}
     third_party/markupsafe \
 %endif
@@ -417,6 +428,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
 %endif
     third_party/rnnoise \
     third_party/s2cellid \
+    third_party/schema_org \
     third_party/skia \
     third_party/skia/include/third_party/skcms \
     third_party/skia/include/third_party/vulkan \
@@ -428,6 +440,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/SPIRV-Tools \
     third_party/sqlite \
     third_party/swiftshader \
+    third_party/swiftshader/third_party/astc-encoder \
     third_party/swiftshader/third_party/llvm-7.0 \
     third_party/swiftshader/third_party/llvm-subzero \
     third_party/swiftshader/third_party/marl \
@@ -734,6 +747,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Fri Jun 05 2020 qvint <dotqvint@gmail.com> - 83.0.4103.97-1
+- Update to 83.0.4103.97
+
 * Wed May 06 2020 qvint <dotqvint@gmail.com> - 81.0.4044.138-1
 - Update to 81.0.4044.138
 - Fix touchpad scrolling under XWayland (rfbz#5621)

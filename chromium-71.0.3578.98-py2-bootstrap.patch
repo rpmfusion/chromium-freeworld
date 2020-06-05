@@ -1,6 +1,6 @@
 --- a/third_party/catapult/common/py_vulcanize/py_vulcanize/generate.py
 +++ b/third_party/catapult/common/py_vulcanize/py_vulcanize/generate.py
-@@ -74,7 +74,7 @@ def _MinifyJS(input_js):
+@@ -83,7 +83,7 @@ def _MinifyJS(input_js):
  
    with tempfile.NamedTemporaryFile() as _:
      args = [
@@ -9,7 +9,7 @@
          rjsmin_path
      ]
      p = subprocess.Popen(args,
-@@ -194,7 +194,7 @@ def _MinifyCSS(css_text):
+@@ -203,7 +203,7 @@ def _MinifyCSS(css_text):
        os.path.join(py_vulcanize_path, 'third_party', 'rcssmin', 'rcssmin.py'))
  
    with tempfile.NamedTemporaryFile() as _:
