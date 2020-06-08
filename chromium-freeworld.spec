@@ -70,7 +70,7 @@
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
 Version:        83.0.4103.97
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Chromium web browser built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -219,6 +219,7 @@ Patch153:       chromium-83-gcc-r762806.patch
 Patch154:       chromium-83-gcc-10-r31184.patch
 Patch155:       chromium-83-gcc-10-r766427.patch
 %endif
+Patch156:       chromium-83-gcc-r766770.patch
 
 # Gentoo patches (short-term fixes):
 Patch250:       chromium-83-gcc-include.patch
@@ -747,6 +748,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Mon Jun 08 2020 qvint <dotqvint@gmail.com> - 83.0.4103.97-2
+- Fix crash in ServiceWorker (rfbz#5671)
+
 * Fri Jun 05 2020 qvint <dotqvint@gmail.com> - 83.0.4103.97-1
 - Update to 83.0.4103.97
 
