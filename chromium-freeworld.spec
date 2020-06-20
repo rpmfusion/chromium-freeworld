@@ -22,9 +22,6 @@
 %else
 %bcond_without system_ply
 %endif
-# This package depends on automagic byte compilation
-# https://fedoraproject.org/wiki/Changes/No_more_automagic_Python_bytecompilation_phase_2
-%global _python_bytecompile_extra 1
 #Require harfbuzz >= 2.4.0 for hb_subset_input_set_retain_gids
 %if 0%{?fedora} >= 31
 %bcond_without system_harfbuzz
@@ -750,6 +747,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %changelog
 * Wed Jun 17 2020 qvint <dotqvint@gmail.com> - 83.0.4103.106-1
 - Update to 83.0.4103.106
+- Disable python byte compiling
 
 * Mon Jun 08 2020 qvint <dotqvint@gmail.com> - 83.0.4103.97-2
 - Fix crash in ServiceWorker (rfbz#5671)
