@@ -66,11 +66,12 @@
 %global ozone 0
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        83.0.4103.116
+Version:        84.0.4147.89
 Release:        1%{?dist}
 Summary:        Chromium web browser built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
+
 %if %{freeworld}
 Source0:        https://commondatastorage.googleapis.com/chromium-browser-official/chromium-%{version}.tar.xz
 %else
@@ -88,6 +89,15 @@ Source0:        https://commondatastorage.googleapis.com/chromium-browser-offici
 # ./chromium-latest.py --stable --ffmpegclean --ffmpegarm --deleteunrar
 Source0:        chromium-%{version}-clean.tar.xz
 %endif
+
+# Patchset composed by Stephan Hartmann.
+%global patchset_revision chromium-84-patchset-3
+Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
+
+# Bundled xcb-proto. Chromium needs python2 version of this package.
+%global xcb_proto_version 1.13
+Source2:        https://xcb.freedesktop.org/dist/xcb-proto-%{xcb_proto_version}.tar.bz2
+
 # The following two source files are copied and modified from the chromium source
 Source10:       %{name}.sh
 #Add our own appdata file.
@@ -181,7 +191,6 @@ BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(libxslt)
 BuildRequires:  opus-devel
 BuildRequires:  snappy-devel
-BuildRequires:  yasm
 BuildRequires:  expat-devel
 BuildRequires:  pciutils-devel
 BuildRequires:  speech-dispatcher-devel
@@ -208,28 +217,12 @@ Recommends:     libva-utils
 ExclusiveArch:  x86_64
 
 # Google patches (short-term fixes and backports):
-Patch150:       chromium-83-gcc-r756880.patch
-Patch151:       chromium-83-gcc-r760272.patch
-Patch152:       chromium-83-gcc-r760588.patch
-Patch153:       chromium-83-gcc-r762806.patch
-%if 0%{?fedora} >= 32
-Patch154:       chromium-83-gcc-10-r31184.patch
-Patch155:       chromium-83-gcc-10-r766427.patch
-%endif
-Patch156:       chromium-83-gcc-r766770.patch
+Patch150:       chromium-84-nss-r771840.patch
 
 # Gentoo patches (short-term fixes):
-Patch250:       chromium-83-gcc-include.patch
-Patch251:       chromium-83-gcc-iterator.patch
-Patch252:       chromium-82-gcc-template.patch
-Patch253:       chromium-82-gcc-noexcept.patch
-%if 0%{?fedora} >= 32
-Patch254:       chromium-83-gcc-10.patch
-%endif
 
 # Fedora patches:
-Patch300:       chromium-71.0.3578.98-py2-bootstrap.patch
-Patch301:       chromium-58.0.3029.96-revert-b794998819088f76b4cf44c8db6940240c563cf4.patch
+Patch300:       chromium-py2-bootstrap.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
 Patch400:       chromium-enable-vaapi.patch
@@ -243,7 +236,23 @@ Patch403:       chromium-rpm-fusion-brand.patch
 %{name} is an open-source web browser, powered by WebKit (Blink)
 ############################################PREP###########################################################
 %prep
-%autosetup -n chromium-%{version} -p1
+%setup -q -T -n chromium-patches-%{patchset_revision} -b 1
+%setup -q -T -n xcb-proto-%{xcb_proto_version} -b 2
+
+%global patchset_root %{_builddir}/chromium-patches-%{patchset_revision}
+%global xcb_proto_root %{_builddir}/xcb-proto-%{xcb_proto_version}
+
+%setup -q -n chromium-%{version}
+
+# Apply patchset composed by Stephan Hartmann.
+rm %{patchset_root}/chromium-84-compiler.patch
+for patch in %{patchset_root}/*.patch; do
+  echo "Applying ${patch}"
+  %{__patch} -p1 <"${patch}"
+done
+
+# Apply patches from this spec.
+%autopatch -p1
 
 #Let's change the default shebang of python files.
 find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__python2}=' {} +
@@ -325,6 +334,8 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/dav1d \
     third_party/devscripts \
     third_party/devtools-frontend \
+    third_party/devtools-frontend/src/front_end/third_party/acorn \
+    third_party/devtools-frontend/src/front_end/third_party/codemirror \
     third_party/devtools-frontend/src/front_end/third_party/fabricjs \
     third_party/devtools-frontend/src/front_end/third_party/lighthouse \
     third_party/devtools-frontend/src/front_end/third_party/wasmparser \
@@ -359,6 +370,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/libaom \
     third_party/libaom/source/libaom/third_party/vector \
     third_party/libaom/source/libaom/third_party/x86inc \
+    third_party/libavif \
     third_party/libjingle \
     third_party/libphonenumber \
     third_party/libsecret \
@@ -377,6 +389,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
 %endif
     third_party/libXNVCtrl \
     third_party/libyuv \
+    third_party/lottie \
     third_party/lss \
     third_party/lzma_sdk \
     third_party/mako \
@@ -398,6 +411,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/one_euro_filter \
     third_party/openh264 \
     third_party/openscreen \
+    third_party/openscreen/src/third_party/mozilla \
     third_party/openscreen/src/third_party/tinycbor/src/src \
     third_party/ots \
     third_party/pdfium \
@@ -455,7 +469,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/web-animations-js \
     third_party/webdriver \
     third_party/webrtc \
-    third_party/webrtc/common_audio/third_party/fft4g \
+    third_party/webrtc/common_audio/third_party/ooura \
     third_party/webrtc/common_audio/third_party/spl_sqrt_floor \
     third_party/webrtc/modules/third_party/fft \
     third_party/webrtc/modules/third_party/g711 \
@@ -465,7 +479,6 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/widevine \
     third_party/woff2 \
     third_party/xdg-utils \
-    third_party/yasm/run_yasm.py \
     third_party/zlib/google \
     tools/grit/third_party/six \
 %if !%{with system_minizip}
@@ -505,7 +518,6 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     re2 \
 %endif
     snappy \
-    yasm \
 %if %{with system_minizip}
     zlib
 %endif
@@ -593,7 +605,6 @@ gn_args=(
     enable_hangout_services_extension=false
     fatal_linker_warnings=false
     treat_warnings_as_errors=false
-    linux_use_bundled_binutils=false
     fieldtrial_testing_like_official_build=true
     'custom_toolchain="//build/toolchain/linux/unbundle:default"'
     'host_toolchain="//build/toolchain/linux/unbundle:default"'
@@ -649,6 +660,13 @@ gn_args+=(
     blink_symbol_level=0
 %endif
 )
+
+# Bundled xcb-proto.
+gn_args+=(
+    'xcbproto_path="%{xcb_proto_root}/src"'
+)
+export PYTHONPATH="${PYTHONPATH}${PYTHONPATH+:}%{xcb_proto_root}"
+
 tools/gn/bootstrap/bootstrap.py  --gn-gen-args "${gn_args[*]}"
 %{target}/gn --script-executable=%{__python2} gen --args="${gn_args[*]}" %{target}
 %if %{debug_logs}
@@ -745,6 +763,11 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Sat Jul 18 2020 qvint <dotqvint@gmail.com> - 84.0.4147.89-1
+- Update to 84.0.4147.89
+- Use patchset composed by Stephan Hartmann <stha09@googlemail.com>
+- Bundle xcb-proto
+
 * Thu Jun 25 2020 qvint <dotqvint@gmail.com> - 83.0.4103.116-1
 - Update to 83.0.4103.116
 

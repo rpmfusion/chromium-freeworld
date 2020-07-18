@@ -21,7 +21,7 @@ Subject: [PATCH] Move offending function to chromeos only
  
  }  // namespace
  
-@@ -1155,6 +1157,8 @@ VaapiVideoDecodeAccelerator::DecideBuffe
+@@ -1169,6 +1171,8 @@ VaapiVideoDecodeAccelerator::DecideBuffe
    if (output_mode_ == VideoDecodeAccelerator::Config::OutputMode::IMPORT)
      return BufferAllocationMode::kNormal;
  
@@ -30,11 +30,11 @@ Subject: [PATCH] Move offending function to chromeos only
    // On Gemini Lake, Kaby Lake and later we can pass to libva the client's
    // PictureBuffers to decode onto, which skips the use of the Vpp unit and its
    // associated format reconciliation copy, avoiding all internal buffer
-@@ -1171,6 +1175,7 @@ VaapiVideoDecodeAccelerator::DecideBuffe
+@@ -1184,6 +1188,7 @@ VaapiVideoDecodeAccelerator::DecideBuffe
        num_extra_pics_ = 3;
      return BufferAllocationMode::kNone;
    }
 +#endif 
  
-   // If we're here, we have to use the Vpp unit and allocate buffers for
-   // |decoder_|; usually we'd have to allocate the |decoder_|s
+   // For H.264 on older devices, another +1 is experimentally needed for
+   // high-to-high resolution changes.

@@ -1,1 +1,3 @@
 chromium-*.tar.xz
+chromium-patches-*.tar.gz
+xcb-proto-*.tar.bz2
