@@ -32,7 +32,7 @@ Subject: [PATCH] Enable VAAPI on Linux
       FEATURE_VALUE_TYPE(features::kSystemKeyboardLock)},
 --- a/chrome/browser/flag_descriptions.cc
 +++ b/chrome/browser/flag_descriptions.cc
-@@ -3136,16 +3136,19 @@ const char kMetalDescription[] =
+@@ -3142,16 +3142,19 @@ const char kMetalDescription[] =
  
  #endif
  
@@ -57,7 +57,7 @@ Subject: [PATCH] Enable VAAPI on Linux
      "Use the aggregated ML model to rank the suggested apps.";
 --- a/chrome/browser/flag_descriptions.h
 +++ b/chrome/browser/flag_descriptions.h
-@@ -1820,13 +1820,19 @@ extern const char kMetalDescription[];
+@@ -1823,13 +1823,19 @@ extern const char kMetalDescription[];
  
  #endif  // defined(OS_MACOSX)
  

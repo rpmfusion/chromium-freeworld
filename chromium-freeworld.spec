@@ -66,7 +66,7 @@
 %global ozone 0
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        84.0.4147.89
+Version:        84.0.4147.125
 Release:        1%{?dist}
 Summary:        Chromium web browser built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -539,6 +539,9 @@ mkdir -p third_party/node/linux/node-linux-x64/bin
 ln -s %{_bindir}/node third_party/node/linux/node-linux-x64/bin/node
 #####################################BUILD#############################################
 %build
+# Final link uses lots of file descriptors.
+ulimit -n 2048
+
 #export compilar variables
 
 %if %{clang}
@@ -553,11 +556,6 @@ export CFLAGS="$CFLAGS -Wno-unknown-warning-option"
 %else
 export AR=ar NM=nm AS=as
 export CC=gcc CXX=g++
-
-
-# GN needs gold to bootstrap
-export LDFLAGS="$LDFLAGS -fuse-ld=gold"
-
 export CXXFLAGS="$CXXFLAGS -fpermissive"
 %if !%{debug_logs}
 # Disable useless warning on non debug log builds
@@ -585,6 +583,7 @@ gn_args=(
     use_cups=true
     use_gnome_keyring=true
     use_gio=true
+    use_gold=false
     use_kerberos=true
     use_libpci=true
     use_pulseaudio=true
@@ -763,6 +762,11 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Tue Aug 11 2020 qvint <dotqvint@gmail.com> - 84.0.4147.125-1
+- Update to 84.0.4147.125
+- Stop using gold
+- Add 'ulimit -n 2048'
+
 * Sat Jul 18 2020 qvint <dotqvint@gmail.com> - 84.0.4147.89-1
 - Update to 84.0.4147.89
 - Use patchset composed by Stephan Hartmann <stha09@googlemail.com>
