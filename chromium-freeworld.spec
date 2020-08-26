@@ -23,11 +23,7 @@
 %bcond_without system_ply
 %endif
 #Require harfbuzz >= 2.4.0 for hb_subset_input_set_retain_gids
-%if 0%{?fedora} >= 31
 %bcond_without system_harfbuzz
-%else
-%bcond_with system_harfbuzz
-%endif
 # Require libxml2 > 2.9.4 for XML_PARSE_NOXXE
 %bcond_without system_libxml2
 
@@ -38,7 +34,6 @@
 # A patch fix building so enabled by default for Fedora 30
 # Need icu version >= 64
 %bcond_with system_libicu
-%if 0%{?fedora} >= 31
 # Allow testing whether libvpx can be unbundled
 %bcond_with system_libvpx
 # Allow testing whether ffmpeg can be unbundled
@@ -46,13 +41,6 @@
 #Allow minizip to be unbundled
 #mini-compat is going to be removed from fedora 30!
 %bcond_without system_minizip
-%else
-%bcond_with system_libvpx
-%bcond_with system_ffmpeg
-#Allow minizip to be unbundled
-#mini-compat is going to be removed from fedora 30!
-%bcond_without system_minizip
-%endif
 
 # Need re2 ver. 2016.07.21 for re2::LazyRE2
 %bcond_with system_re2
@@ -120,9 +108,7 @@ BuildRequires:  mesa-libGL-devel, mesa-libEGL-devel
 BuildRequires:  minizip-compat-devel
 %endif
 # Pipewire need this.
-%if 0%{?fedora} >= 29
 BuildRequires:  pkgconfig(libpipewire-0.2)
-%endif
 BuildRequires:  pkgconfig(gtk+-2.0), pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(libexif), pkgconfig(nss)
 BuildRequires:  pkgconfig(xtst), pkgconfig(xscrnsaver)
@@ -574,9 +560,6 @@ export CXXFLAGS="$CXXFLAGS -w"
 export CFLAGS="$CFLAGS -g0"
 export CXXFLAGS="$CXXFLAGS -g0"
 %endif
-%if 0%{?fedora} <= 29
-export CXXFLAGS="$CXXFLAGS -fno-ipa-cp-clone"
-%endif
 #end compiler part
 %endif
 
@@ -642,10 +625,8 @@ gn_args+=(
 
 #Pipewire
 gn_args+=(
-%if 0%{?fedora} >= 29
      rtc_use_pipewire=true
      rtc_link_pipewire=true
-%endif
 )
 
 # Ozone stuff : Whole work is done completely upstream.
@@ -767,6 +748,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 * Wed Aug 26 2020 qvint <dotqvint@gmail.com> - 85.0.4183.83-1
 - Update to 85.0.4183.83
 - Use xcb-proto bundled in Chromium tarball
+- Drop Fedora 30 support
 
 * Tue Aug 11 2020 qvint <dotqvint@gmail.com> - 84.0.4147.125-1
 - Update to 84.0.4147.125
