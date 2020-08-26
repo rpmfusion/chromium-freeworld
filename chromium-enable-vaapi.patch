@@ -5,7 +5,7 @@ Subject: [PATCH] Enable VAAPI on Linux
 
 --- a/chrome/browser/about_flags.cc
 +++ b/chrome/browser/about_flags.cc
-@@ -2367,7 +2367,7 @@ const FeatureEntry kFeatureEntries[] = {
+@@ -2372,7 +2372,7 @@ const FeatureEntry kFeatureEntries[] = {
          "disable-accelerated-video-decode",
          flag_descriptions::kAcceleratedVideoDecodeName,
          flag_descriptions::kAcceleratedVideoDecodeDescription,
@@ -14,7 +14,7 @@ Subject: [PATCH] Enable VAAPI on Linux
          SINGLE_DISABLE_VALUE_TYPE(switches::kDisableAcceleratedVideoDecode),
      },
      {
-@@ -2798,12 +2798,12 @@ const FeatureEntry kFeatureEntries[] = {
+@@ -2823,12 +2823,12 @@ const FeatureEntry kFeatureEntries[] = {
       flag_descriptions::kWebXrForceRuntimeDescription, kOsDesktop,
       MULTI_VALUE_TYPE(kWebXrForceRuntimeChoices)},
  #endif  // ENABLE_VR
@@ -32,7 +32,7 @@ Subject: [PATCH] Enable VAAPI on Linux
       FEATURE_VALUE_TYPE(features::kSystemKeyboardLock)},
 --- a/chrome/browser/flag_descriptions.cc
 +++ b/chrome/browser/flag_descriptions.cc
-@@ -3142,16 +3142,19 @@ const char kMetalDescription[] =
+@@ -3257,16 +3257,19 @@ const char kMetalDescription[] =
  
  #endif
  
@@ -57,7 +57,7 @@ Subject: [PATCH] Enable VAAPI on Linux
      "Use the aggregated ML model to rank the suggested apps.";
 --- a/chrome/browser/flag_descriptions.h
 +++ b/chrome/browser/flag_descriptions.h
-@@ -1823,13 +1823,19 @@ extern const char kMetalDescription[];
+@@ -1881,13 +1881,19 @@ extern const char kMetalDescription[];
  
  #endif  // defined(OS_MACOSX)
  

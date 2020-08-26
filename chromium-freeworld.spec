@@ -66,7 +66,7 @@
 %global ozone 0
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        84.0.4147.125
+Version:        85.0.4183.83
 Release:        1%{?dist}
 Summary:        Chromium web browser built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -91,12 +91,8 @@ Source0:        chromium-%{version}-clean.tar.xz
 %endif
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-84-patchset-3
+%global patchset_revision chromium-85-patchset-2
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
-
-# Bundled xcb-proto. Chromium needs python2 version of this package.
-%global xcb_proto_version 1.13
-Source2:        https://xcb.freedesktop.org/dist/xcb-proto-%{xcb_proto_version}.tar.bz2
 
 # The following two source files are copied and modified from the chromium source
 Source10:       %{name}.sh
@@ -217,7 +213,9 @@ Recommends:     libva-utils
 ExclusiveArch:  x86_64
 
 # Google patches (short-term fixes and backports):
-Patch150:       chromium-84-nss-r771840.patch
+%if 0%{?fedora} >= 33
+Patch150:       chromium-85-ffmpeg-4.3-r796966.patch
+%endif
 
 # Gentoo patches (short-term fixes):
 
@@ -237,19 +235,27 @@ Patch403:       chromium-rpm-fusion-brand.patch
 ############################################PREP###########################################################
 %prep
 %setup -q -T -n chromium-patches-%{patchset_revision} -b 1
-%setup -q -T -n xcb-proto-%{xcb_proto_version} -b 2
-
-%global patchset_root %{_builddir}/chromium-patches-%{patchset_revision}
-%global xcb_proto_root %{_builddir}/xcb-proto-%{xcb_proto_version}
-
 %setup -q -n chromium-%{version}
 
+%global patchset_root %{_builddir}/chromium-patches-%{patchset_revision}
+
 # Apply patchset composed by Stephan Hartmann.
-rm %{patchset_root}/chromium-84-compiler.patch
-for patch in %{patchset_root}/*.patch; do
-  echo "Applying ${patch}"
-  %{__patch} -p1 <"${patch}"
-done
+%global patchset_apply() %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
+%patchset_apply chromium-blink-gcc-diagnostic-pragma.patch
+%patchset_apply chromium-fix-char_traits.patch
+%patchset_apply chromium-quiche-invalid-offsetof.patch
+%patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
+%patchset_apply chromium-79-gcc-protobuf-alignas.patch
+%patchset_apply chromium-80-QuicStreamSendBuffer-deleted-move-constructor.patch
+%patchset_apply chromium-84-blink-disable-clang-format.patch
+%patchset_apply chromium-85-DelayNode-cast.patch
+%patchset_apply chromium-85-FrameWidget-namespace.patch
+%patchset_apply chromium-85-NearbyConnection-abstract.patch
+%patchset_apply chromium-85-NearbyShareEncryptedMetadataKey-include.patch
+%patchset_apply chromium-85-oscillator_node-cast.patch
+%patchset_apply chromium-85-ostream-operator.patch
+%patchset_apply chromium-85-ozone-include.patch
+%patchset_apply chromium-85-sim_hash-include.patch
 
 # Apply patches from this spec.
 %autopatch -p1
@@ -409,6 +415,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/node \
     third_party/node/node_modules/polymer-bundler/lib/third_party/UglifyJS2 \
     third_party/one_euro_filter \
+    third_party/opencv \
     third_party/openh264 \
     third_party/openscreen \
     third_party/openscreen/src/third_party/mozilla \
@@ -453,7 +460,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/sqlite \
     third_party/swiftshader \
     third_party/swiftshader/third_party/astc-encoder \
-    third_party/swiftshader/third_party/llvm-7.0 \
+    third_party/swiftshader/third_party/llvm-10.0 \
     third_party/swiftshader/third_party/llvm-subzero \
     third_party/swiftshader/third_party/marl \
     third_party/swiftshader/third_party/subzero \
@@ -478,6 +485,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/webrtc/rtc_base/third_party/sigslot \
     third_party/widevine \
     third_party/woff2 \
+    third_party/xcbproto \
     third_party/xdg-utils \
     third_party/zlib/google \
     tools/grit/third_party/six \
@@ -660,12 +668,6 @@ gn_args+=(
 %endif
 )
 
-# Bundled xcb-proto.
-gn_args+=(
-    'xcbproto_path="%{xcb_proto_root}/src"'
-)
-export PYTHONPATH="${PYTHONPATH}${PYTHONPATH+:}%{xcb_proto_root}"
-
 tools/gn/bootstrap/bootstrap.py  --gn-gen-args "${gn_args[*]}"
 %{target}/gn --script-executable=%{__python2} gen --args="${gn_args[*]}" %{target}
 %if %{debug_logs}
@@ -762,6 +764,10 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Wed Aug 26 2020 qvint <dotqvint@gmail.com> - 85.0.4183.83-1
+- Update to 85.0.4183.83
+- Use xcb-proto bundled in Chromium tarball
+
 * Tue Aug 11 2020 qvint <dotqvint@gmail.com> - 84.0.4147.125-1
 - Update to 84.0.4147.125
 - Stop using gold
