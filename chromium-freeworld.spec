@@ -1,6 +1,8 @@
 #Global Libraries
 #Do not turn it on in Fedora copr!
 %global freeworld 1
+%global menu_name Chromium (Freeworld)
+%global xdg_subdir chromium
 #This can be any folder on out
 %global target out/Release
 ### Google API keys (see http://www.chromium.org/developers/how-tos/api-keys)
@@ -56,7 +58,7 @@
 Name:           chromium-freeworld
 Version:        85.0.4183.83
 Release:        1%{?dist}
-Summary:        Chromium web browser built with all freeworld codecs and VA-API support
+Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
 
@@ -86,6 +88,7 @@ Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_re
 Source10:       %{name}.sh
 #Add our own appdata file.
 Source11:       %{name}.appdata.xml
+Source12:       chromium-symbolic.svg
 #Personal stuff
 Source15:       LICENSE
 ######################## Installation Folder #################################################
@@ -212,8 +215,9 @@ Patch300:       chromium-py2-bootstrap.patch
 Patch400:       chromium-enable-vaapi.patch
 Patch401:       chromium-fix-vaapi-on-intel.patch
 Patch402:       chromium-enable-widevine.patch
+Patch403:       chromium-manpage.patch
 %if %{freeworld}
-Patch403:       chromium-rpm-fusion-brand.patch
+Patch420:       chromium-rpm-fusion-brand.patch
 %endif
 
 %description
@@ -666,17 +670,28 @@ mkdir -p %{buildroot}%{_mandir}/man1
 mkdir -p %{buildroot}%{_metainfodir}
 mkdir -p %{buildroot}%{_datadir}/applications
 mkdir -p %{buildroot}%{_datadir}/gnome-control-center/default-apps
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/symbolic/apps
 sed -e "s|@@CHROMIUMDIR@@|%{chromiumdir}|"     %{SOURCE10} > %{name}.sh
 install -m 755 %{name}.sh %{buildroot}%{_bindir}/%{name}
 install -m 644 %{SOURCE11} %{buildroot}%{_metainfodir}
-sed -e "s|@@MENUNAME@@|%{name}|g" -e "s|@@PACKAGE@@|%{name}|g" \
-    chrome/app/resources/manpage.1.in > chrome.1
+sed \
+  -e "s|@@MENUNAME@@|Chromium|g" \
+  -e "s|@@PACKAGE@@|%{name}|g" \
+  -e "s|@@SUMMARY@@|%{summary}|g" \
+  -e "s|@@XDG_SUBDIR@@|%{xdg_subdir}|g" \
+  chrome/app/resources/manpage.1.in >chrome.1
 install -m 644 chrome.1 %{buildroot}%{_mandir}/man1/%{name}.1
-sed -e "s|@@MENUNAME@@|%{name}|g" -e "s|@@PACKAGE@@|%{name}|g" -e "s|@@USR_BIN_SYMLINK_NAME@@|%{name}|g" \
-    chrome/installer/linux/common/desktop.template > %{name}.desktop
+sed \
+  -e "s|@@MENUNAME@@|%{menu_name}|g" \
+  -e "s|@@PACKAGE@@|%{name}|g" \
+  -e "s|@@USR_BIN_SYMLINK_NAME@@|%{name}|g" \
+  chrome/installer/linux/common/desktop.template >%{name}.desktop
 desktop-file-install --dir=%{buildroot}%{_datadir}/applications %{name}.desktop
-sed -e "s|@@MENUNAME@@|%{name}|g" -e "s|@@PACKAGE@@|%{name}|g" -e "s|@@INSTALLDIR@@|%{_bindir}|g" \
-chrome/installer/linux/common/default-app.template > %{name}.xml
+sed \
+  -e "s|@@INSTALLDIR@@|%{_bindir}|g" \
+  -e "s|@@MENUNAME@@|%{menu_name}|g" \
+  -e "s|@@PACKAGE@@|%{name}|g" \
+  chrome/installer/linux/common/default-app.template >%{name}.xml
 install -m 644 %{name}.xml %{buildroot}%{_datadir}/gnome-control-center/default-apps/
 install -m 755 %{target}/chrome %{buildroot}%{chromiumdir}/%{name}
 install -m 4755 %{target}/chrome_sandbox %{buildroot}%{chromiumdir}/chrome-sandbox
@@ -704,6 +719,8 @@ for i in 24 32 48 64 128 256; do
     install -m 644 chrome/app/theme/chromium/${dir}product_logo_$i.${ext} \
         %{buildroot}%{_datadir}/icons/hicolor/${i}x${i}/apps/%{name}.${ext}
 done
+install -m 644 %{SOURCE12} \
+  %{buildroot}%{_datadir}/icons/hicolor/symbolic/apps/%{name}-symbolic.svg
 ####################################check##################################################
 %check
 appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appdata.xml"
@@ -723,6 +740,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{_datadir}/icons/hicolor/64x64/apps/%{name}.png
 %{_datadir}/icons/hicolor/128x128/apps/%{name}.png
 %{_datadir}/icons/hicolor/256x256/apps/%{name}.png
+%{_datadir}/icons/hicolor/symbolic/apps/%{name}-symbolic.svg
 %{_mandir}/man1/%{name}.1.gz
 %dir %{chromiumdir}
 %{chromiumdir}/%{name}
@@ -749,6 +767,11 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 - Update to 85.0.4183.83
 - Use xcb-proto bundled in Chromium tarball
 - Drop Fedora 30 support
+- Fix XDG paths in manpage
+- Update AppStream metadata
+- Fix name in .desktop file (rfbz#5717)
+- Fix name in GNOME default-apps XML
+- Add symbolic app icon
 
 * Tue Aug 11 2020 qvint <dotqvint@gmail.com> - 84.0.4147.125-1
 - Update to 84.0.4147.125
