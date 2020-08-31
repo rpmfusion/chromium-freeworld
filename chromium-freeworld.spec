@@ -57,7 +57,7 @@
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
 Version:        85.0.4183.83
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -696,6 +696,8 @@ install -m 644 %{name}.xml %{buildroot}%{_datadir}/gnome-control-center/default-
 install -m 755 %{target}/chrome %{buildroot}%{chromiumdir}/%{name}
 install -m 4755 %{target}/chrome_sandbox %{buildroot}%{chromiumdir}/chrome-sandbox
 install -m 755 %{target}/chromedriver %{buildroot}%{chromiumdir}/
+install -m 755 %{target}/libEGL.so %{buildroot}%{chromiumdir}/
+install -m 755 %{target}/libGLESv2.so %{buildroot}%{chromiumdir}/
 %if !%{with system_libicu}
 install -m 644 %{target}/icudtl.dat %{buildroot}%{chromiumdir}/
 %endif
@@ -746,6 +748,8 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/%{name}
 %{chromiumdir}/chrome-sandbox
 %{chromiumdir}/chromedriver
+%{chromiumdir}/libEGL.so
+%{chromiumdir}/libGLESv2.so
 %if !%{with system_libicu}
 %{chromiumdir}/icudtl.dat
 %endif
@@ -763,6 +767,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Mon Aug 31 2020 qvint <dotqvint@gmail.com> - 85.0.4183.83-2
+- Ship ANGLE libEGL.so and libGLESv2.so (rfbz#5738)
+
 * Wed Aug 26 2020 qvint <dotqvint@gmail.com> - 85.0.4183.83-1
 - Update to 85.0.4183.83
 - Use xcb-proto bundled in Chromium tarball
