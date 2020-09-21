@@ -534,7 +534,7 @@ gn_args=(
     proprietary_codecs=false
 %endif
     enable_nacl=false
-    enable_hangout_services_extension=false
+    enable_hangout_services_extension=true
     fatal_linker_warnings=false
     treat_warnings_as_errors=false
     fieldtrial_testing_like_official_build=true
@@ -700,6 +700,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %changelog
 * Mon Sep 21 2020 qvint <dotqvint@gmail.com> - 85.0.4183.121-1
 - Update to 85.0.4183.121
+- Enable Hangout services extension (rfbz#5758)
 
 * Thu Sep 10 2020 qvint <dotqvint@gmail.com> - 85.0.4183.102-1
 - Update to 85.0.4183.102
