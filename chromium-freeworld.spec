@@ -35,8 +35,6 @@
 # Need re2 ver. 2016.07.21 for re2::LazyRE2
 %bcond_with system_re2
 
-#Turn on verbose mode
-%global debug_logs 0
 #------------------------------------------------------
 #Build debug packages for debugging
 %global debug_pkg 0
@@ -496,11 +494,8 @@ ulimit -n 2048
 export AR=ar NM=nm AS=as
 export CC=gcc CXX=g++
 export CXXFLAGS="$CXXFLAGS -fpermissive"
-%if !%{debug_logs}
-# Disable useless warning on non debug log builds
 export CFLAGS="$CFLAGS -w"
 export CXXFLAGS="$CXXFLAGS -w"
-%endif
 %if !%{debug_pkg}
 export CFLAGS="$CFLAGS -g0"
 export CXXFLAGS="$CXXFLAGS -g0"
@@ -587,11 +582,7 @@ gn_args+=(
 
 tools/gn/bootstrap/bootstrap.py  --gn-gen-args "${gn_args[*]}"
 %{target}/gn --script-executable=%{__python2} gen --args="${gn_args[*]}" %{target}
-%if %{debug_logs}
-ninja  %{_smp_mflags} -C %{target} -v  chrome chrome_sandbox chromedriver
-%else
-ninja  %{_smp_mflags} -C %{target}   chrome chrome_sandbox chromedriver
-%endif
+%ninja_build -C %{target} chrome chrome_sandbox chromedriver
 ######################################Install####################################
 %install
 mkdir -p %{buildroot}%{_bindir}
@@ -703,6 +694,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 - Update to 85.0.4183.121
 - Enable Hangout services extension (rfbz#5758)
 - Use MD5-based BuildID (rfbz#5743)
+- Use %%ninja_build macro
 
 * Thu Sep 10 2020 qvint <dotqvint@gmail.com> - 85.0.4183.102-1
 - Update to 85.0.4183.102
