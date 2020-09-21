@@ -1,0 +1,14 @@
+Resolve conflicts with Fedora Chromium by using MD5-based BuildID.
+https://bugzilla.rpmfusion.org/show_bug.cgi?id=5743
+
+--- a/build/config/compiler/BUILD.gn
++++ b/build/config/compiler/BUILD.gn
+@@ -338,7 +338,7 @@ config("compiler") {
+       # links.
+       ldflags += [ "-Wl,--build-id=sha1" ]
+     } else if (current_os != "aix") {
+-      ldflags += [ "-Wl,--build-id" ]
++      ldflags += [ "-Wl,--build-id=md5" ]
+     }
+ 
+     if (!is_android) {

@@ -182,6 +182,7 @@ Patch400:       chromium-enable-vaapi.patch
 Patch401:       chromium-fix-vaapi-on-intel.patch
 Patch402:       chromium-enable-widevine.patch
 Patch403:       chromium-manpage.patch
+Patch404:       chromium-md5-based-build-id.patch
 %if %{freeworld}
 Patch420:       chromium-rpm-fusion-brand.patch
 %endif
@@ -701,6 +702,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 * Mon Sep 21 2020 qvint <dotqvint@gmail.com> - 85.0.4183.121-1
 - Update to 85.0.4183.121
 - Enable Hangout services extension (rfbz#5758)
+- Use MD5-based BuildID (rfbz#5743)
 
 * Thu Sep 10 2020 qvint <dotqvint@gmail.com> - 85.0.4183.102-1
 - Update to 85.0.4183.102
