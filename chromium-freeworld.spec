@@ -16,25 +16,14 @@
 %global __requires_exclude %{chromiumdir}/.*\\.so
 %global __provides_exclude_from %{chromiumdir}/.*\\.so
 #######################################CONFIGS###########################################
-#Require harfbuzz >= 2.4.0 for hb_subset_input_set_retain_gids
-%bcond_without system_harfbuzz
-# Require libxml2 > 2.9.4 for XML_PARSE_NOXXE
-%bcond_without system_libxml2
-# Allow testing whether icu can be unbundled
-# A patch fix building so enabled by default for Fedora 30
-# Need icu version >= 64
-%bcond_with system_libicu
-# Allow testing whether libvpx can be unbundled
-%bcond_with system_libvpx
-# Allow testing whether ffmpeg can be unbundled
-%bcond_without system_ffmpeg
-#Allow minizip to be unbundled
-#mini-compat is going to be removed from fedora 30!
-%bcond_without system_minizip
-
-# Need re2 ver. 2016.07.21 for re2::LazyRE2
-%bcond_with system_re2
-
+# System libraries to use.
+%global system_ffmpeg 1
+%global system_harfbuzz 1
+%global system_libicu 0
+%global system_libvpx 0
+%global system_libxml2 1
+%global system_minizip 1
+%global system_re2 0
 #------------------------------------------------------
 # Enable building with ozone support
 %global ozone 0
@@ -87,7 +76,7 @@ BuildRequires:  ninja-build, nodejs, bison, gperf, hwdata
 BuildRequires:  libgcc, glibc, libatomic
 BuildRequires:  libcap-devel, cups-devel, alsa-lib-devel
 BuildRequires:  mesa-libGL-devel, mesa-libEGL-devel
-%if %{with system_minizip}
+%if %{system_minizip}
 BuildRequires:  minizip-compat-devel
 %endif
 # Pipewire need this.
@@ -109,30 +98,30 @@ BuildRequires:  pkgconfig(wayland-server)
 %endif
 BuildRequires:  /usr/bin/python2
 BuildRequires:  python2-setuptools
-%if %{with system_re2}
+%if %{system_re2}
 BuildRequires:  re2-devel
 %endif
 # replace_gn_files.py --system-libraries
 BuildRequires:  flac-devel
 BuildRequires:  freetype-devel
-%if %{with system_harfbuzz}
+%if %{system_harfbuzz}
 BuildRequires:  harfbuzz-devel
 %endif
-%if %{with system_libicu}
+%if %{system_libicu}
 BuildRequires:  libicu-devel
 %endif
 BuildRequires:  libdrm-devel
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  libpng-devel
 # Chromium requires libvpx 1.5.0 and some non-default options
-%if %{with system_libvpx}
+%if %{system_libvpx}
 BuildRequires:  libvpx-devel
 %endif
-%if %{with system_ffmpeg}
+%if %{system_ffmpeg}
 BuildRequires:  ffmpeg-devel
 %endif
 BuildRequires:  libwebp-devel
-%if %{with system_libxml2}
+%if %{system_libxml2}
 BuildRequires:  pkgconfig(libxml-2.0)
 %endif
 BuildRequires:  pkgconfig(libxslt)
@@ -297,7 +286,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/devtools-frontend/src/third_party \
     third_party/dom_distiller_js \
     third_party/emoji-segmenter \
-%if !%{with system_ffmpeg}
+%if !%{system_ffmpeg}
     third_party/ffmpeg \
 %endif
     third_party/flatbuffers \
@@ -306,13 +295,13 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/google_input_tools/third_party/closure_library \
     third_party/google_input_tools/third_party/closure_library/third_party/closure \
     third_party/googletest \
-%if !%{with system_harfbuzz}
+%if !%{system_harfbuzz}
     third_party/harfbuzz-ng \
 %endif
     third_party/harfbuzz-ng/utils \
     third_party/hunspell \
     third_party/iccjpeg \
-%if !%{with system_libicu}
+%if !%{system_libicu}
     third_party/icu \
 %endif
     third_party/inspector_protocol \
@@ -332,12 +321,12 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/libsrtp \
     third_party/libsync \
     third_party/libudev \
-%if !%{with system_libvpx}
+%if !%{system_libvpx}
     third_party/libvpx \
     third_party/libvpx/source/libvpx/third_party/x86inc \
 %endif
     third_party/libwebm \
-%if %{with system_libxml2}
+%if %{system_libxml2}
     third_party/libxml/chromium \
 %else
     third_party/libxml \
@@ -354,7 +343,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
 %if %{ozone}
     third_party/minigbm \
 %endif
-%if !%{with system_minizip}
+%if !%{system_minizip}
     third_party/minizip/ \
 %endif
     third_party/modp_b64 \
@@ -387,7 +376,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/protobuf/third_party/six \
     third_party/pyjson5 \
     third_party/qcms \
-%if !%{with system_re2}
+%if !%{system_re2}
     third_party/re2 \
 %endif
     third_party/rnnoise \
@@ -434,7 +423,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/xdg-utils \
     third_party/zlib/google \
     tools/grit/third_party/six \
-%if !%{with system_minizip}
+%if !%{system_minizip}
     third_party/zlib \
 %endif
     tools/gn/src/base/third_party/icu \
@@ -446,32 +435,32 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     v8/third_party/v8
 
 ./build/linux/unbundle/replace_gn_files.py --system-libraries \
-%if %{with system_ffmpeg}
+%if %{system_ffmpeg}
     ffmpeg \
 %endif
     flac \
     freetype \
     fontconfig \
-%if %{with system_libicu}
+%if %{system_libicu}
     icu \
 %endif
     libdrm \
     libjpeg \
     libpng \
-%if %{with system_libvpx}
+%if %{system_libvpx}
     libvpx \
 %endif
     libwebp \
-%if %{with system_libxml2}
+%if %{system_libxml2}
     libxml \
 %endif
     libxslt \
     opus \
-%if %{with system_re2}
+%if %{system_re2}
     re2 \
 %endif
     snappy \
-%if %{with system_minizip}
+%if %{system_minizip}
     zlib
 %endif
 
@@ -513,7 +502,7 @@ gn_args=(
     link_pulseaudio=true
     use_system_freetype=true
     enable_widevine=true
-%if %{with system_harfbuzz}
+%if %{system_harfbuzz}
     use_system_harfbuzz=true
 %endif
 %if %{freeworld}
@@ -538,7 +527,7 @@ gn_args=(
 # Optimizations
 gn_args+=(
    enable_vr=false
-%if %{with system_libicu}
+%if %{system_libicu}
    icu_use_data_file=false
 %endif
 )
@@ -611,7 +600,7 @@ install -m 4755 %{target}/chrome_sandbox %{buildroot}%{chromiumdir}/chrome-sandb
 install -m 755 %{target}/chromedriver %{buildroot}%{chromiumdir}/
 install -m 755 %{target}/libEGL.so %{buildroot}%{chromiumdir}/
 install -m 755 %{target}/libGLESv2.so %{buildroot}%{chromiumdir}/
-%if !%{with system_libicu}
+%if !%{system_libicu}
 install -m 644 %{target}/icudtl.dat %{buildroot}%{chromiumdir}/
 %endif
 install -m 644 %{target}/v8_context_snapshot.bin %{buildroot}%{chromiumdir}/
@@ -663,7 +652,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/chromedriver
 %{chromiumdir}/libEGL.so
 %{chromiumdir}/libGLESv2.so
-%if !%{with system_libicu}
+%if !%{system_libicu}
 %{chromiumdir}/icudtl.dat
 %endif
 %{chromiumdir}/v8_context_snapshot.bin
@@ -686,6 +675,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 - Use MD5-based BuildID (rfbz#5743)
 - Use %%ninja_build macro
 - Remove debug_pkg toggle
+- Replace bconds with ordinary macros
 
 * Thu Sep 10 2020 qvint <dotqvint@gmail.com> - 85.0.4183.102-1
 - Update to 85.0.4183.102
