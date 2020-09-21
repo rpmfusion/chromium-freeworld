@@ -44,7 +44,7 @@
 %global ozone 0
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        85.0.4183.102
+Version:        85.0.4183.121
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -698,6 +698,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Mon Sep 21 2020 qvint <dotqvint@gmail.com> - 85.0.4183.121-1
+- Update to 85.0.4183.121
+
 * Thu Sep 10 2020 qvint <dotqvint@gmail.com> - 85.0.4183.102-1
 - Update to 85.0.4183.102
 - Remove bundlepylibs and clang toggles
