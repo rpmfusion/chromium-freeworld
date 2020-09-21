@@ -36,8 +36,6 @@
 %bcond_with system_re2
 
 #------------------------------------------------------
-#Build debug packages for debugging
-%global debug_pkg 0
 # Enable building with ozone support
 %global ozone 0
 ##############################Package Definitions######################################
@@ -159,9 +157,7 @@ Provides:       chromium-vaapi = %{version}-%{release}
 Obsoletes:      chromium-vaapi < %{version}-%{release}
 #Some recommendations
 Recommends:     libva-utils
-%if !%{debug_pkg}
 %global debug_package %{nil}
-%endif
 # This build should be only available to amd64
 ExclusiveArch:  x86_64
 
@@ -496,10 +492,8 @@ export CC=gcc CXX=g++
 export CXXFLAGS="$CXXFLAGS -fpermissive"
 export CFLAGS="$CFLAGS -w"
 export CXXFLAGS="$CXXFLAGS -w"
-%if !%{debug_pkg}
 export CFLAGS="$CFLAGS -g0"
 export CXXFLAGS="$CXXFLAGS -g0"
-%endif
 
 gn_args=(
     is_debug=false
@@ -572,12 +566,8 @@ gn_args+=(
 
 #symbol
 gn_args+=(
-%if %{debug_pkg}
-    symbol_level=1
-%else
     symbol_level=0
     blink_symbol_level=0
-%endif
 )
 
 tools/gn/bootstrap/bootstrap.py  --gn-gen-args "${gn_args[*]}"
@@ -695,6 +685,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 - Enable Hangout services extension (rfbz#5758)
 - Use MD5-based BuildID (rfbz#5743)
 - Use %%ninja_build macro
+- Remove debug_pkg toggle
 
 * Thu Sep 10 2020 qvint <dotqvint@gmail.com> - 85.0.4183.102-1
 - Update to 85.0.4183.102
