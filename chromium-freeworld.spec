@@ -23,7 +23,10 @@
 %global system_libvpx 0
 %global system_libxml2 1
 %global system_minizip 1
-%global system_re2 0
+%global system_re2 1
+%if 0%{?fedora} >= 33
+%global system_libicu 1
+%endif
 #------------------------------------------------------
 # Enable building with ozone support
 %global ozone 0
@@ -669,13 +672,15 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
-* Mon Sep 21 2020 qvint <dotqvint@gmail.com> - 85.0.4183.121-1
+* Wed Sep 23 2020 qvint <dotqvint@gmail.com> - 85.0.4183.121-1
 - Update to 85.0.4183.121
 - Enable Hangout services extension (rfbz#5758)
 - Use MD5-based BuildID (rfbz#5743)
 - Use %%ninja_build macro
 - Remove debug_pkg toggle
 - Replace bconds with ordinary macros
+- Use system re2
+- Use system libicu (f33+)
 
 * Thu Sep 10 2020 qvint <dotqvint@gmail.com> - 85.0.4183.102-1
 - Update to 85.0.4183.102
