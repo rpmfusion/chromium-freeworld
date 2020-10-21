@@ -32,7 +32,7 @@
 %global ozone 0
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        85.0.4183.121
+Version:        86.0.4240.111
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -57,7 +57,7 @@ Source0:        chromium-%{version}-clean.tar.xz
 %endif
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-85-patchset-2
+%global patchset_revision chromium-86-patchset-6
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -153,18 +153,11 @@ Recommends:     libva-utils
 # This build should be only available to amd64
 ExclusiveArch:  x86_64
 
-# Google patches (short-term fixes and backports):
-%if 0%{?fedora} >= 33
-Patch150:       chromium-85-ffmpeg-4.3-r796966.patch
-%endif
-
-# Gentoo patches (short-term fixes):
-
 # Fedora patches:
 Patch300:       chromium-py2-bootstrap.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
-Patch400:       chromium-enable-vaapi.patch
+Patch400:       chromium-hw-accel-mjpeg.patch
 Patch401:       chromium-fix-vaapi-on-intel.patch
 Patch402:       chromium-enable-widevine.patch
 Patch403:       chromium-manpage.patch
@@ -184,21 +177,16 @@ Patch420:       chromium-rpm-fusion-brand.patch
 
 # Apply patchset composed by Stephan Hartmann.
 %global patchset_apply() %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
-%patchset_apply chromium-blink-gcc-diagnostic-pragma.patch
 %patchset_apply chromium-fix-char_traits.patch
-%patchset_apply chromium-quiche-invalid-offsetof.patch
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
 %patchset_apply chromium-79-gcc-protobuf-alignas.patch
 %patchset_apply chromium-80-QuicStreamSendBuffer-deleted-move-constructor.patch
 %patchset_apply chromium-84-blink-disable-clang-format.patch
-%patchset_apply chromium-85-DelayNode-cast.patch
-%patchset_apply chromium-85-FrameWidget-namespace.patch
-%patchset_apply chromium-85-NearbyConnection-abstract.patch
-%patchset_apply chromium-85-NearbyShareEncryptedMetadataKey-include.patch
-%patchset_apply chromium-85-oscillator_node-cast.patch
-%patchset_apply chromium-85-ostream-operator.patch
-%patchset_apply chromium-85-ozone-include.patch
-%patchset_apply chromium-85-sim_hash-include.patch
+%patchset_apply chromium-86-ConsumeDurationNumber-constexpr.patch
+%patchset_apply chromium-86-ImageMemoryBarrierData-init.patch
+%patchset_apply chromium-86-ServiceWorkerRunningInfo-noexcept.patch
+%patchset_apply chromium-86-nearby-explicit.patch
+%patchset_apply chromium-86-nearby-include.patch
 
 # Apply patches from this spec.
 %autopatch -p1
@@ -253,7 +241,6 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/breakpad \
     third_party/breakpad/breakpad/src/third_party/curl \
     third_party/brotli \
-    third_party/cacheinvalidation \
     third_party/catapult \
     third_party/catapult/common/py_vulcanize/third_party/rcssmin \
     third_party/catapult/common/py_vulcanize/third_party/rjsmin \
@@ -282,9 +269,15 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/devscripts \
     third_party/devtools-frontend \
     third_party/devtools-frontend/src/front_end/third_party/acorn \
+    third_party/devtools-frontend/src/front_end/third_party/chromium \
     third_party/devtools-frontend/src/front_end/third_party/codemirror \
     third_party/devtools-frontend/src/front_end/third_party/fabricjs \
+    third_party/devtools-frontend/src/front_end/third_party/i18n \
+    third_party/devtools-frontend/src/front_end/third_party/intl-messageformat \
     third_party/devtools-frontend/src/front_end/third_party/lighthouse \
+    third_party/devtools-frontend/src/front_end/third_party/lit-html \
+    third_party/devtools-frontend/src/front_end/third_party/lodash-isequal \
+    third_party/devtools-frontend/src/front_end/third_party/marked \
     third_party/devtools-frontend/src/front_end/third_party/wasmparser \
     third_party/devtools-frontend/src/third_party \
     third_party/dom_distiller_js \
@@ -351,6 +344,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
 %endif
     third_party/modp_b64 \
     third_party/nasm \
+    third_party/nearby \
     third_party/node \
     third_party/node/node_modules/polymer-bundler/lib/third_party/UglifyJS2 \
     third_party/one_euro_filter \
@@ -385,6 +379,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/rnnoise \
     third_party/s2cellid \
     third_party/schema_org \
+    third_party/securemessage \
     third_party/skia \
     third_party/skia/include/third_party/skcms \
     third_party/skia/include/third_party/vulkan \
@@ -403,6 +398,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/swiftshader/third_party/subzero \
     third_party/swiftshader/third_party/SPIRV-Headers/include/spirv/unified1 \
     third_party/tcmalloc \
+    third_party/ukey2 \
     third_party/unrar \
     third_party/usb_ids \
     third_party/usrsctp \
@@ -425,6 +421,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/xcbproto \
     third_party/xdg-utils \
     third_party/zlib/google \
+    third_party/zxcvbn-cpp \
     tools/grit/third_party/six \
 %if !%{system_minizip}
     third_party/zlib \
@@ -672,6 +669,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Wed Oct 21 2020 qvint <dotqvint@gmail.com> - 86.0.4240.111-1
+- Update to 86.0.4240.111
+
 * Wed Sep 23 2020 qvint <dotqvint@gmail.com> - 85.0.4183.121-1
 - Update to 85.0.4183.121
 - Enable Hangout services extension (rfbz#5758)
