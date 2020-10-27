@@ -33,7 +33,7 @@
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
 Version:        86.0.4240.111
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -57,7 +57,7 @@ Source0:        chromium-%{version}-clean.tar.xz
 %endif
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-86-patchset-6
+%global patchset_revision chromium-86-patchset-7
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -153,6 +153,13 @@ Recommends:     libva-utils
 # This build should be only available to amd64
 ExclusiveArch:  x86_64
 
+# Google patches (short-term fixes and backports):
+Patch150:       chromium-86-cookiemonster-r803260.patch
+Patch151:       chromium-86-vaapi-r807550.patch
+Patch152:       chromium-86-vaapi-r811480.patch
+Patch153:       chromium-86-xproto-r819538.patch
+Patch154:       chromium-86-xproto-r819650.patch
+
 # Fedora patches:
 Patch300:       chromium-py2-bootstrap.patch
 
@@ -180,7 +187,6 @@ Patch420:       chromium-rpm-fusion-brand.patch
 %patchset_apply chromium-fix-char_traits.patch
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
 %patchset_apply chromium-79-gcc-protobuf-alignas.patch
-%patchset_apply chromium-80-QuicStreamSendBuffer-deleted-move-constructor.patch
 %patchset_apply chromium-84-blink-disable-clang-format.patch
 %patchset_apply chromium-86-ConsumeDurationNumber-constexpr.patch
 %patchset_apply chromium-86-ImageMemoryBarrierData-init.patch
@@ -669,6 +675,13 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Tue Oct 27 2020 qvint <dotqvint@gmail.com> - 86.0.4240.111-2
+- Fix invalid "end" iterator usage in CookieMonster
+- Only fall back to the i965 driver if we're on iHD
+- Check for enable-accelerated-video-decode
+- Fix mouse movements near window edges
+- Fix crash in UserInputMonitorLinuxCore (rfbz#5807)
+
 * Wed Oct 21 2020 qvint <dotqvint@gmail.com> - 86.0.4240.111-1
 - Update to 86.0.4240.111
 
