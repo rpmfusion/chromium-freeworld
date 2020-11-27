@@ -27,13 +27,10 @@
 %if 0%{?fedora} >= 33
 %global system_libicu 1
 %endif
-#------------------------------------------------------
-# Enable building with ozone support
-%global ozone 0
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        86.0.4240.111
-Release:        2%{?dist}
+Version:        87.0.4280.66
+Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -57,7 +54,7 @@ Source0:        chromium-%{version}-clean.tar.xz
 %endif
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-86-patchset-7
+%global patchset_revision chromium-87-patchset-9
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -93,12 +90,10 @@ BuildRequires:  pkgconfig(libffi)
 #for vaapi
 BuildRequires:  pkgconfig(libva)
 BuildRequires:  pkgconfig(gbm)
-%if %{ozone}
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(wayland-server)
-%endif
 BuildRequires:  /usr/bin/python2
 BuildRequires:  python2-setuptools
 %if %{system_re2}
@@ -153,13 +148,6 @@ Recommends:     libva-utils
 # This build should be only available to amd64
 ExclusiveArch:  x86_64
 
-# Google patches (short-term fixes and backports):
-Patch150:       chromium-86-cookiemonster-r803260.patch
-Patch151:       chromium-86-vaapi-r807550.patch
-Patch152:       chromium-86-vaapi-r811480.patch
-Patch153:       chromium-86-xproto-r819538.patch
-Patch154:       chromium-86-xproto-r819650.patch
-
 # Fedora patches:
 Patch300:       chromium-py2-bootstrap.patch
 
@@ -172,6 +160,9 @@ Patch404:       chromium-md5-based-build-id.patch
 %if %{freeworld}
 Patch420:       chromium-rpm-fusion-brand.patch
 %endif
+
+# RPM Fusion patches [free/chromium-freeworld] -- short-term:
+Patch450:       chromium-87-includes.patch
 
 %description
 %{name} is an open-source web browser, powered by WebKit (Blink)
@@ -188,11 +179,12 @@ Patch420:       chromium-rpm-fusion-brand.patch
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
 %patchset_apply chromium-79-gcc-protobuf-alignas.patch
 %patchset_apply chromium-84-blink-disable-clang-format.patch
-%patchset_apply chromium-86-ConsumeDurationNumber-constexpr.patch
-%patchset_apply chromium-86-ImageMemoryBarrierData-init.patch
-%patchset_apply chromium-86-ServiceWorkerRunningInfo-noexcept.patch
 %patchset_apply chromium-86-nearby-explicit.patch
 %patchset_apply chromium-86-nearby-include.patch
+%patchset_apply chromium-87-ServiceWorkerContainerHost-crash.patch
+%patchset_apply chromium-87-openscreen-include.patch
+%patchset_apply chromium-88-ityp-include.patch
+%patchset_apply chromium-88-vaapi-attribute.patch
 
 # Apply patches from this spec.
 %autopatch -p1
@@ -275,6 +267,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/devscripts \
     third_party/devtools-frontend \
     third_party/devtools-frontend/src/front_end/third_party/acorn \
+    third_party/devtools-frontend/src/front_end/third_party/axe-core \
     third_party/devtools-frontend/src/front_end/third_party/chromium \
     third_party/devtools-frontend/src/front_end/third_party/codemirror \
     third_party/devtools-frontend/src/front_end/third_party/fabricjs \
@@ -284,6 +277,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/devtools-frontend/src/front_end/third_party/lit-html \
     third_party/devtools-frontend/src/front_end/third_party/lodash-isequal \
     third_party/devtools-frontend/src/front_end/third_party/marked \
+    third_party/devtools-frontend/src/front_end/third_party/puppeteer \
     third_party/devtools-frontend/src/front_end/third_party/wasmparser \
     third_party/devtools-frontend/src/third_party \
     third_party/dom_distiller_js \
@@ -342,9 +336,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/markupsafe \
     third_party/mesa \
     third_party/metrics_proto \
-%if %{ozone}
     third_party/minigbm \
-%endif
 %if !%{system_minizip}
     third_party/minizip/ \
 %endif
@@ -375,6 +367,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/ply \
     third_party/polymer \
     third_party/private-join-and-compute \
+    third_party/private_membership \
     third_party/protobuf \
     third_party/protobuf/third_party/six \
     third_party/pyjson5 \
@@ -386,6 +379,8 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/s2cellid \
     third_party/schema_org \
     third_party/securemessage \
+    third_party/shaka-player \
+    third_party/shell-encryption \
     third_party/skia \
     third_party/skia/include/third_party/skcms \
     third_party/skia/include/third_party/vulkan \
@@ -409,9 +404,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/usb_ids \
     third_party/usrsctp \
     third_party/vulkan \
-%if %{ozone}
     third_party/wayland \
-%endif
     third_party/web-animations-js \
     third_party/webdriver \
     third_party/webrtc \
@@ -549,16 +542,6 @@ gn_args+=(
      rtc_link_pipewire=true
 )
 
-# Ozone stuff : Whole work is done completely upstream.
-gn_args+=(
-%if %{ozone}
-    use_ozone=true
-    use_system_minigbm=true
-    use_xkbcommon=true
-%endif
-)
-
-
 #symbol
 gn_args+=(
     symbol_level=0
@@ -675,6 +658,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Fri Nov 27 2020 qvint <dotqvint@gmail.com> - 87.0.4280.66-1
+- Update to 87.0.4280.66
+
 * Tue Oct 27 2020 qvint <dotqvint@gmail.com> - 86.0.4240.111-2
 - Fix invalid "end" iterator usage in CookieMonster
 - Only fall back to the i965 driver if we're on iHD
