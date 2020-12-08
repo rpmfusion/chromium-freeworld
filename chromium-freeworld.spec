@@ -24,12 +24,9 @@
 %global system_libxml2 1
 %global system_minizip 1
 %global system_re2 1
-%if 0%{?fedora} >= 33
-%global system_libicu 1
-%endif
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        87.0.4280.66
+Version:        87.0.4280.88
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -658,6 +655,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Tue Dec 08 2020 qvint <dotqvint@gmail.com> - 87.0.4280.88-1
+- Update to 87.0.4280.88
+
 * Fri Nov 27 2020 qvint <dotqvint@gmail.com> - 87.0.4280.66-1
 - Update to 87.0.4280.66
 
