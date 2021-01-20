@@ -671,6 +671,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 - Fix Icon key in chrome-apps.directory (rfbz#5895)
 - Fix PulseAudio application name and icon
 - Don't depend on CHROME_DESKTOP env var
+- Sync shell wrapper with Fedora Chromium (rfbz#5859, rhbz#1902983)
 
 * Tue Dec 08 2020 qvint <dotqvint@gmail.com> - 87.0.4280.88-1
 - Update to 87.0.4280.88
