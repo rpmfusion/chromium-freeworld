@@ -10,8 +10,6 @@
 ### For your own distribution, please get your own set of keys.
 ### http://lists.debian.org/debian-legal/2013/11/msg00006.html
 %global api_key AIzaSyDUIXvzVrt5OkVsgXhQ6NFfvWlA44by-aw
-%global default_client_id 449907151817.apps.googleusercontent.com
-%global default_client_secret miEreAep8nuvTdvLums6qyLK
 ###############################Exclude Private chromium libs###########################
 %global __requires_exclude %{chromiumdir}/.*\\.so
 %global __provides_exclude_from %{chromiumdir}/.*\\.so
@@ -527,8 +525,6 @@ gn_args=(
     'custom_toolchain="//build/toolchain/linux/unbundle:default"'
     'host_toolchain="//build/toolchain/linux/unbundle:default"'
     'google_api_key="%{api_key}"'
-    'google_default_client_id="%{default_client_id}"'
-    'google_default_client_secret="%{default_client_secret}"'
 )
 
 # Optimizations
@@ -668,6 +664,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %changelog
 * Wed Jan 20 2021 qvint <dotqvint@gmail.com> - 88.0.4324.96-1
 - Update to 88.0.4324.96
+- Comply with new Google API key rules for derivatives
 - Fix Icon key in chrome-apps.directory (rfbz#5895)
 - Fix PulseAudio application name and icon
 - Don't depend on CHROME_DESKTOP env var
