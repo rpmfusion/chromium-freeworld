@@ -154,6 +154,7 @@ Patch401:       chromium-fix-vaapi-on-intel.patch
 Patch402:       chromium-enable-widevine.patch
 Patch403:       chromium-manpage.patch
 Patch404:       chromium-md5-based-build-id.patch
+Patch405:       chromium-names.patch
 %if %{freeworld}
 Patch420:       chromium-rpm-fusion-brand.patch
 %endif
@@ -489,6 +490,8 @@ export CFLAGS="$CFLAGS -g0"
 export CXXFLAGS="$CXXFLAGS -g0"
 
 gn_args=(
+    'rpm_fusion_package_name="%{name}"'
+    'rpm_fusion_menu_name="%{menu_name}"'
     is_debug=false
     use_vaapi=true
     is_component_build=false
@@ -665,6 +668,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %changelog
 * Wed Jan 20 2021 qvint <dotqvint@gmail.com> - 88.0.4324.96-1
 - Update to 88.0.4324.96
+- Fix Icon key in chrome-apps.directory (rfbz#5895)
+- Fix PulseAudio application name and icon
+- Don't depend on CHROME_DESKTOP env var
 
 * Tue Dec 08 2020 qvint <dotqvint@gmail.com> - 87.0.4280.88-1
 - Update to 87.0.4280.88

@@ -1,0 +1,91 @@
+Replace hard-coded "chromium-browser" with package name.
+
+* Fixes Icon key in chrome-apps.directory.
+  https://bugzilla.rpmfusion.org/show_bug.cgi?id=5895
+
+* Fixes PulseAudio application name and icon
+  as seen from pavucontrol.
+
+* Prevents showing "Chromium isn't your default browser",
+  when the browser is launched directly without the wrapper.
+
+--- a/chrome/browser/BUILD.gn
++++ b/chrome/browser/BUILD.gn
+@@ -4966,6 +4966,7 @@ static_library("browser") {
+       "upgrade_detector/directory_monitor.h",
+       "upgrade_detector/get_installed_version_linux.cc",
+     ]
++    configs += [ "//third_party/rpm_fusion:defines" ]
+     deps += [ "//chrome/app/theme:chrome_unscaled_resources_grit" ]
+ 
+     if (use_dbus) {
+--- a/chrome/browser/shell_integration_linux.cc
++++ b/chrome/browser/shell_integration_linux.cc
+@@ -414,7 +414,7 @@ std::string GetIconName() {
+ #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+   return "google-chrome";
+ #else  // BUILDFLAG(CHROMIUM_BRANDING)
+-  return "chromium-browser";
++  return RPM_FUSION_PACKAGE_NAME;
+ #endif
+ }
+ 
+--- a/chrome/common/BUILD.gn
++++ b/chrome/common/BUILD.gn
+@@ -79,6 +79,7 @@ source_set("channel_info") {
+     deps += [ "//chromeos/crosapi/cpp" ]
+   } else if (is_posix) {
+     sources += [ "channel_info_posix.cc" ]
++    configs += [ "//third_party/rpm_fusion:defines" ]
+   }
+ }
+ 
+--- a/chrome/common/channel_info_posix.cc
++++ b/chrome/common/channel_info_posix.cc
+@@ -93,7 +93,7 @@ std::string GetDesktopName(base::Environ
+   std::string name;
+   if (env->GetVar("CHROME_DESKTOP", &name) && !name.empty())
+     return name;
+-  return "chromium-browser.desktop";
++  return RPM_FUSION_PACKAGE_NAME ".desktop";
+ #endif
+ }
+ #endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
+--- a/media/audio/BUILD.gn
++++ b/media/audio/BUILD.gn
+@@ -296,6 +296,8 @@ source_set("audio") {
+       "pulse/pulse_util.h",
+     ]
+ 
++    configs += [ "//third_party/rpm_fusion:defines" ]
++
+     deps += [ "//build:branding_buildflags" ]
+ 
+     if (link_pulseaudio) {
+--- a/media/audio/pulse/pulse_util.cc
++++ b/media/audio/pulse/pulse_util.cc
+@@ -37,8 +37,8 @@ namespace {
+ constexpr char kBrowserDisplayName[] = "google-chrome";
+ #define PRODUCT_STRING "Google Chrome"
+ #else
+-constexpr char kBrowserDisplayName[] = "chromium-browser";
+-#define PRODUCT_STRING "Chromium"
++constexpr char kBrowserDisplayName[] = RPM_FUSION_PACKAGE_NAME;
++#define PRODUCT_STRING RPM_FUSION_MENU_NAME
+ #endif
+ 
+ #if defined(DLOPEN_PULSEAUDIO)
+--- /dev/null
++++ b/third_party/rpm_fusion/BUILD.gn
+@@ -0,0 +1,11 @@
++declare_args() {
++  rpm_fusion_package_name = "chromium-browser"
++  rpm_fusion_menu_name = "Chromium"
++}
++
++config("defines") {
++  defines = [
++    "RPM_FUSION_PACKAGE_NAME=\"$rpm_fusion_package_name\"",
++    "RPM_FUSION_MENU_NAME=\"$rpm_fusion_menu_name\"",
++  ]
++}
