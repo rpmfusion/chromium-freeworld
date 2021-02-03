@@ -24,7 +24,7 @@
 %global system_re2 1
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        88.0.4324.96
+Version:        88.0.4324.146
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -662,6 +662,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Wed Feb 03 2021 qvint <dotqvint@gmail.com> - 88.0.4324.146-1
+- Update to 88.0.4324.146
+
 * Wed Jan 20 2021 qvint <dotqvint@gmail.com> - 88.0.4324.96-1
 - Update to 88.0.4324.96
 - Comply with new Google API key rules for derivatives

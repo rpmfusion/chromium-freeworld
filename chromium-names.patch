@@ -11,7 +11,7 @@ Replace hard-coded "chromium-browser" with package name.
 
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -4966,6 +4966,7 @@ static_library("browser") {
+@@ -4964,6 +4964,7 @@ static_library("browser") {
        "upgrade_detector/directory_monitor.h",
        "upgrade_detector/get_installed_version_linux.cc",
      ]
