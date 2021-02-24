@@ -153,6 +153,8 @@ Patch402:       chromium-enable-widevine.patch
 Patch403:       chromium-manpage.patch
 Patch404:       chromium-md5-based-build-id.patch
 Patch405:       chromium-names.patch
+Patch406:       chromium-fstatfix.patch
+Patch407:       chromium-gcc11.patch
 %if %{freeworld}
 Patch420:       chromium-rpm-fusion-brand.patch
 %endif
