@@ -24,7 +24,7 @@
 %global system_re2 1
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        88.0.4324.150
+Version:        89.0.4389.114
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -49,7 +49,7 @@ Source0:        chromium-%{version}-clean.tar.xz
 %endif
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-88-patchset-3
+%global patchset_revision chromium-89-patchset-7
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -124,6 +124,7 @@ BuildRequires:  expat-devel
 BuildRequires:  pciutils-devel
 BuildRequires:  speech-dispatcher-devel
 BuildRequires:  pulseaudio-libs-devel
+BuildRequires:  libxshmfence-devel
 # install desktop files
 BuildRequires:  desktop-file-utils
 # install AppData files
@@ -142,6 +143,9 @@ Recommends:     libva-utils
 %global debug_package %{nil}
 # This build should be only available to amd64
 ExclusiveArch:  x86_64
+
+# Gentoo patches:
+Patch200:       chromium-89-webcodecs-deps.patch
 
 # Fedora patches:
 Patch300:       chromium-py2-bootstrap.patch
@@ -170,21 +174,16 @@ Patch700:       chromium-rpm-fusion-brand.patch
 %global patchset_root %{_builddir}/chromium-patches-%{patchset_revision}
 
 # Apply patchset composed by Stephan Hartmann.
-%global patchset_apply() %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
-%patchset_apply chromium-fix-char_traits.patch
+%global patchset_apply() \
+  printf "Applying %%s\\n" %{1} \
+  %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
+
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
-%patchset_apply chromium-79-gcc-protobuf-alignas.patch
-%patchset_apply chromium-84-blink-disable-clang-format.patch
-%patchset_apply chromium-87-openscreen-include.patch
-%patchset_apply chromium-88-AXTreeFormatter-include.patch
-%patchset_apply chromium-88-BookmarkModelObserver-include.patch
-%patchset_apply chromium-88-CompositorFrameReporter-dcheck.patch
-%patchset_apply chromium-88-StringPool-include.patch
-%patchset_apply chromium-88-dawn-static.patch
-%patchset_apply chromium-88-federated_learning-include.patch
-%patchset_apply chromium-88-ideographicSpaceCharacter.patch
-%patchset_apply chromium-88-ityp-include.patch
-%patchset_apply chromium-88-vaapi-attribute.patch
+%patchset_apply chromium-89-AXTreeSerializer-include.patch
+%patchset_apply chromium-89-dawn-include.patch
+%patchset_apply chromium-89-quiche-dcheck.patch
+%patchset_apply chromium-89-quiche-private.patch
+%patchset_apply chromium-89-skia-CropRect.patch
 
 # Apply patches up to #600 from this spec.
 %autopatch -M600 -p1
@@ -223,7 +222,6 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     net/third_party/quic \
     net/third_party/uri_template \
     third_party/abseil-cpp \
-    third_party/adobe \
     third_party/angle \
     third_party/angle/src/common/third_party/base \
     third_party/angle/src/common/third_party/smhasher \
@@ -233,13 +231,6 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/angle/src/third_party/trace_event \
     third_party/angle/src/third_party/volk \
     third_party/libgifcodec \
-    third_party/glslang \
-    third_party/angle/third_party/spirv-headers \
-    third_party/angle/third_party/spirv-tools \
-    third_party/angle/third_party/vulkan-headers \
-    third_party/angle/third_party/vulkan-loader \
-    third_party/angle/third_party/vulkan-tools \
-    third_party/angle/third_party/vulkan-validation-layers \
     third_party/apple_apsl \
     third_party/axe-core \
     third_party/boringssl \
@@ -298,6 +289,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/flatbuffers \
     third_party/freetype \
     third_party/fusejs \
+    third_party/liburlpattern \
     third_party/google_input_tools \
     third_party/google_input_tools/third_party/closure_library \
     third_party/google_input_tools/third_party/closure_library/third_party/closure \
@@ -328,6 +320,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/libsrtp \
     third_party/libsync \
     third_party/libudev \
+    third_party/libva_protected_content \
 %if !%{system_libvpx}
     third_party/libvpx \
     third_party/libvpx/source/libvpx/third_party/x86inc \
@@ -376,6 +369,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/pdfium/third_party/libtiff \
     third_party/pdfium/third_party/skia_shared \
     third_party/perfetto \
+    third_party/perfetto/protos/third_party/chromium \
     third_party/pffft \
     third_party/ply \
     third_party/polymer \
@@ -392,7 +386,6 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/s2cellid \
     third_party/schema_org \
     third_party/securemessage \
-    third_party/shaka-player \
     third_party/shell-encryption \
     third_party/skia \
     third_party/skia/include/third_party/skcms \
@@ -401,9 +394,6 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/skia/third_party/skcms \
     third_party/smhasher \
     third_party/speech-dispatcher \
-    third_party/spirv-cross/spirv-cross \
-    third_party/spirv-headers \
-    third_party/SPIRV-Tools \
     third_party/sqlite \
     third_party/swiftshader \
     third_party/swiftshader/third_party/astc-encoder \
@@ -674,6 +664,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Sun Apr 04 2021 qvint <dotqvint@gmail.com> - 89.0.4389.114-1
+- Update to 89.0.4389.114
+
 * Thu Feb 04 2021 qvint <dotqvint@gmail.com> - 88.0.4324.150-1
 - Update to 88.0.4324.150
 
