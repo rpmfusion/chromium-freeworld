@@ -34,8 +34,6 @@ Cr-Commit-Position: refs/heads/master@{#854937}
  .../va_protected_content.h                    | 149 ------------------
  14 files changed, 55 insertions(+), 210 deletions(-)
 
-diff --git a/media/gpu/vaapi/h264_vaapi_video_decoder_delegate.cc b/media/gpu/vaapi/h264_vaapi_video_decoder_delegate.cc
-index ff397d92dc3d4..7940887de44ae 100644
 --- a/media/gpu/vaapi/h264_vaapi_video_decoder_delegate.cc
 +++ b/media/gpu/vaapi/h264_vaapi_video_decoder_delegate.cc
 @@ -4,13 +4,6 @@
@@ -52,7 +50,7 @@ index ff397d92dc3d4..7940887de44ae 100644
  #include <va/va.h>
  
  #include "base/memory/aligned_memory.h"
-@@ -103,7 +96,9 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitFrameMetadata(
+@@ -103,7 +96,9 @@ DecodeStatus H264VaapiVideoDecoderDelega
                 "H264VaapiVideoDecoderDelegate::SubmitFrameMetadata");
    VAPictureParameterBufferH264 pic_param;
    memset(&pic_param, 0, sizeof(pic_param));
@@ -62,7 +60,7 @@ index ff397d92dc3d4..7940887de44ae 100644
    full_sample_ = false;
  
  #define FROM_SPS_TO_PP(a) pic_param.a = sps->a
-@@ -224,6 +219,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
+@@ -223,6 +218,7 @@ DecodeStatus H264VaapiVideoDecoderDelega
    // extract the slice header parameters of interest and return them to the
    // caller.
  
@@ -70,7 +68,7 @@ index ff397d92dc3d4..7940887de44ae 100644
    VAEncryptionParameters crypto_params = {};
    // Don't use the VAEncryptionSegmentInfo vector in the class since we do not
    // need to hold this data across calls.
-@@ -357,6 +353,9 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
+@@ -368,6 +364,9 @@ DecodeStatus H264VaapiVideoDecoderDelega
    slice_header_out->full_sample_index =
        status_buf->status_report_index_feedback;
    return DecodeStatus::kOk;
@@ -80,7 +78,7 @@ index ff397d92dc3d4..7940887de44ae 100644
  }
  
  DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
-@@ -384,6 +383,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
+@@ -395,6 +394,7 @@ DecodeStatus H264VaapiVideoDecoderDelega
                 : DecodeStatus::kFail;
    }
  
@@ -88,7 +86,7 @@ index ff397d92dc3d4..7940887de44ae 100644
    if (IsEncryptedSession()) {
      const ProtectedSessionState state = SetupDecryptDecode(
          /*full_sample=*/false, size, &crypto_params_, &encryption_segment_info_,
-@@ -396,6 +396,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
+@@ -407,6 +407,7 @@ DecodeStatus H264VaapiVideoDecoderDelega
        return DecodeStatus::kTryAgain;
      }
    }
@@ -96,7 +94,7 @@ index ff397d92dc3d4..7940887de44ae 100644
    VASliceParameterBufferH264 slice_param;
    memset(&slice_param, 0, sizeof(slice_param));
  
-@@ -496,11 +497,13 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitDecode(
+@@ -507,11 +508,13 @@ DecodeStatus H264VaapiVideoDecoderDelega
    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
    TRACE_EVENT0("media,gpu", "H264VaapiVideoDecoderDelegate::SubmitDecode");
  
@@ -110,7 +108,7 @@ index ff397d92dc3d4..7940887de44ae 100644
    const VaapiH264Picture* vaapi_pic = pic->AsVaapiH264Picture();
    CHECK(gfx::Rect(vaapi_pic->GetDecodeSize()).Contains(pic->visible_rect()));
    VAProcPipelineParameterBuffer proc_buffer;
-@@ -516,7 +519,9 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitDecode(
+@@ -527,7 +530,9 @@ DecodeStatus H264VaapiVideoDecoderDelega
  
    const bool success = vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
        vaapi_pic->GetVADecodeSurfaceID());
@@ -120,7 +118,7 @@ index ff397d92dc3d4..7940887de44ae 100644
    if (!success && NeedsProtectedSessionRecovery())
      return DecodeStatus::kTryAgain;
  
-@@ -540,7 +545,9 @@ bool H264VaapiVideoDecoderDelegate::OutputPicture(
+@@ -551,7 +556,9 @@ bool H264VaapiVideoDecoderDelegate::Outp
  
  void H264VaapiVideoDecoderDelegate::Reset() {
    DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -130,8 +128,6 @@ index ff397d92dc3d4..7940887de44ae 100644
    vaapi_wrapper_->DestroyPendingBuffers();
  }
  
-diff --git a/media/gpu/vaapi/h264_vaapi_video_decoder_delegate.h b/media/gpu/vaapi/h264_vaapi_video_decoder_delegate.h
-index 9219c7e586eb2..fbe823e4b0242 100644
 --- a/media/gpu/vaapi/h264_vaapi_video_decoder_delegate.h
 +++ b/media/gpu/vaapi/h264_vaapi_video_decoder_delegate.h
 @@ -8,6 +8,7 @@
@@ -142,7 +138,7 @@ index 9219c7e586eb2..fbe823e4b0242 100644
  #include "media/gpu/h264_decoder.h"
  #include "media/gpu/vaapi/vaapi_video_decoder_delegate.h"
  #include "media/video/h264_parser.h"
-@@ -68,6 +69,7 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
+@@ -67,6 +68,7 @@ class H264VaapiVideoDecoderDelegate : pu
                               VAPictureH264* va_pics,
                               int num_pics);
  
@@ -150,7 +146,7 @@ index 9219c7e586eb2..fbe823e4b0242 100644
    // We need to hold onto this memory here because it's referenced by the
    // mapped buffer in libva across calls. It is filled in SubmitSlice() and
    // stays alive until SubmitDecode() or Reset().
-@@ -76,6 +78,7 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
+@@ -75,6 +77,7 @@ class H264VaapiVideoDecoderDelegate : pu
    // We need to retain this for the multi-slice case since that will aggregate
    // the encryption details across all the slices.
    VAEncryptionParameters crypto_params_;
@@ -158,11 +154,9 @@ index 9219c7e586eb2..fbe823e4b0242 100644
  
    // We need to set this so we don't resubmit crypto params on decode.
    bool full_sample_;
-diff --git a/media/gpu/vaapi/h265_vaapi_video_decoder_delegate.cc b/media/gpu/vaapi/h265_vaapi_video_decoder_delegate.cc
-index 9efb5d30f41d5..eef9044281f3f 100644
 --- a/media/gpu/vaapi/h265_vaapi_video_decoder_delegate.cc
 +++ b/media/gpu/vaapi/h265_vaapi_video_decoder_delegate.cc
-@@ -79,7 +79,9 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitFrameMetadata(
+@@ -79,7 +79,9 @@ DecodeStatus H265VaapiVideoDecoderDelega
  
    VAPictureParameterBufferHEVC pic_param;
    memset(&pic_param, 0, sizeof(pic_param));
@@ -172,7 +166,7 @@ index 9efb5d30f41d5..eef9044281f3f 100644
  
    int highest_tid = sps->sps_max_sub_layers_minus1;
  #define FROM_SPS_TO_PP(a) pic_param.a = sps->a
-@@ -304,6 +306,7 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitSlice(
+@@ -304,6 +306,7 @@ DecodeStatus H265VaapiVideoDecoderDelega
      return DecodeStatus::kFail;
    }
  
@@ -180,7 +174,7 @@ index 9efb5d30f41d5..eef9044281f3f 100644
    if (IsEncryptedSession()) {
      const ProtectedSessionState state =
          SetupDecryptDecode(/*full_sample=*/false, size, &crypto_params_,
-@@ -316,6 +319,7 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitSlice(
+@@ -316,6 +319,7 @@ DecodeStatus H265VaapiVideoDecoderDelega
        return DecodeStatus::kTryAgain;
      }
    }
@@ -188,7 +182,7 @@ index 9efb5d30f41d5..eef9044281f3f 100644
    memset(&slice_param_, 0, sizeof(slice_param_));
  
    slice_param_.slice_data_size = slice_hdr->nalu_size;
-@@ -438,7 +442,7 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitSlice(
+@@ -438,7 +442,7 @@ DecodeStatus H265VaapiVideoDecoderDelega
  #if BUILDFLAG(IS_CHROMEOS_ASH)
    slice_param_.slice_data_num_emu_prevn_bytes =
        slice_hdr->header_emulation_prevention_bytes;
@@ -197,7 +191,7 @@ index 9efb5d30f41d5..eef9044281f3f 100644
  
    last_slice_data_ = data;
    last_slice_size_ = size;
-@@ -454,11 +458,13 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitDecode(
+@@ -454,11 +458,13 @@ DecodeStatus H265VaapiVideoDecoderDelega
      return DecodeStatus::kFail;
    }
  
@@ -211,7 +205,7 @@ index 9efb5d30f41d5..eef9044281f3f 100644
  
    const VaapiH265Picture* vaapi_pic = pic->AsVaapiH265Picture();
    CHECK(gfx::Rect(vaapi_pic->GetDecodeSize()).Contains(pic->visible_rect()));
-@@ -476,7 +482,9 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitDecode(
+@@ -476,7 +482,9 @@ DecodeStatus H265VaapiVideoDecoderDelega
    const bool success = vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
        vaapi_pic->GetVADecodeSurfaceID());
    ref_pic_list_pocs_.clear();
@@ -221,7 +215,7 @@ index 9efb5d30f41d5..eef9044281f3f 100644
    if (!success && NeedsProtectedSessionRecovery())
      return DecodeStatus::kTryAgain;
  
-@@ -503,7 +511,9 @@ void H265VaapiVideoDecoderDelegate::Reset() {
+@@ -503,7 +511,9 @@ void H265VaapiVideoDecoderDelegate::Rese
    DETACH_FROM_SEQUENCE(sequence_checker_);
    vaapi_wrapper_->DestroyPendingBuffers();
    ref_pic_list_pocs_.clear();
@@ -231,8 +225,6 @@ index 9efb5d30f41d5..eef9044281f3f 100644
    last_slice_data_ = nullptr;
  }
  
-diff --git a/media/gpu/vaapi/h265_vaapi_video_decoder_delegate.h b/media/gpu/vaapi/h265_vaapi_video_decoder_delegate.h
-index 986c2b530076e..f02871a1b2200 100644
 --- a/media/gpu/vaapi/h265_vaapi_video_decoder_delegate.h
 +++ b/media/gpu/vaapi/h265_vaapi_video_decoder_delegate.h
 @@ -5,16 +5,10 @@
@@ -253,7 +245,7 @@ index 986c2b530076e..f02871a1b2200 100644
  #include "media/gpu/h265_decoder.h"
  #include "media/gpu/h265_dpb.h"
  #include "media/gpu/vaapi/vaapi_video_decoder_delegate.h"
-@@ -95,6 +89,7 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
+@@ -95,6 +89,7 @@ class H265VaapiVideoDecoderDelegate : pu
    const uint8_t* last_slice_data_{nullptr};
    size_t last_slice_size_{0};
  
@@ -261,7 +253,7 @@ index 986c2b530076e..f02871a1b2200 100644
    // We need to hold onto this memory here because it's referenced by the
    // mapped buffer in libva across calls. It is filled in SubmitSlice() and
    // stays alive until SubmitDecode() or Reset().
-@@ -103,6 +98,7 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
+@@ -103,6 +98,7 @@ class H265VaapiVideoDecoderDelegate : pu
    // We need to retain this for the multi-slice case since that will aggregate
    // the encryption details across all the slices.
    VAEncryptionParameters crypto_params_;
@@ -269,8 +261,6 @@ index 986c2b530076e..f02871a1b2200 100644
  };
  
  }  // namespace media
-diff --git a/media/gpu/vaapi/va_surface.h b/media/gpu/vaapi/va_surface.h
-index d64814a8cba61..a6f4ac5ea2fac 100644
 --- a/media/gpu/vaapi/va_surface.h
 +++ b/media/gpu/vaapi/va_surface.h
 @@ -8,13 +8,6 @@
@@ -287,8 +277,6 @@ index d64814a8cba61..a6f4ac5ea2fac 100644
  #include <va/va.h>
  
  #include "base/callback.h"
-diff --git a/media/gpu/vaapi/vaapi_utils.cc b/media/gpu/vaapi/vaapi_utils.cc
-index 876c14498aed1..7d2437069d8b0 100644
 --- a/media/gpu/vaapi/vaapi_utils.cc
 +++ b/media/gpu/vaapi/vaapi_utils.cc
 @@ -11,6 +11,7 @@
@@ -299,7 +287,7 @@ index 876c14498aed1..7d2437069d8b0 100644
  #include "media/gpu/vaapi/vaapi_common.h"
  #include "media/gpu/vaapi/vaapi_wrapper.h"
  #include "media/gpu/vp8_picture.h"
-@@ -350,7 +351,12 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
+@@ -350,7 +351,12 @@ void FillVP8DataStructures(const Vp8Fram
  }
  
  bool IsValidVABufferType(VABufferType type) {
@@ -313,8 +301,6 @@ index 876c14498aed1..7d2437069d8b0 100644
           type == VACencStatusParameterBufferType;
  }
  
-diff --git a/media/gpu/vaapi/vaapi_utils.h b/media/gpu/vaapi/vaapi_utils.h
-index fd42ad2a148e3..9bcee23ce96d1 100644
 --- a/media/gpu/vaapi/vaapi_utils.h
 +++ b/media/gpu/vaapi/vaapi_utils.h
 @@ -5,13 +5,6 @@
@@ -331,8 +317,6 @@ index fd42ad2a148e3..9bcee23ce96d1 100644
  #include <va/va.h>
  
  #include "base/callback_forward.h"
-diff --git a/media/gpu/vaapi/vaapi_video_decoder.h b/media/gpu/vaapi/vaapi_video_decoder.h
-index c9301be5720c4..7bddbc6a23bd7 100644
 --- a/media/gpu/vaapi/vaapi_video_decoder.h
 +++ b/media/gpu/vaapi/vaapi_video_decoder.h
 @@ -5,13 +5,6 @@
@@ -349,20 +333,18 @@ index c9301be5720c4..7bddbc6a23bd7 100644
  #include <stdint.h>
  #include <va/va.h>
  
-diff --git a/media/gpu/vaapi/vaapi_video_decoder_delegate.cc b/media/gpu/vaapi/vaapi_video_decoder_delegate.cc
-index 0e0e512b21dea..1c708b58cbfff 100644
 --- a/media/gpu/vaapi/vaapi_video_decoder_delegate.cc
 +++ b/media/gpu/vaapi/vaapi_video_decoder_delegate.cc
-@@ -25,7 +25,7 @@ namespace {
- constexpr base::TimeDelta kKeyRetrievalMaxPeriod =
-     base::TimeDelta::FromMinutes(1);
+@@ -34,7 +34,7 @@ void ctr128_inc64(uint8_t* counter) {
+ }
+ 
  }  // namespace
 -#endif
 +#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
  
  namespace media {
  
-@@ -49,7 +49,7 @@ VaapiVideoDecoderDelegate::VaapiVideoDecoderDelegate(
+@@ -58,7 +58,7 @@ VaapiVideoDecoderDelegate::VaapiVideoDec
  #if BUILDFLAG(IS_CHROMEOS_ASH)
    if (cdm_context)
      chromeos_cdm_context_ = cdm_context->GetChromeOsCdmContext();
@@ -371,7 +353,7 @@ index 0e0e512b21dea..1c708b58cbfff 100644
    memset(&src_region_, 0, sizeof(src_region_));
    memset(&dst_region_, 0, sizeof(dst_region_));
  }
-@@ -101,6 +101,7 @@ bool VaapiVideoDecoderDelegate::SetDecryptConfig(
+@@ -110,6 +110,7 @@ bool VaapiVideoDecoderDelegate::SetDecry
    return true;
  }
  
@@ -379,7 +361,7 @@ index 0e0e512b21dea..1c708b58cbfff 100644
  VaapiVideoDecoderDelegate::ProtectedSessionState
  VaapiVideoDecoderDelegate::SetupDecryptDecode(
      bool full_sample,
-@@ -109,7 +110,6 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
+@@ -118,7 +119,6 @@ VaapiVideoDecoderDelegate::SetupDecryptD
      std::vector<VAEncryptionSegmentInfo>* segments,
      const std::vector<SubsampleEntry>& subsamples) {
    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -387,7 +369,7 @@ index 0e0e512b21dea..1c708b58cbfff 100644
    DCHECK(crypto_params);
    DCHECK(segments);
    if (protected_session_state_ == ProtectedSessionState::kInProcess ||
-@@ -233,11 +233,9 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
+@@ -257,11 +257,9 @@ VaapiVideoDecoderDelegate::SetupDecryptD
           DecryptConfig::kDecryptionKeySize);
    crypto_params->key_blob_size = DecryptConfig::kDecryptionKeySize;
    crypto_params->segment_info = &segments->front();
@@ -400,8 +382,6 @@ index 0e0e512b21dea..1c708b58cbfff 100644
  
  bool VaapiVideoDecoderDelegate::NeedsProtectedSessionRecovery() {
    if (!IsEncryptedSession() || !vaapi_wrapper_->IsProtectedSessionDead() ||
-diff --git a/media/gpu/vaapi/vaapi_video_decoder_delegate.h b/media/gpu/vaapi/vaapi_video_decoder_delegate.h
-index aeb48a75bd2c9..9d46000ba9d42 100644
 --- a/media/gpu/vaapi/vaapi_video_decoder_delegate.h
 +++ b/media/gpu/vaapi/vaapi_video_decoder_delegate.h
 @@ -5,13 +5,6 @@
@@ -451,11 +431,9 @@ index aeb48a75bd2c9..9d46000ba9d42 100644
    EncryptionScheme encryption_scheme_;
    ProtectedSessionState protected_session_state_;
    std::unique_ptr<DecryptConfig> decrypt_config_;
-diff --git a/media/gpu/vaapi/vaapi_wrapper.cc b/media/gpu/vaapi/vaapi_wrapper.cc
-index 2a1eea0298b67..5cac28746eb19 100644
 --- a/media/gpu/vaapi/vaapi_wrapper.cc
 +++ b/media/gpu/vaapi/vaapi_wrapper.cc
-@@ -2796,6 +2796,7 @@ bool VaapiWrapper::Initialize(CodecMode mode,
+@@ -2704,6 +2704,7 @@ bool VaapiWrapper::Initialize(CodecMode
      return false;
    }
  
@@ -463,7 +441,7 @@ index 2a1eea0298b67..5cac28746eb19 100644
    if (encryption_scheme != EncryptionScheme::kUnencrypted) {
      DCHECK(!required_attribs.empty());
      // We need to adjust the attribute for encryption scheme.
-@@ -2807,6 +2808,7 @@ bool VaapiWrapper::Initialize(CodecMode mode,
+@@ -2715,6 +2716,7 @@ bool VaapiWrapper::Initialize(CodecMode
        }
      }
    }
@@ -471,8 +449,6 @@ index 2a1eea0298b67..5cac28746eb19 100644
  
    const VAStatus va_res =
        vaCreateConfig(va_display_, va_profile, entrypoint,
-diff --git a/media/gpu/vaapi/vaapi_wrapper.h b/media/gpu/vaapi/vaapi_wrapper.h
-index f58723a0e852e..29b6864998240 100644
 --- a/media/gpu/vaapi/vaapi_wrapper.h
 +++ b/media/gpu/vaapi/vaapi_wrapper.h
 @@ -10,13 +10,6 @@
@@ -489,8 +465,6 @@ index f58723a0e852e..29b6864998240 100644
  #include <stddef.h>
  #include <stdint.h>
  #include <va/va.h>
-diff --git a/media/gpu/vaapi/vp9_vaapi_video_decoder_delegate.cc b/media/gpu/vaapi/vp9_vaapi_video_decoder_delegate.cc
-index 27f26002967cd..34ac822cdeb7a 100644
 --- a/media/gpu/vaapi/vp9_vaapi_video_decoder_delegate.cc
 +++ b/media/gpu/vaapi/vp9_vaapi_video_decoder_delegate.cc
 @@ -8,6 +8,7 @@
@@ -501,7 +475,7 @@ index 27f26002967cd..34ac822cdeb7a 100644
  #include "media/gpu/decode_surface_handler.h"
  #include "media/gpu/macros.h"
  #include "media/gpu/vaapi/va_surface.h"
-@@ -91,12 +92,13 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
+@@ -91,12 +92,13 @@ DecodeStatus VP9VaapiVideoDecoderDelegat
    if (!encoded_data)
      return DecodeStatus::kFail;
  
@@ -517,7 +491,7 @@ index 27f26002967cd..34ac822cdeb7a 100644
    VAEncryptionParameters crypto_param{};
    if (IsEncryptedSession()) {
      const ProtectedSessionState state = SetupDecryptDecode(
-@@ -120,6 +122,7 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
+@@ -120,6 +122,7 @@ DecodeStatus VP9VaapiVideoDecoderDelegat
          return DecodeStatus::kFail;
      }
    }
@@ -525,7 +499,7 @@ index 27f26002967cd..34ac822cdeb7a 100644
  
    pic_param.frame_width = base::checked_cast<uint16_t>(frame_hdr->frame_width);
    pic_param.frame_height =
-@@ -215,11 +218,13 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
+@@ -215,11 +218,13 @@ DecodeStatus VP9VaapiVideoDecoderDelegat
          {slice_params_->type(), slice_params_->size(), &slice_param}},
         {encoded_data->id(),
          {encoded_data->type(), frame_hdr->frame_size, frame_hdr->data}}};
@@ -539,8 +513,6 @@ index 27f26002967cd..34ac822cdeb7a 100644
  
    const VaapiVP9Picture* vaapi_pic = pic->AsVaapiVP9Picture();
    VAProcPipelineParameterBuffer proc_buffer;
-diff --git a/third_party/libva_protected_content/va_protected_content.h b/third_party/libva_protected_content/va_protected_content.h
-index c14a77da41389..845e1afde8282 100644
 --- a/third_party/libva_protected_content/va_protected_content.h
 +++ b/third_party/libva_protected_content/va_protected_content.h
 @@ -46,98 +46,10 @@ extern "C" {

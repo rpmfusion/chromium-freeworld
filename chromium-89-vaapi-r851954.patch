@@ -21,8 +21,6 @@ Cr-Commit-Position: refs/heads/master@{#851954}
  media/gpu/vaapi/vaapi_video_decoder.h | 7 +++++++
  2 files changed, 14 insertions(+)
 
-diff --git a/media/gpu/vaapi/va_surface.h b/media/gpu/vaapi/va_surface.h
-index a6f4ac5ea2fac..d64814a8cba61 100644
 --- a/media/gpu/vaapi/va_surface.h
 +++ b/media/gpu/vaapi/va_surface.h
 @@ -8,6 +8,13 @@
@@ -39,8 +37,6 @@ index a6f4ac5ea2fac..d64814a8cba61 100644
  #include <va/va.h>
  
  #include "base/callback.h"
-diff --git a/media/gpu/vaapi/vaapi_video_decoder.h b/media/gpu/vaapi/vaapi_video_decoder.h
-index 7bddbc6a23bd7..c9301be5720c4 100644
 --- a/media/gpu/vaapi/vaapi_video_decoder.h
 +++ b/media/gpu/vaapi/vaapi_video_decoder.h
 @@ -5,6 +5,13 @@
