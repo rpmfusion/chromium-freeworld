@@ -144,15 +144,20 @@ Recommends:     libva-utils
 # This build should be only available to amd64
 ExclusiveArch:  x86_64
 
+# Google patches:
+Patch1101:      chromium-89-vaapi-r850949.patch
+Patch1102:      chromium-89-vaapi-r851954.patch
+Patch1103:      chromium-89-vaapi-r854937.patch
+
 # Gentoo patches:
 Patch200:       chromium-89-webcodecs-deps.patch
+Patch201:       chromium-89-EnumTable-crash.patch
 
 # Fedora patches:
 Patch300:       chromium-py2-bootstrap.patch
 Patch301:       chromium-fstatfix.patch
 Patch302:       chromium-gcc11.patch
-# Manually applied patches:
-Patch701:       chromium-rawhide-gcc-std-max-fix.patch
+Patch1303:      chromium-rawhide-gcc-std-max-fix.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
 Patch400:       chromium-hw-accel-mjpeg.patch
@@ -161,8 +166,7 @@ Patch402:       chromium-enable-widevine.patch
 Patch403:       chromium-manpage.patch
 Patch404:       chromium-md5-based-build-id.patch
 Patch405:       chromium-names.patch
-# Manually applied patches:
-Patch700:       chromium-rpm-fusion-brand.patch
+Patch1406:      chromium-rpm-fusion-brand.patch
 
 %description
 %{name} is an open-source web browser, powered by WebKit (Blink)
@@ -185,16 +189,22 @@ Patch700:       chromium-rpm-fusion-brand.patch
 %patchset_apply chromium-89-quiche-private.patch
 %patchset_apply chromium-89-skia-CropRect.patch
 
-# Apply patches up to #600 from this spec.
-%autopatch -M600 -p1
+# Apply patches up to #1000 from this spec.
+%autopatch -M1000 -p1
 
 # Manually apply patches that need an ifdef
-%if %{freeworld}
-%patch700 -p1
+%if 0%{?fedora} >= 34
+%patch1101 -p1
+%patch1102 -p1
+%patch1103 -p1
 %endif
 
 %if 0%{?fedora} >= 35
-%patch701 -p1
+%patch1303 -p1
+%endif
+
+%if %{freeworld}
+%patch1406 -p1
 %endif
 
 #Let's change the default shebang of python files.

@@ -1,0 +1,59 @@
+From 533e4fcfb04c105446ef2c65691256ee03f378bb Mon Sep 17 00:00:00 2001
+From: Jeffrey Kardatzke <jkardatzke@google.com>
+Date: Mon, 8 Feb 2021 23:34:44 +0000
+Subject: [PATCH] vaapi: Fix other includes for libva update
+
+I missed a couple spots where I needed the legacy define so we don't
+have conflicting values in headers.
+
+BUG=b:174951211
+TEST=Builds w/ updated libva patch in ChromeOS chroot
+
+Change-Id: I092544aa3285f7ff764fdd6c402e36b129f60ce7
+Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/2679258
+Commit-Queue: Jeffrey Kardatzke <jkardatzke@google.com>
+Commit-Queue: Andres Calderon Jaramillo <andrescj@chromium.org>
+Auto-Submit: Jeffrey Kardatzke <jkardatzke@google.com>
+Reviewed-by: Andres Calderon Jaramillo <andrescj@chromium.org>
+Cr-Commit-Position: refs/heads/master@{#851954}
+---
+ media/gpu/vaapi/va_surface.h          | 7 +++++++
+ media/gpu/vaapi/vaapi_video_decoder.h | 7 +++++++
+ 2 files changed, 14 insertions(+)
+
+diff --git a/media/gpu/vaapi/va_surface.h b/media/gpu/vaapi/va_surface.h
+index a6f4ac5ea2fac..d64814a8cba61 100644
+--- a/media/gpu/vaapi/va_surface.h
++++ b/media/gpu/vaapi/va_surface.h
+@@ -8,6 +8,13 @@
+ #ifndef MEDIA_GPU_VAAPI_VA_SURFACE_H_
+ #define MEDIA_GPU_VAAPI_VA_SURFACE_H_
+ 
++// TODO(jkardatzke): Remove this once the transition to the new upstream
++// protected content API is complete. This is used to bridge a transition
++// between the libva pull request we used, and what actually landed upstream.
++#ifndef LEGACY_UPSTREAM_PROTECTED_LIBVA
++#define LEGACY_UPSTREAM_PROTECTED_LIBVA
++#endif
++
+ #include <va/va.h>
+ 
+ #include "base/callback.h"
+diff --git a/media/gpu/vaapi/vaapi_video_decoder.h b/media/gpu/vaapi/vaapi_video_decoder.h
+index 7bddbc6a23bd7..c9301be5720c4 100644
+--- a/media/gpu/vaapi/vaapi_video_decoder.h
++++ b/media/gpu/vaapi/vaapi_video_decoder.h
+@@ -5,6 +5,13 @@
+ #ifndef MEDIA_GPU_VAAPI_VAAPI_VIDEO_DECODER_H_
+ #define MEDIA_GPU_VAAPI_VAAPI_VIDEO_DECODER_H_
+ 
++// TODO(jkardatzke): Remove this once the transition to the new upstream
++// protected content API is complete. This is used to bridge a transition
++// between the libva pull request we used, and what actually landed upstream.
++#ifndef LEGACY_UPSTREAM_PROTECTED_LIBVA
++#define LEGACY_UPSTREAM_PROTECTED_LIBVA
++#endif
++
+ #include <stdint.h>
+ #include <va/va.h>
+ 
