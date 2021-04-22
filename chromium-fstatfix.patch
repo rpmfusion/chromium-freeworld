@@ -1,7 +1,7 @@
 --- a/sandbox/linux/seccomp-bpf-helpers/baseline_policy.cc
 +++ b/sandbox/linux/seccomp-bpf-helpers/baseline_policy.cc
-@@ -261,6 +261,18 @@ ResultExpr EvaluateSyscallImpl(int fs_de
-     return RestrictKillTarget(current_pid, sysno);
+@@ -269,6 +269,18 @@ ResultExpr EvaluateSyscallImpl(int fs_de
+     return Allow();
    }
  
 +#if defined(__NR_newfstatat)

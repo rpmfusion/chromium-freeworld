@@ -11,7 +11,7 @@ Replace hard-coded "chromium-browser" with package name.
 
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -5082,6 +5082,7 @@ static_library("browser") {
+@@ -5149,6 +5149,7 @@ static_library("browser") {
        "upgrade_detector/directory_monitor.h",
        "upgrade_detector/get_installed_version_linux.cc",
      ]
@@ -53,7 +53,7 @@ Replace hard-coded "chromium-browser" with package name.
  #endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 --- a/media/audio/BUILD.gn
 +++ b/media/audio/BUILD.gn
-@@ -296,6 +296,8 @@ source_set("audio") {
+@@ -294,6 +294,8 @@ source_set("audio") {
        "pulse/pulse_util.h",
      ]
  

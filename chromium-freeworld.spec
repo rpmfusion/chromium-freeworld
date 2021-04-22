@@ -24,8 +24,8 @@
 %global system_re2 1
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        89.0.4389.114
-Release:        2%{?dist}
+Version:        90.0.4430.85
+Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -49,7 +49,7 @@ Source0:        chromium-%{version}-clean.tar.xz
 %endif
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-89-patchset-7
+%global patchset_revision chromium-90-patchset-7
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -75,7 +75,7 @@ BuildRequires:  mesa-libGL-devel, mesa-libEGL-devel
 BuildRequires:  minizip-compat-devel
 %endif
 # Pipewire need this.
-BuildRequires:  pkgconfig(libpipewire-0.2)
+BuildRequires:  pkgconfig(libpipewire-0.3)
 BuildRequires:  pkgconfig(gtk+-2.0), pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(libexif), pkgconfig(nss)
 BuildRequires:  pkgconfig(xtst), pkgconfig(xscrnsaver)
@@ -144,13 +144,7 @@ Recommends:     libva-utils
 # This build should be only available to amd64
 ExclusiveArch:  x86_64
 
-# Google patches:
-Patch1101:      chromium-89-vaapi-r850949.patch
-Patch1102:      chromium-89-vaapi-r851954.patch
-Patch1103:      chromium-89-vaapi-r854937.patch
-
 # Gentoo patches:
-Patch200:       chromium-89-webcodecs-deps.patch
 Patch201:       chromium-89-EnumTable-crash.patch
 
 # Fedora patches:
@@ -183,22 +177,16 @@ Patch1406:      chromium-rpm-fusion-brand.patch
   %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
 
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
-%patchset_apply chromium-89-AXTreeSerializer-include.patch
-%patchset_apply chromium-89-dawn-include.patch
-%patchset_apply chromium-89-quiche-dcheck.patch
-%patchset_apply chromium-89-quiche-private.patch
-%patchset_apply chromium-89-skia-CropRect.patch
+%patchset_apply chromium-90-CrossThreadCopier-qualification.patch
+%patchset_apply chromium-90-TokenizedOutput-include.patch
+%patchset_apply chromium-90-angle-constexpr.patch
+%patchset_apply chromium-90-quantization_utils-include.patch
+%patchset_apply chromium-90-ruy-include.patch
 
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
 
 # Manually apply patches that need an ifdef
-%if 0%{?fedora} >= 34
-%patch1101 -p1
-%patch1102 -p1
-%patch1103 -p1
-%endif
-
 %if 0%{?fedora} >= 35
 %patch1303 -p1
 %endif
@@ -292,14 +280,20 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/devtools-frontend/src/front_end/third_party/wasmparser \
     third_party/devtools-frontend/src/third_party \
     third_party/dom_distiller_js \
+    third_party/eigen3 \
     third_party/emoji-segmenter \
+    third_party/farmhash \
+    third_party/fdlibm \
 %if !%{system_ffmpeg}
     third_party/ffmpeg \
 %endif
+    third_party/fft2d \
     third_party/flatbuffers \
     third_party/freetype \
     third_party/fusejs \
     third_party/liburlpattern \
+    third_party/libzip \
+    third_party/gemmlowp \
     third_party/google_input_tools \
     third_party/google_input_tools/third_party/closure_library \
     third_party/google_input_tools/third_party/closure_library/third_party/closure \
@@ -321,9 +315,11 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/leveldatabase \
     third_party/libaddressinput \
     third_party/libaom \
+    third_party/libaom/source/libaom/third_party/fastfeat \
     third_party/libaom/source/libaom/third_party/vector \
     third_party/libaom/source/libaom/third_party/x86inc \
     third_party/libavif \
+    third_party/libgav1 \
     third_party/libjingle \
     third_party/libphonenumber \
     third_party/libsecret \
@@ -359,6 +355,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/modp_b64 \
     third_party/nasm \
     third_party/nearby \
+    third_party/neon_2_sse \
     third_party/node \
     third_party/node/node_modules/polymer-bundler/lib/third_party/UglifyJS2 \
     third_party/one_euro_filter \
@@ -393,6 +390,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/re2 \
 %endif
     third_party/rnnoise \
+    third_party/ruy \
     third_party/s2cellid \
     third_party/schema_org \
     third_party/securemessage \
@@ -413,9 +411,15 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/swiftshader/third_party/subzero \
     third_party/swiftshader/third_party/SPIRV-Headers/include/spirv/unified1 \
     third_party/tcmalloc \
+    third_party/tensorflow-text \
+    third_party/tflite \
+    third_party/tflite/src/third_party/eigen3 \
+    third_party/tflite/src/third_party/fft2d \
+    third_party/tflite-support \
     third_party/tint \
     third_party/ukey2 \
     third_party/unrar \
+    third_party/utf \
     third_party/usb_ids \
     third_party/usrsctp \
     third_party/vulkan \
@@ -432,6 +436,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/webrtc/rtc_base/third_party/sigslot \
     third_party/widevine \
     third_party/woff2 \
+    third_party/wuffs \
     third_party/x11proto \
     third_party/xcbproto \
     third_party/xdg-utils \
@@ -674,6 +679,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Thu Apr 22 2021 qvint <dotqvint@gmail.com> - 90.0.4430.85-1
+- Update to 90.0.4430.85
+
 * Sat Apr 17 2021 Leigh Scott <leigh123linux@gmail.com> - 89.0.4389.114-2
 - Rebuild for F33 to include missed patches (rfbz#5973)
 

@@ -1,6 +1,6 @@
 --- a/third_party/widevine/cdm/BUILD.gn
 +++ b/third_party/widevine/cdm/BUILD.gn
-@@ -15,7 +15,7 @@ buildflag_header("buildflags") {
+@@ -16,7 +16,7 @@ buildflag_header("buildflags") {
  
    flags = [
      "ENABLE_WIDEVINE=$enable_widevine",
