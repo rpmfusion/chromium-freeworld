@@ -24,7 +24,7 @@
 %global system_re2 1
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        90.0.4430.85
+Version:        92.0.4515.159
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -49,7 +49,7 @@ Source0:        chromium-%{version}-clean.tar.xz
 %endif
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-90-patchset-7
+%global patchset_revision chromium-92-patchset-7
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -90,7 +90,8 @@ BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(wayland-server)
 BuildRequires:  /usr/bin/python2
-BuildRequires:  python2-setuptools
+BuildRequires:  /usr/bin/python3
+BuildRequires:  python3-setuptools
 %if %{system_re2}
 BuildRequires:  re2-devel
 %endif
@@ -124,6 +125,7 @@ BuildRequires:  expat-devel
 BuildRequires:  pciutils-devel
 BuildRequires:  speech-dispatcher-devel
 BuildRequires:  pulseaudio-libs-devel
+BuildRequires:  libcurl-devel
 BuildRequires:  libxshmfence-devel
 # install desktop files
 BuildRequires:  desktop-file-utils
@@ -145,12 +147,15 @@ Recommends:     libva-utils
 ExclusiveArch:  x86_64
 
 # Gentoo patches:
-Patch201:       chromium-89-EnumTable-crash.patch
+Patch201:       chromium-92-EnumTable-crash.patch
 
 # Fedora patches:
-Patch300:       chromium-py2-bootstrap.patch
+Patch300:       chromium-py3-bootstrap.patch
 Patch301:       chromium-fstatfix.patch
 Patch302:       chromium-gcc11.patch
+Patch303:       chromium-py3-fixes.patch
+Patch304:       chromium-java-only-allowed-in-android-builds.patch
+Patch305:       chromium-freetype-2.11.patch
 Patch1303:      chromium-rawhide-gcc-std-max-fix.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
@@ -177,11 +182,8 @@ Patch1406:      chromium-rpm-fusion-brand.patch
   %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
 
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
-%patchset_apply chromium-90-CrossThreadCopier-qualification.patch
-%patchset_apply chromium-90-TokenizedOutput-include.patch
-%patchset_apply chromium-90-angle-constexpr.patch
-%patchset_apply chromium-90-quantization_utils-include.patch
 %patchset_apply chromium-90-ruy-include.patch
+
 
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
@@ -196,7 +198,7 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 %endif
 
 #Let's change the default shebang of python files.
-find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__python2}=' {} +
+find -type f -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__python3}=' {} +
 ./build/linux/unbundle/remove_bundled_libraries.py --do-remove \
     base/third_party/cityhash \
     base/third_party/double_conversion \
@@ -209,6 +211,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     base/third_party/valgrind \
     base/third_party/xdg_mime \
     base/third_party/xdg_user_dirs \
+    buildtools/third_party/eu-strip \
     buildtools/third_party/libc++ \
     buildtools/third_party/libc++abi \
     chrome/third_party/mozilla_security_manager \
@@ -269,7 +272,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/devtools-frontend/src/front_end/third_party/axe-core \
     third_party/devtools-frontend/src/front_end/third_party/chromium \
     third_party/devtools-frontend/src/front_end/third_party/codemirror \
-    third_party/devtools-frontend/src/front_end/third_party/fabricjs \
+    third_party/devtools-frontend/src/front_end/third_party/diff \
     third_party/devtools-frontend/src/front_end/third_party/i18n \
     third_party/devtools-frontend/src/front_end/third_party/intl-messageformat \
     third_party/devtools-frontend/src/front_end/third_party/lighthouse \
@@ -302,6 +305,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/harfbuzz-ng \
 %endif
     third_party/harfbuzz-ng/utils \
+    third_party/highway \
     third_party/hunspell \
     third_party/iccjpeg \
 %if !%{system_libicu}
@@ -321,6 +325,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/libavif \
     third_party/libgav1 \
     third_party/libjingle \
+    third_party/libjxl \
     third_party/libphonenumber \
     third_party/libsecret \
     third_party/libsrtp \
@@ -392,7 +397,6 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/rnnoise \
     third_party/ruy \
     third_party/s2cellid \
-    third_party/schema_org \
     third_party/securemessage \
     third_party/shell-encryption \
     third_party/skia \
@@ -416,7 +420,6 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/tflite/src/third_party/eigen3 \
     third_party/tflite/src/third_party/fft2d \
     third_party/tflite-support \
-    third_party/tint \
     third_party/ukey2 \
     third_party/unrar \
     third_party/utf \
@@ -426,6 +429,7 @@ find -depth -type f -writable -name "*.py" -exec sed -iE '1s=^#! */usr/bin/\(pyt
     third_party/wayland \
     third_party/web-animations-js \
     third_party/webdriver \
+    third_party/webgpu-cts \
     third_party/webrtc \
     third_party/webrtc/common_audio/third_party/ooura \
     third_party/webrtc/common_audio/third_party/spl_sqrt_floor \
@@ -570,7 +574,7 @@ gn_args+=(
 )
 
 tools/gn/bootstrap/bootstrap.py  --gn-gen-args "${gn_args[*]}"
-%{target}/gn --script-executable=%{__python2} gen --args="${gn_args[*]}" %{target}
+%{target}/gn --script-executable=%{__python3} gen --args="${gn_args[*]}" %{target}
 %ninja_build -C %{target} chrome chrome_sandbox chromedriver
 ######################################Install####################################
 %install
@@ -679,6 +683,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Sat Aug 21 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.159-1
+- Update to 92.0.4515.159
+
 * Thu Apr 22 2021 qvint <dotqvint@gmail.com> - 90.0.4430.85-1
 - Update to 90.0.4430.85
 
