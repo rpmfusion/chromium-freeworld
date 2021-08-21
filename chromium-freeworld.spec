@@ -686,6 +686,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 * Sat Aug 21 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.159-1
 - Update to 92.0.4515.159
 
+* Mon Aug 02 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 90.0.4430.85-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+
 * Thu Apr 22 2021 qvint <dotqvint@gmail.com> - 90.0.4430.85-1
 - Update to 90.0.4430.85
 
