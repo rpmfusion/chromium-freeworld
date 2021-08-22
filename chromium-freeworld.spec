@@ -25,7 +25,7 @@
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
 Version:        92.0.4515.159
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -148,6 +148,7 @@ ExclusiveArch:  x86_64
 
 # Gentoo patches:
 Patch201:       chromium-92-EnumTable-crash.patch
+Patch202:       chromium-92-crashpad-consent.patch
 
 # Fedora patches:
 Patch300:       chromium-py3-bootstrap.patch
@@ -612,6 +613,7 @@ install -m 644 %{name}.xml %{buildroot}%{_datadir}/gnome-control-center/default-
 install -m 755 %{target}/chrome %{buildroot}%{chromiumdir}/%{name}
 install -m 4755 %{target}/chrome_sandbox %{buildroot}%{chromiumdir}/chrome-sandbox
 install -m 755 %{target}/chromedriver %{buildroot}%{chromiumdir}/
+install -m 755 %{target}/crashpad_handler %{buildroot}%{chromiumdir}/
 install -m 755 %{target}/libEGL.so %{buildroot}%{chromiumdir}/
 install -m 755 %{target}/libGLESv2.so %{buildroot}%{chromiumdir}/
 %if !%{system_libicu}
@@ -664,6 +666,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/%{name}
 %{chromiumdir}/chrome-sandbox
 %{chromiumdir}/chromedriver
+%{chromiumdir}/crashpad_handler
 %{chromiumdir}/libEGL.so
 %{chromiumdir}/libGLESv2.so
 %if !%{system_libicu}
@@ -683,6 +686,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Sun Aug 22 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.159-2
+- Add missing file and add crashpad_handler consent patch
+
 * Sat Aug 21 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.159-1
 - Update to 92.0.4515.159
 
