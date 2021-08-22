@@ -25,7 +25,7 @@
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
 Version:        92.0.4515.159
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -150,13 +150,16 @@ ExclusiveArch:  x86_64
 Patch201:       chromium-92-EnumTable-crash.patch
 Patch202:       chromium-92-crashpad-consent.patch
 
+# Upstream patches:
+Patch251:       chromium-sandbox-syscall-broker-use-struct-kernel_stat.patch
+Patch252:       chromium-sandbox-fix-fstatat-crash.patch
+
 # Fedora patches:
 Patch300:       chromium-py3-bootstrap.patch
-Patch301:       chromium-fstatfix.patch
-Patch302:       chromium-gcc11.patch
-Patch303:       chromium-py3-fixes.patch
-Patch304:       chromium-java-only-allowed-in-android-builds.patch
-Patch305:       chromium-freetype-2.11.patch
+Patch301:       chromium-gcc11.patch
+Patch302:       chromium-py3-fixes.patch
+Patch303:       chromium-java-only-allowed-in-android-builds.patch
+Patch304:       chromium-freetype-2.11.patch
 Patch1303:      chromium-rawhide-gcc-std-max-fix.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
@@ -686,6 +689,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Sun Aug 22 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.159-3
+- Fix sandbox crash
+
 * Sun Aug 22 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.159-2
 - Add missing file and add crashpad_handler consent patch
 
