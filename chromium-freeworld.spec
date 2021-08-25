@@ -160,6 +160,7 @@ Patch301:       chromium-gcc11.patch
 Patch302:       chromium-py3-fixes.patch
 Patch303:       chromium-java-only-allowed-in-android-builds.patch
 Patch304:       chromium-freetype-2.11.patch
+Patch305:       chromium-sandbox-clone3.patch
 Patch1303:      chromium-rawhide-gcc-std-max-fix.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
