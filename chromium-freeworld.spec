@@ -25,7 +25,7 @@
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
 Version:        92.0.4515.159
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -187,6 +187,7 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
 %patchset_apply chromium-90-ruy-include.patch
+#patchset_apply chromium-91-compiler.patch
 
 
 # Apply patches up to #1000 from this spec.
@@ -215,7 +216,6 @@ find -type f -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__
     base/third_party/valgrind \
     base/third_party/xdg_mime \
     base/third_party/xdg_user_dirs \
-    buildtools/third_party/eu-strip \
     buildtools/third_party/libc++ \
     buildtools/third_party/libc++abi \
     chrome/third_party/mozilla_security_manager \
@@ -462,6 +462,10 @@ find -type f -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__
     v8/third_party/inspector_protocol \
     v8/third_party/v8
 
+# bundled eu-strip is for amd64 only and we don't want to pre-stripped binaries
+mkdir -p buildtools/third_party/eu-strip/bin || die
+ln -s %{_bindir}/true buildtools/third_party/eu-strip/bin/eu-strip || die
+
 ./build/linux/unbundle/replace_gn_files.py --system-libraries \
 %if %{system_ffmpeg}
     ffmpeg \
@@ -615,6 +619,7 @@ sed \
 install -m 644 %{name}.xml %{buildroot}%{_datadir}/gnome-control-center/default-apps/
 install -m 755 %{target}/chrome %{buildroot}%{chromiumdir}/%{name}
 install -m 4755 %{target}/chrome_sandbox %{buildroot}%{chromiumdir}/chrome-sandbox
+mv %{target}/chromedriver{.unstripped,} || die
 install -m 755 %{target}/chromedriver %{buildroot}%{chromiumdir}/
 install -m 755 %{target}/crashpad_handler %{buildroot}%{chromiumdir}/
 install -m 755 %{target}/libEGL.so %{buildroot}%{chromiumdir}/
@@ -689,6 +694,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Wed Aug 25 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.159-4
+- Disable eu-strip
+
 * Sun Aug 22 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.159-3
 - Fix sandbox crash
 
