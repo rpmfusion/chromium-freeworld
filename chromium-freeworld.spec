@@ -25,7 +25,7 @@
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
 Version:        92.0.4515.159
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -149,6 +149,9 @@ ExclusiveArch:  x86_64
 # Gentoo patches:
 Patch201:       chromium-92-EnumTable-crash.patch
 Patch202:       chromium-92-crashpad-consent.patch
+
+# Archlinux patches:
+Patch230:       extend-enable-accelerated-video-decode-flag.patch
 
 # Upstream patches:
 Patch251:       chromium-sandbox-syscall-broker-use-struct-kernel_stat.patch
@@ -695,6 +698,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Thu Aug 26 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.159-5
+- Enable expired vaapi support
+
 * Wed Aug 25 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.159-4
 - Disable eu-strip
 
