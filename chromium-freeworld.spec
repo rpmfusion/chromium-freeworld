@@ -24,7 +24,7 @@
 %global system_re2 1
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        92.0.4515.166
+Version:        93.0.4577.63
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -49,7 +49,7 @@ Source0:        chromium-%{version}-clean.tar.xz
 %endif
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-92-patchset-7
+%global patchset_revision chromium-93-patchset-6
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -89,9 +89,12 @@ BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(wayland-server)
-BuildRequires:  /usr/bin/python2
+#BuildRequires:  /usr/bin/python2
 BuildRequires:  /usr/bin/python3
+BuildRequires:	python3-beautifulsoup4
+BuildRequires:  python3-html5lib
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-six
 %if %{system_re2}
 BuildRequires:  re2-devel
 %endif
@@ -147,20 +150,19 @@ Recommends:     libva-utils
 ExclusiveArch:  x86_64
 
 # Gentoo patches:
-Patch201:       chromium-92-EnumTable-crash.patch
-Patch202:       chromium-92-crashpad-consent.patch
+Patch201:       chromium-93-EnumTable-crash.patch
 
 # Upstream patches:
 Patch251:       chromium-sandbox-syscall-broker-use-struct-kernel_stat.patch
 Patch252:       chromium-sandbox-fix-fstatat-crash.patch
+Patch1101:      chromium_revert_crap_upstream_commit.patch
+
 
 # Fedora patches:
 Patch300:       chromium-py3-bootstrap.patch
 Patch301:       chromium-gcc11.patch
 Patch302:       chromium-py3-fixes.patch
 Patch303:       chromium-java-only-allowed-in-android-builds.patch
-Patch304:       chromium-freetype-2.11.patch
-Patch305:       chromium-sandbox-clone3.patch
 Patch1303:      chromium-rawhide-gcc-std-max-fix.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
@@ -188,11 +190,20 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
 %patchset_apply chromium-90-ruy-include.patch
-#patchset_apply chromium-91-compiler.patch
+%patchset_apply chromium-93-BluetoothLowEnergyScanFilter-include.patch
+%patchset_apply chromium-93-ClassProperty-include.patch
+%patchset_apply chromium-93-ContextSet-permissive.patch
+%patchset_apply chromium-93-DevToolsEmbedderMessageDispatcher-include.patch
+%patchset_apply chromium-93-FormForest-constexpr.patch
+%patchset_apply chromium-93-HashPasswordManager-include.patch
+%patchset_apply chromium-93-pdfium-include.patch
+%patchset_apply chromium-93-ScopedTestDialogAutoConfirm-include.patch
 
 
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
+
+%patch1101 -R -p1
 
 # Manually apply patches that need an ifdef
 %if 0%{?fedora} >= 35
@@ -232,7 +243,6 @@ find -type f -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__
     third_party/angle/src/common/third_party/base \
     third_party/angle/src/common/third_party/smhasher \
     third_party/angle/src/common/third_party/xxhash \
-    third_party/angle/src/third_party/compiler \
     third_party/angle/src/third_party/libXNVCtrl \
     third_party/angle/src/third_party/trace_event \
     third_party/angle/src/third_party/volk \
@@ -451,7 +461,6 @@ find -type f -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__
     third_party/xdg-utils \
     third_party/zlib/google \
     third_party/zxcvbn-cpp \
-    tools/grit/third_party/six \
 %if !%{system_minizip}
     third_party/zlib \
 %endif
@@ -695,6 +704,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Wed Sep 01 2021 Leigh Scott <leigh123linux@gmail.com> - 93.0.4577.63-1
+- Update to 93.0.4577.63
+
 * Tue Aug 31 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.166-1
 - Update to 92.0.4515.166
 

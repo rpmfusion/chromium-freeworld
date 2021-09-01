@@ -1,14 +1,3 @@
---- a/third_party/catapult/common/py_vulcanize/py_vulcanize/generate.py
-+++ b/third_party/catapult/common/py_vulcanize/py_vulcanize/generate.py
-@@ -83,7 +83,7 @@ def _MinifyJS(input_js):
- 
-   with tempfile.NamedTemporaryFile() as _:
-     args = [
--        'python',
-+        'python3',
-         rjsmin_path
-     ]
-     p = subprocess.Popen(args,
 --- a/tools/gn/bootstrap/bootstrap.py
 +++ b/tools/gn/bootstrap/bootstrap.py
 @@ -130,7 +130,7 @@ def main(argv):
