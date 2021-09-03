@@ -25,7 +25,7 @@
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
 Version:        93.0.4577.63
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -147,15 +147,17 @@ Obsoletes:      chromium-vaapi < %{version}-%{release}
 Recommends:     libva-utils
 %global debug_package %{nil}
 # This build should be only available to amd64
-ExclusiveArch:  x86_64
+ExclusiveArch:  x86_64 aarch64
 
 # Gentoo patches:
 Patch201:       chromium-93-EnumTable-crash.patch
 
+# Arch Linux patches:
+Patch226:      chromium-93-ffmpeg-4.4.patch
+
 # Upstream patches:
 Patch251:       chromium-sandbox-syscall-broker-use-struct-kernel_stat.patch
 Patch252:       chromium-sandbox-fix-fstatat-crash.patch
-Patch1101:      chromium_revert_crap_upstream_commit.patch
 
 
 # Fedora patches:
@@ -163,6 +165,7 @@ Patch300:       chromium-py3-bootstrap.patch
 Patch301:       chromium-gcc11.patch
 Patch302:       chromium-py3-fixes.patch
 Patch303:       chromium-java-only-allowed-in-android-builds.patch
+Patch304:       chromium-update-highway-0.12.2.patch
 Patch1303:      chromium-rawhide-gcc-std-max-fix.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
@@ -190,6 +193,7 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
 %patchset_apply chromium-90-ruy-include.patch
+%patchset_apply chromium-91-libyuv-aarch64.patch
 %patchset_apply chromium-93-BluetoothLowEnergyScanFilter-include.patch
 %patchset_apply chromium-93-ClassProperty-include.patch
 %patchset_apply chromium-93-ContextSet-permissive.patch
@@ -202,8 +206,6 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
-
-%patch1101 -R -p1
 
 # Manually apply patches that need an ifdef
 %if 0%{?fedora} >= 35
@@ -679,7 +681,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{_datadir}/icons/hicolor/128x128/apps/%{name}.png
 %{_datadir}/icons/hicolor/256x256/apps/%{name}.png
 %{_datadir}/icons/hicolor/symbolic/apps/%{name}-symbolic.svg
-%{_mandir}/man1/%{name}.1.gz
+%{_mandir}/man1/%{name}.1.*
 %dir %{chromiumdir}
 %{chromiumdir}/%{name}
 %{chromiumdir}/chrome-sandbox
@@ -704,6 +706,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Fri Sep 03 2021 Leigh Scott <leigh123linux@gmail.com> - 93.0.4577.63-2
+- Enable aarch64 build
+
 * Wed Sep 01 2021 Leigh Scott <leigh123linux@gmail.com> - 93.0.4577.63-1
 - Update to 93.0.4577.63
 
