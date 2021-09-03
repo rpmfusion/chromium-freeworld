@@ -3,6 +3,9 @@
 %global freeworld 1
 %global menu_name Chromium (Freeworld)
 %global xdg_subdir chromium
+%ifarch aarch64
+%global _smp_build_ncpus 6
+%endif
 #This can be any folder on out
 %global target out/Release
 ### Google API keys (see http://www.chromium.org/developers/how-tos/api-keys)
