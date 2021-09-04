@@ -170,6 +170,7 @@ Patch302:       chromium-py3-fixes.patch
 Patch303:       chromium-java-only-allowed-in-android-builds.patch
 Patch304:       chromium-update-highway-0.12.2.patch
 Patch305:       chromium-aarch64-cxxflags-addition.patch
+Patch306:       chromium-93-old-freetype.patch
 Patch1303:      chromium-rawhide-gcc-std-max-fix.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
