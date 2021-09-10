@@ -94,7 +94,7 @@ BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(wayland-server)
 #BuildRequires:  /usr/bin/python2
 BuildRequires:  /usr/bin/python3
-BuildRequires:	python3-beautifulsoup4
+BuildRequires:  python3-beautifulsoup4
 BuildRequires:  python3-html5lib
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-six
@@ -141,8 +141,10 @@ BuildRequires:  libappstream-glib
 BuildRequires:  java-1.8.0-openjdk
 # Libstdc++ static needed for linker
 BuildRequires:  libstdc++-static
-#Runtime Requirements
+# Runtime Requirements
 Requires:       hicolor-icon-theme
+# GTK modules it expects to find for some reason.
+Requires:       libcanberra-gtk3%{_isa}
 # Make sure chromium-freeworld replaces chromium-vaapi
 Provides:       chromium-vaapi = %{version}-%{release}
 Obsoletes:      chromium-vaapi < %{version}-%{release}
