@@ -28,7 +28,7 @@
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
 Version:        93.0.4577.63
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -68,10 +68,12 @@ Source15:       LICENSE
 ########################################################################################
 #Compiler settings
 # Make sure we don't encounter any bug
-BuildRequires:  gcc-c++
+BuildRequires:  clang
+BuildRequires:  lld
+BuildRequires:  llvm
 # Basic tools and libraries needed for building
 BuildRequires:  ninja-build, nodejs, bison, gperf, hwdata
-BuildRequires:  libgcc, glibc, libatomic
+BuildRequires:  libatomic
 BuildRequires:  libcap-devel, cups-devel, alsa-lib-devel
 BuildRequires:  mesa-libGL-devel, mesa-libEGL-devel
 %if %{system_minizip}
@@ -159,6 +161,9 @@ Patch201:       chromium-93-EnumTable-crash.patch
 
 # Arch Linux patches:
 Patch226:      chromium-93-ffmpeg-4.4.patch
+
+Patch231:      remove-llvm13-warning-flags.patch
+Patch232:      chromium-91-sql-standard-layout-type.patch
 
 # Upstream patches:
 Patch251:       chromium-sandbox-syscall-broker-use-struct-kernel_stat.patch
@@ -527,8 +532,10 @@ ln -s %{_bindir}/node third_party/node/linux/node-linux-x64/bin/node
 ulimit -n 2048
 
 #export compilar variables
-export AR=ar NM=nm AS=as
-export CC=gcc CXX=g++
+export CC=clang
+export CXX=clang++
+export AR=llvm-ar
+export NM=llvm-nm
 export CXXFLAGS="$CXXFLAGS -fpermissive"
 export CFLAGS="$CFLAGS -w"
 export CXXFLAGS="$CXXFLAGS -w"
@@ -585,7 +592,7 @@ gn_args+=(
 
 
 gn_args+=(
-    is_clang=false
+    clang_use_chrome_plugins=false
 )
 
 #Pipewire
@@ -713,6 +720,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Sat Sep 11 2021 Leigh Scott <leigh123linux@gmail.com> - 93.0.4577.63-3
+- Use clang to compile
+
 * Fri Sep 03 2021 Leigh Scott <leigh123linux@gmail.com> - 93.0.4577.63-2
 - Enable aarch64 build
 

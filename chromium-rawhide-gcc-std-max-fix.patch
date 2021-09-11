@@ -9,3 +9,16 @@
  
    // Only set an alternative stack if there isn't already one, or if the current
    // one is too small.
+--- a/sandbox/linux/services/credentials.cc
++++ b/sandbox/linux/services/credentials.cc
+@@ -98,7 +98,9 @@
+   // attempt this optimization.
+   clone_flags |= CLONE_VM | CLONE_VFORK | CLONE_SETTLS;
+
+-  char tls_buf[PTHREAD_STACK_MIN] = {0};
++  const std::size_t pthread_stack_min = PTHREAD_STACK_MIN;
++  char tls_buf[pthread_stack_min];
++  memset(tls_buf, 0, pthread_stack_min);
+   tls = tls_buf;
+ #endif
+
