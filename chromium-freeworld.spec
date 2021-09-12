@@ -81,7 +81,7 @@ BuildRequires:  minizip-compat-devel
 %endif
 # Pipewire need this.
 BuildRequires:  pkgconfig(libpipewire-0.3)
-BuildRequires:  pkgconfig(gtk+-2.0), pkgconfig(gtk+-3.0)
+BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(libexif), pkgconfig(nss)
 BuildRequires:  pkgconfig(xtst), pkgconfig(xscrnsaver)
 BuildRequires:  pkgconfig(dbus-1), pkgconfig(libudev)
