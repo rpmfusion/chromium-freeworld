@@ -162,8 +162,10 @@ Patch201:       chromium-93-EnumTable-crash.patch
 # Arch Linux patches:
 Patch226:      chromium-93-ffmpeg-4.4.patch
 
+# Suse patches:
 Patch231:      remove-llvm13-warning-flags.patch
 Patch232:      chromium-91-sql-standard-layout-type.patch
+Patch233:      chromium-clang-nomerge.patch
 
 # Upstream patches:
 Patch251:       chromium-sandbox-syscall-broker-use-struct-kernel_stat.patch
