@@ -27,8 +27,8 @@
 %global system_re2 1
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        93.0.4577.63
-Release:        3%{?dist}
+Version:        93.0.4577.82
+Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -140,7 +140,7 @@ BuildRequires:  desktop-file-utils
 # install AppData files
 BuildRequires:  libappstream-glib
 # Mojojojo need this >:(
-BuildRequires:  java-1.8.0-openjdk
+BuildRequires:  java-1.8.0-openjdk-headless
 # Libstdc++ static needed for linker
 BuildRequires:  libstdc++-static
 # Runtime Requirements
@@ -723,6 +723,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Tue Sep 14 2021 Leigh Scott <leigh123linux@gmail.com> - 93.0.4577.82-1
+- Update to 93.0.4577.82
+
 * Sat Sep 11 2021 Leigh Scott <leigh123linux@gmail.com> - 93.0.4577.63-3
 - Use clang to compile
 
