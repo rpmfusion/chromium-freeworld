@@ -19,7 +19,12 @@
 #######################################CONFIGS###########################################
 # System libraries to use.
 %global system_ffmpeg 1
+%global system_freetype 0
+%if 0%{?fedora} >= 36
 %global system_harfbuzz 1
+%else
+%global system_harfbuzz 0
+%endif
 %global system_libicu 0
 %global system_libvpx 0
 %global system_libxml2 1
@@ -27,7 +32,7 @@
 %global system_re2 1
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        93.0.4577.82
+Version:        94.0.4606.61
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -52,7 +57,7 @@ Source0:        chromium-%{version}-clean.tar.xz
 %endif
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-93-patchset-6
+%global patchset_revision chromium-94-patchset-3
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -105,7 +110,9 @@ BuildRequires:  re2-devel
 %endif
 # replace_gn_files.py --system-libraries
 BuildRequires:  flac-devel
-BuildRequires:  freetype-devel
+# Needs freetype git
+# https://github.com/freetype/freetype/commit/47cf8ebf4a78ed42da455a98d77a92ce6a180d78
+#BuildRequires:  freetype-devel
 %if %{system_harfbuzz}
 BuildRequires:  harfbuzz-devel
 %endif
@@ -121,13 +128,13 @@ BuildRequires:  libvpx-devel
 %endif
 %if %{system_ffmpeg}
 BuildRequires:  ffmpeg-devel
+BuildRequires:  opus-devel
 %endif
 BuildRequires:  libwebp-devel
 %if %{system_libxml2}
 BuildRequires:  pkgconfig(libxml-2.0)
 %endif
 BuildRequires:  pkgconfig(libxslt)
-BuildRequires:  opus-devel
 BuildRequires:  snappy-devel
 BuildRequires:  expat-devel
 BuildRequires:  pciutils-devel
@@ -161,26 +168,20 @@ Patch201:       chromium-93-EnumTable-crash.patch
 
 # Arch Linux patches:
 Patch226:      chromium-93-ffmpeg-4.4.patch
+Patch1227:     chromium-94-ffmpeg-roll.patch
 
 # Suse patches:
 Patch231:      remove-llvm13-warning-flags.patch
 Patch232:      chromium-91-sql-standard-layout-type.patch
 Patch233:      chromium-clang-nomerge.patch
 
-# Upstream patches:
-Patch251:       chromium-sandbox-syscall-broker-use-struct-kernel_stat.patch
-Patch252:       chromium-sandbox-fix-fstatat-crash.patch
-
-
 # Fedora patches:
 Patch300:       chromium-py3-bootstrap.patch
 Patch301:       chromium-gcc11.patch
 Patch302:       chromium-py3-fixes.patch
 Patch303:       chromium-java-only-allowed-in-android-builds.patch
-Patch304:       chromium-update-highway-0.12.2.patch
-Patch305:       chromium-aarch64-cxxflags-addition.patch
-Patch306:       chromium-93-old-freetype.patch
-Patch307:       chromium-clang-format.patch
+Patch304:       chromium-aarch64-cxxflags-addition.patch
+Patch305:       chromium-clang-format.patch
 Patch1303:      chromium-rawhide-gcc-std-max-fix.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
@@ -209,20 +210,16 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
 %patchset_apply chromium-90-ruy-include.patch
 %patchset_apply chromium-91-libyuv-aarch64.patch
-%patchset_apply chromium-93-BluetoothLowEnergyScanFilter-include.patch
-%patchset_apply chromium-93-ClassProperty-include.patch
-%patchset_apply chromium-93-ContextSet-permissive.patch
-%patchset_apply chromium-93-DevToolsEmbedderMessageDispatcher-include.patch
-%patchset_apply chromium-93-FormForest-constexpr.patch
-%patchset_apply chromium-93-HashPasswordManager-include.patch
-%patchset_apply chromium-93-pdfium-include.patch
-%patchset_apply chromium-93-ScopedTestDialogAutoConfirm-include.patch
+%patchset_apply chromium-94-ConversionStorageSql-lambda.patch
+%patchset_apply chromium-94-CustomSpaces-include.patch
 
 
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
 
 # Manually apply patches that need an ifdef
+%patch1227 -Rp1
+
 %if 0%{?fedora} >= 35
 %patch1303 -p1
 %endif
@@ -296,6 +293,7 @@ find -type f -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__
     third_party/cros_system_api \
     third_party/dawn \
     third_party/dawn/third_party/khronos \
+    third_party/dawn/third_party/tint \
     third_party/depot_tools \
     third_party/dav1d \
     third_party/devscripts \
@@ -313,6 +311,7 @@ find -type f -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__
     third_party/devtools-frontend/src/front_end/third_party/marked \
     third_party/devtools-frontend/src/front_end/third_party/puppeteer \
     third_party/devtools-frontend/src/front_end/third_party/wasmparser \
+    third_party/devtools-frontend/src/test/unittests/front_end/third_party/i18n \
     third_party/devtools-frontend/src/third_party \
     third_party/dom_distiller_js \
     third_party/eigen3 \
@@ -324,7 +323,9 @@ find -type f -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__
 %endif
     third_party/fft2d \
     third_party/flatbuffers \
+%if !%{system_freetype}
     third_party/freetype \
+%endif
     third_party/fusejs \
     third_party/liburlpattern \
     third_party/libzip \
@@ -496,9 +497,15 @@ ln -s %{_bindir}/true buildtools/third_party/eu-strip/bin/eu-strip || die
 ./build/linux/unbundle/replace_gn_files.py --system-libraries \
 %if %{system_ffmpeg}
     ffmpeg \
+    opus \
+%endif
+%if %{system_harfbuzz}
+    harfbuzz-ng \
 %endif
     flac \
+%if %{system_freetype}
     freetype \
+%endif
     fontconfig \
 %if %{system_libicu}
     icu \
@@ -514,7 +521,6 @@ ln -s %{_bindir}/true buildtools/third_party/eu-strip/bin/eu-strip || die
     libxml \
 %endif
     libxslt \
-    opus \
 %if %{system_re2}
     re2 \
 %endif
@@ -525,6 +531,10 @@ ln -s %{_bindir}/true buildtools/third_party/eu-strip/bin/eu-strip || die
 
 sed -i 's|//third_party/usb_ids|/usr/share/hwdata|g' \
     services/device/public/cpp/usb/BUILD.gn
+
+# Allow building against system libraries in official builds
+sed -i 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
+    tools/generate_shim_headers/generate_shim_headers.py || die
 
 # Fix the path to nodejs binary
 mkdir -p third_party/node/linux/node-linux-x64/bin
@@ -551,6 +561,7 @@ gn_args=(
     is_debug=false
     use_vaapi=true
     is_component_build=false
+    is_official_build=true
     use_sysroot=false
     use_custom_libcxx=false
     use_aura=true
@@ -563,7 +574,9 @@ gn_args=(
     use_libpci=true
     use_pulseaudio=true
     link_pulseaudio=true
+%if %{system_freetype}
     use_system_freetype=true
+%endif
     enable_widevine=true
 %if %{system_harfbuzz}
     use_system_harfbuzz=true
@@ -579,7 +592,7 @@ gn_args=(
     enable_hangout_services_extension=true
     fatal_linker_warnings=false
     treat_warnings_as_errors=false
-    fieldtrial_testing_like_official_build=true
+    disable_fieldtrial_testing_config=true
     'custom_toolchain="//build/toolchain/linux/unbundle:default"'
     'host_toolchain="//build/toolchain/linux/unbundle:default"'
     'google_api_key="%{api_key}"'
@@ -595,7 +608,12 @@ gn_args+=(
 
 
 gn_args+=(
+    is_clang=true
     clang_use_chrome_plugins=false
+    use_thin_lto=false
+    use_lld=false
+    use_gold=false
+    is_cfi=false
 )
 
 #Pipewire
@@ -650,7 +668,7 @@ install -m 755 %{target}/chrome %{buildroot}%{chromiumdir}/%{name}
 install -m 4755 %{target}/chrome_sandbox %{buildroot}%{chromiumdir}/chrome-sandbox
 mv %{target}/chromedriver{.unstripped,} || die
 install -m 755 %{target}/chromedriver %{buildroot}%{chromiumdir}/
-install -m 755 %{target}/crashpad_handler %{buildroot}%{chromiumdir}/
+install -m 755 %{target}/chrome_crashpad_handler %{buildroot}%{chromiumdir}/
 install -m 755 %{target}/libEGL.so %{buildroot}%{chromiumdir}/
 install -m 755 %{target}/libGLESv2.so %{buildroot}%{chromiumdir}/
 %if !%{system_libicu}
@@ -703,7 +721,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/%{name}
 %{chromiumdir}/chrome-sandbox
 %{chromiumdir}/chromedriver
-%{chromiumdir}/crashpad_handler
+%{chromiumdir}/chrome_crashpad_handler
 %{chromiumdir}/libEGL.so
 %{chromiumdir}/libGLESv2.so
 %if !%{system_libicu}
@@ -723,6 +741,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Wed Sep 22 2021 Leigh Scott <leigh123linux@gmail.com> - 94.0.4606.61-1
+- Update to 94.0.4606.61
+
 * Tue Sep 14 2021 Leigh Scott <leigh123linux@gmail.com> - 93.0.4577.82-1
 - Update to 93.0.4577.82
 

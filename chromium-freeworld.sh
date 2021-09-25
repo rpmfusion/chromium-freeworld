@@ -54,6 +54,7 @@ CHROMIUM_DISTRO_FLAGS="  --enable-plugins \
                          --enable-user-scripts \
                          --enable-printing \
                          --enable-gpu-rasterization \
+                         --disable-features=AudioServiceSandbox \
                          --enable-sync"
 
 exec -a "$0" "@@CHROMIUMDIR@@/$(basename "$0" | sed 's/\.sh$//')" $CHROMIUM_DISTRO_FLAGS "$@"

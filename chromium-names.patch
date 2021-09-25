@@ -32,14 +32,14 @@ Replace hard-coded "chromium-browser" with package name.
  
 --- a/chrome/common/BUILD.gn
 +++ b/chrome/common/BUILD.gn
-@@ -83,6 +83,7 @@ source_set("channel_info") {
+@@ -80,6 +80,7 @@ source_set("channel_info") {
      deps += [ "//chromeos/crosapi/cpp" ]
    } else if (is_posix) {
      sources += [ "channel_info_posix.cc" ]
 +    configs += [ "//third_party/rpm_fusion:defines" ]
+   } else if (is_fuchsia) {
+     sources += [ "channel_info_fuchsia.cc" ]
    }
- }
- 
 --- a/chrome/common/channel_info_posix.cc
 +++ b/chrome/common/channel_info_posix.cc
 @@ -96,7 +96,7 @@ std::string GetDesktopName(base::Environ
