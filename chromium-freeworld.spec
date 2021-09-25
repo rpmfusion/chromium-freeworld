@@ -110,9 +110,9 @@ BuildRequires:  re2-devel
 %endif
 # replace_gn_files.py --system-libraries
 BuildRequires:  flac-devel
-# Needs freetype git
-# https://github.com/freetype/freetype/commit/47cf8ebf4a78ed42da455a98d77a92ce6a180d78
-#BuildRequires:  freetype-devel
+%if %{system_freetype}
+BuildRequires:  freetype-devel
+%endif
 %if %{system_harfbuzz}
 BuildRequires:  harfbuzz-devel
 %endif
