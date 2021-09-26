@@ -169,6 +169,8 @@ Patch201:       chromium-93-EnumTable-crash.patch
 # Arch Linux patches:
 Patch226:      chromium-93-ffmpeg-4.4.patch
 Patch1227:     chromium-94-ffmpeg-roll.patch
+Patch1228:     add-a-TODO-about-a-missing-pnacl-flag.patch
+Patch1229:     use-ffile-compilation-dir.patch
 
 # Suse patches:
 Patch231:      remove-llvm13-warning-flags.patch
@@ -219,6 +221,11 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 
 # Manually apply patches that need an ifdef
 %patch1227 -Rp1
+
+%if 0%{?fedora} < 35
+%patch1228 -Rp1
+%patch1229 -Rp1
+%endif
 
 %if 0%{?fedora} >= 35
 %patch1303 -p1
