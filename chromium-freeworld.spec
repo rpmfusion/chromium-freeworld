@@ -622,7 +622,6 @@ gn_args+=(
     clang_use_chrome_plugins=false
     use_thin_lto=false
     use_lld=false
-    use_gold=false
     is_cfi=false
 )
 
