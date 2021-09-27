@@ -596,6 +596,9 @@ gn_args=(
     proprietary_codecs=false
 %endif
     enable_nacl=false
+%if 0%{?fedora} < 34
+    chrome_pgo_phase=0
+%endif
     enable_hangout_services_extension=true
     fatal_linker_warnings=false
     treat_warnings_as_errors=false
