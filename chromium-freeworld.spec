@@ -639,7 +639,7 @@ gn_args+=(
 
 tools/gn/bootstrap/bootstrap.py  --gn-gen-args "${gn_args[*]}"
 %{target}/gn --script-executable=%{__python3} gen --args="${gn_args[*]}" %{target}
-%ninja_build -C %{target} chrome chrome_sandbox chromedriver
+%ninja_build -C %{target} chrome chrome_sandbox
 ######################################Install####################################
 %install
 mkdir -p %{buildroot}%{_bindir}
@@ -675,8 +675,6 @@ sed \
 install -m 644 %{name}.xml %{buildroot}%{_datadir}/gnome-control-center/default-apps/
 install -m 755 %{target}/chrome %{buildroot}%{chromiumdir}/%{name}
 install -m 4755 %{target}/chrome_sandbox %{buildroot}%{chromiumdir}/chrome-sandbox
-mv %{target}/chromedriver{.unstripped,} || die
-install -m 755 %{target}/chromedriver %{buildroot}%{chromiumdir}/
 install -m 755 %{target}/chrome_crashpad_handler %{buildroot}%{chromiumdir}/
 install -m 755 %{target}/libEGL.so %{buildroot}%{chromiumdir}/
 install -m 755 %{target}/libGLESv2.so %{buildroot}%{chromiumdir}/
@@ -729,7 +727,6 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %dir %{chromiumdir}
 %{chromiumdir}/%{name}
 %{chromiumdir}/chrome-sandbox
-%{chromiumdir}/chromedriver
 %{chromiumdir}/chrome_crashpad_handler
 %{chromiumdir}/libEGL.so
 %{chromiumdir}/libGLESv2.so
