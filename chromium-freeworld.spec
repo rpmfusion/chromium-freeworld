@@ -32,7 +32,7 @@
 %global system_re2 1
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        94.0.4606.81
+Version:        95.0.4638.54
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -57,7 +57,7 @@ Source0:        chromium-%{version}-clean.tar.xz
 %endif
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-94-patchset-3
+%global patchset_revision chromium-95-patchset-4
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -165,6 +165,7 @@ ExclusiveArch:  x86_64 aarch64
 
 # Gentoo patches:
 Patch201:       chromium-93-EnumTable-crash.patch
+Patch202:       chromium-95-maldoca-zlib.patch
 
 # Arch Linux patches:
 Patch226:      chromium-93-ffmpeg-4.4.patch
@@ -210,10 +211,9 @@ Patch1406:      chromium-rpm-fusion-brand.patch
   %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
 
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
-%patchset_apply chromium-90-ruy-include.patch
-%patchset_apply chromium-91-libyuv-aarch64.patch
-%patchset_apply chromium-94-ConversionStorageSql-lambda.patch
-%patchset_apply chromium-94-CustomSpaces-include.patch
+%patchset_apply chromium-95-libyuv-aarch64.patch
+%patchset_apply chromium-95-BitstreamReader-namespace.patch
+%patchset_apply chromium-95-quiche-include.patch
 
 
 # Apply patches up to #1000 from this spec.
@@ -390,6 +390,9 @@ find -type f -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__
     third_party/lss \
     third_party/lzma_sdk \
     third_party/mako \
+    third_party/maldoca \
+    third_party/maldoca/src/third_party/tensorflow_protos \
+    third_party/maldoca/src/third_party/zlibwrappe \
     third_party/markupsafe \
     third_party/mesa \
     third_party/metrics_proto \
@@ -747,6 +750,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Tue Oct 19 2021 Leigh Scott <leigh123linux@gmail.com> - 95.0.4638.54-1
+- Update to 95.0.4638.54
+
 * Thu Oct 07 2021 Leigh Scott <leigh123linux@gmail.com> - 94.0.4606.81-1
 - Update to 94.0.4606.81
 

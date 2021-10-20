@@ -1,13 +1,18 @@
 --- a/build/config/compiler/BUILD.gn.orig
 +++ b/build/config/compiler/BUILD.gn
-@@ -1631,10 +1631,6 @@ config("default_warnings") {
-           # TODO(https://crbug.com/1028110): Evaluate and possible enable.
-           "-Wno-deprecated-copy",
- 
--          # TODO(https://crbug.com/1203071): Clean up and enable.
--          "-Wno-unused-but-set-parameter",
--          "-Wno-unused-but-set-variable",
--
-           # TODO(https://crbug.com/1239077): Fix and re-enable.
-           "-Wno-inline-asm",
+@@ -1668,15 +1668,6 @@ config("default_warnings") {
+           "-Wno-builtin-assume-aligned-alignment",
          ]
+ 
+-        # NaCl does not support flags from ToT.
+-        if (!is_nacl) {
+-          cflags += [
+-            # TODO(https://crbug.com/1203071): Clean up and enable.
+-            "-Wno-unused-but-set-parameter",
+-            "-Wno-unused-but-set-variable",
+-          ]
+-        }
+-
+         if (is_fuchsia) {
+           # TODO(https://bugs.chromium.org/p/fuchsia/issues/detail?id=77383)
+           cflags += [ "-Wno-deprecated-copy" ]
