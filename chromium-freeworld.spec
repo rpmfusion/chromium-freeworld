@@ -166,6 +166,7 @@ ExclusiveArch:  x86_64 aarch64
 # Gentoo patches:
 Patch201:       chromium-93-EnumTable-crash.patch
 Patch202:       chromium-95-maldoca-zlib.patch
+Patch1212:      chromium-95-harfbuzz-3.patch
 
 # Arch Linux patches:
 Patch226:      chromium-93-ffmpeg-4.4.patch
@@ -220,6 +221,10 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 %autopatch -M1000 -p1
 
 # Manually apply patches that need an ifdef
+%if %{system_harfbuzz}
+%patch1212 -p1
+%endif
+
 %patch1227 -Rp1
 
 %if 0%{?fedora} < 35
