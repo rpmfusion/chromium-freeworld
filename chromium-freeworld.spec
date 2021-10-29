@@ -32,7 +32,7 @@
 %global system_re2 1
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        95.0.4638.54
+Version:        95.0.4638.69
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -755,6 +755,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Fri Oct 29 2021 Leigh Scott <leigh123linux@gmail.com> - 95.0.4638.69-1
+- Update to 95.0.4638.69
+
 * Tue Oct 19 2021 Leigh Scott <leigh123linux@gmail.com> - 95.0.4638.54-1
 - Update to 95.0.4638.54
 
