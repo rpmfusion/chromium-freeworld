@@ -33,7 +33,7 @@
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
 Version:        95.0.4638.69
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -169,7 +169,7 @@ Patch202:       chromium-95-maldoca-zlib.patch
 Patch1212:      chromium-95-harfbuzz-3.patch
 
 # Arch Linux patches:
-Patch226:      chromium-93-ffmpeg-4.4.patch
+Patch1226:      chromium-93-ffmpeg-4.4.patch
 Patch1227:     chromium-94-ffmpeg-roll.patch
 Patch1228:     add-a-TODO-about-a-missing-pnacl-flag.patch
 Patch1229:     use-ffile-compilation-dir.patch
@@ -225,7 +225,10 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 %patch1212 -p1
 %endif
 
+%if 0%{?fedora} < 36
+%patch1226 -p1
 %patch1227 -Rp1
+%endif
 
 %if 0%{?fedora} < 35
 %patch1228 -Rp1
@@ -755,6 +758,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Tue Nov 09 2021 Leigh Scott <leigh123linux@gmail.com> - 95.0.4638.69-2
+- Rebuilt for new ffmpeg snapshot
+
 * Fri Oct 29 2021 Leigh Scott <leigh123linux@gmail.com> - 95.0.4638.69-1
 - Update to 95.0.4638.69
 
