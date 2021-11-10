@@ -169,7 +169,7 @@ Patch202:       chromium-95-maldoca-zlib.patch
 Patch1212:      chromium-95-harfbuzz-3.patch
 
 # Arch Linux patches:
-Patch1226:      chromium-93-ffmpeg-4.4.patch
+Patch226:      chromium-93-ffmpeg-4.4.patch
 Patch1227:     chromium-94-ffmpeg-roll.patch
 Patch1228:     add-a-TODO-about-a-missing-pnacl-flag.patch
 Patch1229:     use-ffile-compilation-dir.patch
@@ -225,10 +225,7 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 %patch1212 -p1
 %endif
 
-%if 0%{?fedora} < 36
-%patch1226 -p1
 %patch1227 -Rp1
-%endif
 
 %if 0%{?fedora} < 35
 %patch1228 -Rp1
