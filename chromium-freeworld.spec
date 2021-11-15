@@ -18,7 +18,11 @@
 %global __provides_exclude_from %{chromiumdir}/.*\\.so
 #######################################CONFIGS###########################################
 # System libraries to use.
+%if 0%{?fedora} > 36
+%global system_ffmpeg 0
+%else
 %global system_ffmpeg 1
+%endif
 %global system_freetype 0
 %if 0%{?fedora} >= 36
 %global system_harfbuzz 1
@@ -32,8 +36,8 @@
 %global system_re2 1
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        95.0.4638.69
-Release:        2%{?dist}
+Version:        96.0.4664.45
+Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -57,7 +61,7 @@ Source0:        chromium-%{version}-clean.tar.xz
 %endif
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-95-patchset-4
+%global patchset_revision chromium-96-patchset-4
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -164,9 +168,7 @@ Recommends:     libva-utils
 ExclusiveArch:  x86_64 aarch64
 
 # Gentoo patches:
-Patch201:       chromium-93-EnumTable-crash.patch
-Patch202:       chromium-95-maldoca-zlib.patch
-Patch1212:      chromium-95-harfbuzz-3.patch
+Patch201:       chromium-96-EnumTable-crash.patch
 
 # Arch Linux patches:
 Patch226:      chromium-93-ffmpeg-4.4.patch
@@ -182,10 +184,9 @@ Patch233:      chromium-clang-nomerge.patch
 # Fedora patches:
 Patch300:       chromium-py3-bootstrap.patch
 Patch301:       chromium-gcc11.patch
-Patch302:       chromium-py3-fixes.patch
-Patch303:       chromium-java-only-allowed-in-android-builds.patch
-Patch304:       chromium-aarch64-cxxflags-addition.patch
-Patch305:       chromium-clang-format.patch
+Patch302:       chromium-java-only-allowed-in-android-builds.patch
+Patch303:       chromium-aarch64-cxxflags-addition.patch
+Patch304:       chromium-clang-format.patch
 Patch1303:      chromium-rawhide-gcc-std-max-fix.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
@@ -213,17 +214,16 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
 %patchset_apply chromium-95-libyuv-aarch64.patch
-%patchset_apply chromium-95-BitstreamReader-namespace.patch
-%patchset_apply chromium-95-quiche-include.patch
+%patchset_apply chromium-96-CommandLine-include.patch
+%patchset_apply chromium-96-CouponDB-include.patch
+%patchset_apply chromium-96-DrmRenderNodePathFinder-include.patch
+%patchset_apply chromium-96-RestrictedCookieManager-tuple.patch
 
 
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
 
 # Manually apply patches that need an ifdef
-%if %{system_harfbuzz}
-%patch1212 -p1
-%endif
 
 %patch1227 -Rp1
 
@@ -325,6 +325,7 @@ find -type f -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__
     third_party/devtools-frontend/src/front_end/third_party/wasmparser \
     third_party/devtools-frontend/src/test/unittests/front_end/third_party/i18n \
     third_party/devtools-frontend/src/third_party \
+    third_party/distributed_point_functions \
     third_party/dom_distiller_js \
     third_party/eigen3 \
     third_party/emoji-segmenter \
@@ -332,6 +333,7 @@ find -type f -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__
     third_party/fdlibm \
 %if !%{system_ffmpeg}
     third_party/ffmpeg \
+    third_party/opus
 %endif
     third_party/fft2d \
     third_party/flatbuffers \
@@ -467,7 +469,6 @@ find -type f -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__
     third_party/tflite \
     third_party/tflite/src/third_party/eigen3 \
     third_party/tflite/src/third_party/fft2d \
-    third_party/tflite-support \
     third_party/ukey2 \
     third_party/unrar \
     third_party/utf \
@@ -755,6 +756,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Mon Nov 15 2021 Leigh Scott <leigh123linux@gmail.com> - 96.0.4664.45-1
+- Update to 96.0.4664.45
+
 * Tue Nov 09 2021 Leigh Scott <leigh123linux@gmail.com> - 95.0.4638.69-2
 - Rebuilt for new ffmpeg snapshot
 

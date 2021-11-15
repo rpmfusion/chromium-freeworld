@@ -11,9 +11,9 @@ Replace hard-coded "chromium-browser" with package name.
 
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -5149,6 +5149,7 @@ static_library("browser") {
-       "upgrade_detector/directory_monitor.h",
-       "upgrade_detector/get_installed_version_linux.cc",
+@@ -5636,6 +5636,7 @@
+       "themes/theme_service_aura_linux.cc",
+       "themes/theme_service_aura_linux.h",
      ]
 +    configs += [ "//third_party/rpm_fusion:defines" ]
      deps += [ "//chrome/app/theme:chrome_unscaled_resources_grit" ]
@@ -32,8 +32,8 @@ Replace hard-coded "chromium-browser" with package name.
  
 --- a/chrome/common/BUILD.gn
 +++ b/chrome/common/BUILD.gn
-@@ -80,6 +80,7 @@ source_set("channel_info") {
-     deps += [ "//chromeos/crosapi/cpp" ]
+@@ -83,6 +83,7 @@
+     sources += [ "channel_info_lacros.cc" ]
    } else if (is_posix) {
      sources += [ "channel_info_posix.cc" ]
 +    configs += [ "//third_party/rpm_fusion:defines" ]

@@ -1,6 +1,6 @@
 --- a/build/config/compiler/BUILD.gn.orig
 +++ b/build/config/compiler/BUILD.gn
-@@ -1668,15 +1668,6 @@ config("default_warnings") {
+@@ -1523,18 +1523,6 @@
            "-Wno-builtin-assume-aligned-alignment",
          ]
  
@@ -10,6 +10,9 @@
 -            # TODO(https://crbug.com/1203071): Clean up and enable.
 -            "-Wno-unused-but-set-parameter",
 -            "-Wno-unused-but-set-variable",
+-
+-            # TODO(https://crbug.com/1255745): Clean up, enable.
+-            "-Wno-bitwise-instead-of-logical",
 -          ]
 -        }
 -
