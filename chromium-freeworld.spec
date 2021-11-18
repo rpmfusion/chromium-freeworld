@@ -333,7 +333,7 @@ find -type f -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__
     third_party/fdlibm \
 %if !%{system_ffmpeg}
     third_party/ffmpeg \
-    third_party/opus
+    third_party/opus \
 %endif
     third_party/fft2d \
     third_party/flatbuffers \
