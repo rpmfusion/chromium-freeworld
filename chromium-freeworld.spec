@@ -36,7 +36,7 @@
 %global system_re2 1
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        96.0.4664.110
+Version:        97.0.4692.71
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -61,7 +61,7 @@ Source0:        chromium-%{version}-clean.tar.xz
 %endif
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-96-patchset-4
+%global patchset_revision chromium-97-patchset-4
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -169,15 +169,15 @@ ExclusiveArch:  x86_64 aarch64
 
 # Gentoo patches:
 Patch201:       chromium-96-EnumTable-crash.patch
+Patch202:       chromium-InkDropHost-crash.patch
 
 # Arch Linux patches:
 Patch226:      chromium-93-ffmpeg-4.4.patch
-Patch1227:     chromium-94-ffmpeg-roll.patch
+Patch227:      unbundle-ffmpeg-av_stream_get_first_dts.patch
 Patch1228:     add-a-TODO-about-a-missing-pnacl-flag.patch
 Patch1229:     use-ffile-compilation-dir.patch
 
 # Suse patches:
-Patch231:      remove-llvm13-warning-flags.patch
 Patch232:      chromium-91-sql-standard-layout-type.patch
 Patch233:      chromium-clang-nomerge.patch
 
@@ -190,7 +190,6 @@ Patch304:       chromium-clang-format.patch
 Patch1303:      chromium-rawhide-gcc-std-max-fix.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
-Patch400:       chromium-hw-accel-mjpeg.patch
 Patch401:       chromium-fix-vaapi-on-intel.patch
 Patch402:       chromium-enable-widevine.patch
 Patch403:       chromium-manpage.patch
@@ -214,18 +213,14 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
 %patchset_apply chromium-95-libyuv-aarch64.patch
-%patchset_apply chromium-96-CommandLine-include.patch
-%patchset_apply chromium-96-CouponDB-include.patch
-%patchset_apply chromium-96-DrmRenderNodePathFinder-include.patch
-%patchset_apply chromium-96-RestrictedCookieManager-tuple.patch
+%patchset_apply chromium-97-Point-constexpr.patch
+%patchset_apply chromium-97-ScrollView-reference.patch
 
 
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
 
 # Manually apply patches that need an ifdef
-
-%patch1227 -Rp1
 
 %if 0%{?fedora} < 35
 %patch1228 -Rp1
@@ -756,6 +751,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/swiftshader/libGLESv2.so
 #########################################changelogs#################################################
 %changelog
+* Wed Jan 05 2022 Leigh Scott <leigh123linux@gmail.com> - 97.0.4692.71-1
+- Update to 97.0.4692.71
+
 * Tue Dec 14 2021 Leigh Scott <leigh123linux@gmail.com> - 96.0.4664.110-1
 - Update to 96.0.4664.110
 
@@ -795,165 +793,3 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 * Wed Sep 01 2021 Leigh Scott <leigh123linux@gmail.com> - 93.0.4577.63-1
 - Update to 93.0.4577.63
 
-* Tue Aug 31 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.166-1
-- Update to 92.0.4515.166
-
-* Thu Aug 26 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.159-5
-- Enable expired vaapi support
-
-* Wed Aug 25 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.159-4
-- Disable eu-strip
-
-* Sun Aug 22 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.159-3
-- Fix sandbox crash
-
-* Sun Aug 22 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.159-2
-- Add missing file and add crashpad_handler consent patch
-
-* Sat Aug 21 2021 Leigh Scott <leigh123linux@gmail.com> - 92.0.4515.159-1
-- Update to 92.0.4515.159
-
-* Mon Aug 02 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 90.0.4430.85-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
-
-* Thu Apr 22 2021 qvint <dotqvint@gmail.com> - 90.0.4430.85-1
-- Update to 90.0.4430.85
-
-* Sat Apr 17 2021 Leigh Scott <leigh123linux@gmail.com> - 89.0.4389.114-2
-- Rebuild for F33 to include missed patches (rfbz#5973)
-
-* Sun Apr 04 2021 qvint <dotqvint@gmail.com> - 89.0.4389.114-1
-- Update to 89.0.4389.114
-
-* Thu Feb 04 2021 qvint <dotqvint@gmail.com> - 88.0.4324.150-1
-- Update to 88.0.4324.150
-
-* Wed Jan 20 2021 qvint <dotqvint@gmail.com> - 88.0.4324.96-1
-- Update to 88.0.4324.96
-- Comply with new Google API key rules for derivatives
-- Fix Icon key in chrome-apps.directory (rfbz#5895)
-- Fix PulseAudio application name and icon
-- Don't depend on CHROME_DESKTOP env var
-- Sync shell wrapper with Fedora Chromium (rfbz#5859, rhbz#1902983)
-
-* Tue Dec 08 2020 qvint <dotqvint@gmail.com> - 87.0.4280.88-1
-- Update to 87.0.4280.88
-
-* Fri Nov 27 2020 qvint <dotqvint@gmail.com> - 87.0.4280.66-1
-- Update to 87.0.4280.66
-
-* Tue Oct 27 2020 qvint <dotqvint@gmail.com> - 86.0.4240.111-2
-- Fix invalid "end" iterator usage in CookieMonster
-- Only fall back to the i965 driver if we're on iHD
-- Check for enable-accelerated-video-decode
-- Fix mouse movements near window edges
-- Fix crash in UserInputMonitorLinuxCore (rfbz#5807)
-
-* Wed Oct 21 2020 qvint <dotqvint@gmail.com> - 86.0.4240.111-1
-- Update to 86.0.4240.111
-
-* Wed Sep 23 2020 qvint <dotqvint@gmail.com> - 85.0.4183.121-1
-- Update to 85.0.4183.121
-- Enable Hangout services extension (rfbz#5758)
-- Use MD5-based BuildID (rfbz#5743)
-- Use %%ninja_build macro
-- Remove debug_pkg toggle
-- Replace bconds with ordinary macros
-- Use system re2
-- Use system libicu (f33+)
-
-* Thu Sep 10 2020 qvint <dotqvint@gmail.com> - 85.0.4183.102-1
-- Update to 85.0.4183.102
-- Remove bundlepylibs and clang toggles
-
-* Mon Aug 31 2020 qvint <dotqvint@gmail.com> - 85.0.4183.83-2
-- Ship ANGLE libEGL.so and libGLESv2.so (rfbz#5738)
-
-* Wed Aug 26 2020 qvint <dotqvint@gmail.com> - 85.0.4183.83-1
-- Update to 85.0.4183.83
-- Use xcb-proto bundled in Chromium tarball
-- Drop Fedora 30 support
-- Fix XDG paths in manpage
-- Update AppStream metadata
-- Fix name in .desktop file (rfbz#5717)
-- Fix name in GNOME default-apps XML
-- Add symbolic app icon
-
-* Tue Aug 11 2020 qvint <dotqvint@gmail.com> - 84.0.4147.125-1
-- Update to 84.0.4147.125
-- Stop using gold
-- Add 'ulimit -n 2048'
-
-* Sat Jul 18 2020 qvint <dotqvint@gmail.com> - 84.0.4147.89-1
-- Update to 84.0.4147.89
-- Use patchset composed by Stephan Hartmann <stha09@googlemail.com>
-- Bundle xcb-proto
-
-* Thu Jun 25 2020 qvint <dotqvint@gmail.com> - 83.0.4103.116-1
-- Update to 83.0.4103.116
-
-* Wed Jun 17 2020 qvint <dotqvint@gmail.com> - 83.0.4103.106-1
-- Update to 83.0.4103.106
-- Disable python byte compiling
-
-* Mon Jun 08 2020 qvint <dotqvint@gmail.com> - 83.0.4103.97-2
-- Fix crash in ServiceWorker (rfbz#5671)
-
-* Fri Jun 05 2020 qvint <dotqvint@gmail.com> - 83.0.4103.97-1
-- Update to 83.0.4103.97
-
-* Wed May 06 2020 qvint <dotqvint@gmail.com> - 81.0.4044.138-1
-- Update to 81.0.4044.138
-- Fix touchpad scrolling under XWayland (rfbz#5621)
-
-* Thu Apr 30 2020 qvint <dotqvint@gmail.com> - 81.0.4044.129-1
-- Update to 81.0.4044.129
-
-* Thu Apr 09 2020 qvint <dotqvint@gmail.com> - 81.0.4044.92-1
-- Update to 81.0.4044.92
-
-* Sun Apr 05 2020 qvint <dotqvint@gmail.com> - 80.0.3987.163-1
-- Update to 80.0.3987.163
-
-* Thu Apr 02 2020 qvint <dotqvint@gmail.com> - 80.0.3987.162-1
-- Update to 80.0.3987.162
-
-* Wed Mar 18 2020 qvint <dotqvint@gmail.com> - 80.0.3987.149-1
-- Update to 80.0.3987.149
-- Fix rpmlint warnings and errors
-
-* Wed Mar 04 2020 qvint <dotqvint@gmail.com> - 80.0.3987.132-1
-- Update to 80.0.3987.132
-
-* Sun Mar 01 2020 qvint <dotqvint@gmail.com> - 80.0.3987.122-1
-- Update to 80.0.3987.122
-
-* Tue Feb 04 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 79.0.3945.130-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
-
-* Fri Jan 17 2020 Vasiliy Glazov <vascom2@gmail.com> - 79.0.3945.130-1
-- Update to 79.0.3945.130
-
-* Tue Jan 14 2020 Vasiliy Glazov <vascom2@gmail.com> - 79.0.3945.117-1
-- Update to 79.0.3945.117
-
-* Sat Dec 21 2019 Akarshan Biswas <akarshanbiswas@fedoraproject.org> - 79.0.3945.88-1
-- Update to 79.0.3945.88
-
-* Fri Dec 13 2019 Akarshan Biswas <akarshanbiswas@fedoraproject.org> - 79.0.3945.79-1
-- Update to 79.0.3945.79
-
-* Fri Dec 06 2019 Vasiliy Glazov <vascom2@gmail.com> - 78.0.3904.108-2
-- Disable fedora's build flags to reduce binary size
-
-* Thu Nov 21 2019 Vasiliy Glazov <vascom2@gmail.com> - 78.0.3904.108-1
-- Update to 78.0.3904.108
-
-* Tue Nov 12 2019 Vasiliy Glazov <vascom2@gmail.com> - 78.0.3904.97-1
-- Update to 78.0.3904.97
-
-* Sat Nov 02 2019 Akarshan Biswas <akarshanbiswas@fedoraproject.org> - 78.0.3904.87-1
-- Update to 78.0.3904.87
-
-* Thu Oct 31 2019 Akarshan Biswas <akarshanbiswas@fedoraproject.org> - 78.0.3904.70-1
-- IMPORT: rename package; add back Fedora build flags
