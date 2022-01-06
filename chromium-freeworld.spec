@@ -691,6 +691,9 @@ install -m 644 %{target}/locales/*.pak %{buildroot}%{chromiumdir}/locales/
 install -m 644 %{target}/xdg*  %{buildroot}%{chromiumdir}/
 install -m 644 %{target}/MEIPreload/* %{buildroot}%{chromiumdir}/MEIPreload/
 install -m 755 %{target}/swiftshader/*.so %{buildroot}%{chromiumdir}/swiftshader/
+install -m 755 %{target}/libvk_swiftshader.so %{buildroot}%{chromiumdir}/
+install -m 755 %{target}/libvulkan.so.1 %{buildroot}%{chromiumdir}/
+install -m 644 %{target}/vk_swiftshader_icd.json %{buildroot}%{chromiumdir}/
 
 # Icons
 for i in 16 32; do
@@ -749,6 +752,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %dir %{chromiumdir}/swiftshader
 %{chromiumdir}/swiftshader/libEGL.so
 %{chromiumdir}/swiftshader/libGLESv2.so
+%{chromiumdir}/libvk_swiftshader.so*
+%{chromiumdir}/libvulkan.so*
+%{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
 * Wed Jan 05 2022 Leigh Scott <leigh123linux@gmail.com> - 97.0.4692.71-1
