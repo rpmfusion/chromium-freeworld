@@ -173,7 +173,7 @@ Patch201:       chromium-96-EnumTable-crash.patch
 Patch202:       chromium-InkDropHost-crash.patch
 
 # Arch Linux patches:
-Patch226:       chromium-93-ffmpeg-4.4.patch
+Patch1226:      chromium-93-ffmpeg-4.4.patch
 Patch1227:      unbundle-ffmpeg-av_stream_get_first_dts.patch
 Patch1228:      add-a-TODO-about-a-missing-pnacl-flag.patch
 Patch1229:      use-ffile-compilation-dir.patch
@@ -223,6 +223,7 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 
 # Manually apply patches that need an ifdef
 %if %{system_ffmpeg}
+%patch1226 -p1
 %patch1227 -p1
 %endif
 
