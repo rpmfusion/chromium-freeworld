@@ -19,7 +19,7 @@
 %global __provides_exclude_from %{chromiumdir}/.*\\.so
 #######################################CONFIGS###########################################
 # System libraries to use.
-%if 0%{?fedora} > 36
+%if 0%{?fedora} > 35
 %global system_ffmpeg 0
 %else
 %global system_ffmpeg 1
