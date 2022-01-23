@@ -6,6 +6,7 @@
 %ifarch aarch64
 %global _smp_build_ncpus 6
 %endif
+%undefine _auto_set_build_flags
 #This can be any folder on out
 %global target out/Release
 ### Google API keys (see http://www.chromium.org/developers/how-tos/api-keys)
