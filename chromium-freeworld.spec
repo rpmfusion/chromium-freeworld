@@ -173,14 +173,14 @@ Patch201:       chromium-96-EnumTable-crash.patch
 Patch202:       chromium-InkDropHost-crash.patch
 
 # Arch Linux patches:
-Patch226:      chromium-93-ffmpeg-4.4.patch
-Patch227:      unbundle-ffmpeg-av_stream_get_first_dts.patch
-Patch1228:     add-a-TODO-about-a-missing-pnacl-flag.patch
-Patch1229:     use-ffile-compilation-dir.patch
+Patch226:       chromium-93-ffmpeg-4.4.patch
+Patch1227:      unbundle-ffmpeg-av_stream_get_first_dts.patch
+Patch1228:      add-a-TODO-about-a-missing-pnacl-flag.patch
+Patch1229:      use-ffile-compilation-dir.patch
 
 # Suse patches:
-Patch232:      chromium-91-sql-standard-layout-type.patch
-Patch233:      chromium-clang-nomerge.patch
+Patch232:       chromium-91-sql-standard-layout-type.patch
+Patch233:       chromium-clang-nomerge.patch
 
 # Fedora patches:
 Patch300:       chromium-py3-bootstrap.patch
@@ -222,6 +222,9 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 %autopatch -M1000 -p1
 
 # Manually apply patches that need an ifdef
+%if %{system_ffmpeg}
+%patch1227 -p1
+%endif
 
 %if 0%{?fedora} < 35
 %patch1228 -Rp1
