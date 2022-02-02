@@ -1,6 +1,4 @@
 #Global Libraries
-#Do not turn it on in Fedora copr!
-%global freeworld 1
 %global menu_name Chromium (Freeworld)
 %global xdg_subdir chromium
 %ifarch aarch64
@@ -19,7 +17,7 @@
 %global __provides_exclude_from %{chromiumdir}/.*\\.so
 #######################################CONFIGS###########################################
 # System libraries to use.
-%if 0%{?fedora} > 35
+%if 0%{?fedora} >= 36
 %global system_ffmpeg 0
 %else
 %global system_ffmpeg 1
@@ -42,24 +40,7 @@ Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
-
-%if %{freeworld}
 Source0:        https://commondatastorage.googleapis.com/chromium-browser-official/chromium-%{version}.tar.xz
-%else
-# Unfortunately, Fedora & Copr forbids uploading sources with patent-encumbered
-# ffmpeg code even if they are never compiled and linked to target binaries,
-# so we must repackage upstream tarballs to satisfy this requirement. However,
-# we cannot simply delete all code of ffmpeg because this will disable support
-# for some commonly-used free codecs such as Ogg Theora. Instead, helper
-# scripts included in official Fedora packages are copied, modified, and used
-# to automate the repackaging work.
-# Get those helper scripts from https://src.fedoraproject.org/rpms/chromium
-# If you don't use Fedora services, Just set the value of freeworld in this spec file
-# to 1 to use the upstreanm packaged source.
-# The repackaged source tarball used here is produced by:
-# ./chromium-latest.py --stable --ffmpegclean --ffmpegarm --deleteunrar
-Source0:        chromium-%{version}-clean.tar.xz
-%endif
 
 # Patchset composed by Stephan Hartmann.
 %global patchset_revision chromium-97-patchset-4
@@ -236,9 +217,7 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 %patch1303 -p1
 %endif
 
-%if %{freeworld}
 %patch1406 -p1
-%endif
 
 #Let's change the default shebang of python files.
 find -type f -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__python3}=' {} +
@@ -545,6 +524,9 @@ ln -s %{_bindir}/true buildtools/third_party/eu-strip/bin/eu-strip || die
     zlib
 %endif
 
+# Too much debuginfo
+sed -i 's|-g2|-g0|g' build/config/compiler/BUILD.gn
+
 sed -i 's|//third_party/usb_ids|/usr/share/hwdata|g' \
     services/device/public/cpp/usb/BUILD.gn
 
@@ -566,26 +548,19 @@ export CXX=clang++
 export AR=llvm-ar
 export NM=llvm-nm
 export CXXFLAGS="$CXXFLAGS -fpermissive"
-export CFLAGS="$CFLAGS -w"
-export CXXFLAGS="$CXXFLAGS -w"
-export CFLAGS="$CFLAGS -g0"
-export CXXFLAGS="$CXXFLAGS -g0"
 
 gn_args=(
     'rpm_fusion_package_name="%{name}"'
     'rpm_fusion_menu_name="%{menu_name}"'
-    is_debug=false
     use_vaapi=true
     is_component_build=false
     is_official_build=true
     use_sysroot=false
-    use_custom_libcxx=false
     use_aura=true
     'system_libdir="%{_lib}"'
     use_cups=true
     use_gnome_keyring=true
     use_gio=true
-    use_gold=false
     use_kerberos=true
     use_libpci=true
     use_pulseaudio=true
@@ -597,18 +572,13 @@ gn_args=(
 %if %{system_harfbuzz}
     use_system_harfbuzz=true
 %endif
-%if %{freeworld}
     'ffmpeg_branding="Chrome"'
     proprietary_codecs=true
-%else
-    'ffmpeg_branding="Chromium"'
-    proprietary_codecs=false
-%endif
     enable_nacl=false
-%if 0%{?fedora} < 34
-    chrome_pgo_phase=0
-%endif
     enable_hangout_services_extension=true
+%ifarch aarch64
+    'target_cpu="arm64"'
+%endif
     fatal_linker_warnings=false
     treat_warnings_as_errors=false
     disable_fieldtrial_testing_config=true
@@ -627,8 +597,11 @@ gn_args+=(
 
 
 gn_args+=(
+    is_debug=false
     is_clang=true
     clang_use_chrome_plugins=false
+    use_custom_libcxx=false
+    use_gold=false
     use_thin_lto=false
     use_lld=false
     is_cfi=false
