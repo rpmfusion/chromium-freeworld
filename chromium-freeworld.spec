@@ -178,6 +178,7 @@ Patch402:       chromium-enable-widevine.patch
 Patch403:       chromium-manpage.patch
 Patch404:       chromium-md5-based-build-id.patch
 Patch405:       chromium-names.patch
+Patch406:       gcc12.patch
 Patch1406:      chromium-rpm-fusion-brand.patch
 
 %description
