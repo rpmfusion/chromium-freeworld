@@ -8,3 +8,13 @@
  
  #include <algorithm>
  #include <limits>
+--- a/v8/src/heap/cppgc/prefinalizer-handler.h
++++ b/v8/src/heap/cppgc/prefinalizer-handler.h
+@@ -6,6 +6,7 @@
+ #define V8_HEAP_CPPGC_PREFINALIZER_HANDLER_H_
+ 
+ #include <vector>
++#include <utility>
+ 
+ #include "include/cppgc/prefinalizer.h"
+ 
