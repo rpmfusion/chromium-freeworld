@@ -8,6 +8,16 @@
  
  #include <algorithm>
  #include <limits>
+--- a/base/third_party/symbolize/symbolize.h
++++ b/base/third_party/symbolize/symbolize.h
+@@ -61,6 +61,7 @@
+ #ifdef HAVE_SYMBOLIZE
+ 
+ #include <algorithm>
++#include <utility>
+ 
+ #if defined(__ELF__)  // defined by gcc
+ #if defined(__OpenBSD__)
 --- a/v8/src/heap/cppgc/prefinalizer-handler.h
 +++ b/v8/src/heap/cppgc/prefinalizer-handler.h
 @@ -6,6 +6,7 @@
