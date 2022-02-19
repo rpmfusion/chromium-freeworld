@@ -17,17 +17,9 @@
 %global __provides_exclude_from %{chromiumdir}/.*\\.so
 #######################################CONFIGS###########################################
 # System libraries to use.
-%if 0%{?fedora} >= 36
-%global system_ffmpeg 0
-%else
 %global system_ffmpeg 1
-%endif
 %global system_freetype 0
-%if 0%{?fedora} >= 36
-%global system_harfbuzz 1
-%else
 %global system_harfbuzz 0
-%endif
 %global system_libicu 0
 %global system_libvpx 0
 %global system_libxml2 1
@@ -36,7 +28,7 @@
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
 Version:        98.0.4758.102
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -86,10 +78,13 @@ BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(wayland-server)
 #BuildRequires:  /usr/bin/python2
-BuildRequires:  /usr/bin/python3
+BuildRequires:  python3-devel
+BuildRequires:  python-unversioned-command
 BuildRequires:  python3-beautifulsoup4
 BuildRequires:  python3-html5lib
-BuildRequires:  python3-setuptools
+BuildRequires:  python3-markupsafe
+BuildRequires:  python3-ply
+BuildRequires:  python3-simplejson
 BuildRequires:  python3-six
 %if %{system_re2}
 BuildRequires:  re2-devel
@@ -113,7 +108,11 @@ BuildRequires:  libpng-devel
 BuildRequires:  libvpx-devel
 %endif
 %if %{system_ffmpeg}
+%if 0%{?fedora} && 0%{?fedora} > 35
+BuildRequires:  compat-ffmpeg4-devel
+%else
 BuildRequires:  ffmpeg-devel
+%endif
 BuildRequires:  opus-devel
 %endif
 BuildRequires:  libwebp-devel
@@ -221,8 +220,6 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 
 %patch1406 -p1
 
-#Let's change the default shebang of python files.
-find -type f -exec sed -iE '1s=^#! */usr/bin/\(python\|env python\)[23]\?=#!%{__python3}=' {} +
 ./build/linux/unbundle/remove_bundled_libraries.py --do-remove \
     base/third_party/cityhash \
     base/third_party/double_conversion \
@@ -541,6 +538,9 @@ mkdir -p third_party/node/linux/node-linux-x64/bin
 ln -s %{_bindir}/node third_party/node/linux/node-linux-x64/bin/node
 #####################################BUILD#############################################
 %build
+%if 0%{?fedora} && 0%{?fedora} > 35
+export PKG_CONFIG_PATH="%{_libdir}/compat-ffmpeg4/pkgconfig"
+%endif
 # Final link uses lots of file descriptors.
 ulimit -n 2048
 
@@ -737,6 +737,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Sat Feb 19 2022 Leigh Scott <leigh123linux@gmail.com> - 98.0.4758.102-2
+- Use compat-ffmpeg4 for f36+
+
 * Thu Feb 17 2022 Leigh Scott <leigh123linux@gmail.com> - 98.0.4758.102-1
 - Update to 98.0.4758.102
 
