@@ -57,4 +57,9 @@ CHROMIUM_DISTRO_FLAGS="  --enable-plugins \
                          --disable-features=AudioServiceSandbox \
                          --enable-sync"
 
+# This provides a much better experience on Wayland.
+if [ "$XDG_SESSION_TYPE" == "wayland" ] || [[ $WAYLAND_DISPLAY ]] ; then
+  CHROMIUM_DISTRO_FLAGS="--ozone-platform=wayland $CHROMIUM_DISTRO_FLAGS"
+fi
+
 exec -a "$0" "@@CHROMIUMDIR@@/$(basename "$0" | sed 's/\.sh$//')" $CHROMIUM_DISTRO_FLAGS "$@"
