@@ -27,15 +27,15 @@
 %global system_re2 1
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        98.0.4758.102
-Release:        2%{?dist}
+Version:        99.0.4844.51
+Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
 Source0:        https://commondatastorage.googleapis.com/chromium-browser-official/chromium-%{version}.tar.xz
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-98-patchset-5
+%global patchset_revision chromium-99-patchset-3
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -152,8 +152,10 @@ ExclusiveArch:  x86_64 aarch64
 Patch201:       chromium-98-EnumTable-crash.patch
 Patch202:       chromium-InkDropHost-crash.patch
 Patch203:       chromium-98-system-libdrm.patch
+Patch1204:      chromium-glibc-2.34-r1.patch
 
 # Arch Linux patches:
+Patch220:       webcodecs-stop-using-AudioOpusEncoder.patch
 Patch1226:      chromium-93-ffmpeg-4.4.patch
 Patch1227:      unbundle-ffmpeg-av_stream_get_first_dts.patch
 Patch1228:      add-a-TODO-about-a-missing-pnacl-flag.patch
@@ -169,7 +171,6 @@ Patch301:       chromium-gcc11.patch
 Patch302:       chromium-java-only-allowed-in-android-builds.patch
 Patch303:       chromium-aarch64-cxxflags-addition.patch
 Patch304:       chromium-clang-format.patch
-Patch1303:      chromium-rawhide-gcc-std-max-fix.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
 Patch401:       chromium-fix-vaapi-on-intel.patch
@@ -195,15 +196,17 @@ Patch1406:      chromium-rpm-fusion-brand.patch
   %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
 
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
-%patchset_apply chromium-95-libyuv-aarch64.patch
-%patchset_apply chromium-98-MiraclePtr-gcc-ice.patch
-%patchset_apply chromium-98-WaylandFrameManager-check.patch
+%patchset_apply chromium-99-AutofillAssistantModelExecutor-NoDestructor.patch
 
 
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
 
 # Manually apply patches that need an ifdef
+%if 0%{?fedora} >= 35
+%patch1204 -p1
+%endif
+
 %if %{system_ffmpeg}
 %patch1226 -p1
 %patch1227 -p1
@@ -212,10 +215,6 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 %if 0%{?fedora} < 35
 %patch1228 -Rp1
 %patch1229 -Rp1
-%endif
-
-%if 0%{?fedora} >= 35
-%patch1303 -p1
 %endif
 
 %patch1406 -p1
@@ -289,6 +288,7 @@ Patch1406:      chromium-rpm-fusion-brand.patch
     third_party/devscripts \
     third_party/devtools-frontend \
     third_party/devtools-frontend/src/front_end/third_party/acorn \
+    third_party/devtools-frontend/src/front_end/third_party/additional_readme_paths.json \
     third_party/devtools-frontend/src/front_end/third_party/axe-core \
     third_party/devtools-frontend/src/front_end/third_party/chromium \
     third_party/devtools-frontend/src/front_end/third_party/codemirror \
@@ -737,6 +737,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Wed Mar 02 2022 Leigh Scott <leigh123linux@gmail.com> - 99.0.4844.51-1
+- Update to 99.0.4844.51
+
 * Sat Feb 19 2022 Leigh Scott <leigh123linux@gmail.com> - 98.0.4758.102-2
 - Use compat-ffmpeg4 for f36+
 

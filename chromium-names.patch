@@ -50,7 +50,7 @@ Replace hard-coded "chromium-browser" with package name.
 +  return RPM_FUSION_PACKAGE_NAME ".desktop";
  #endif
  }
- #endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+ #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 --- a/media/audio/BUILD.gn
 +++ b/media/audio/BUILD.gn
 @@ -294,6 +294,8 @@ source_set("audio") {
