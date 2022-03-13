@@ -1,0 +1,45 @@
+From 11fc2f438c726814d54b06dd24a2d393af8d8028 Mon Sep 17 00:00:00 2001
+From: Alexey Gladkov <legion@altlinux.org>
+Date: Mon, 27 Aug 2018 14:59:55 +0300
+Subject: [PATCH] ALT: allow to override clang through env variables
+
+---
+ build/toolchain/gcc_toolchain.gni | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/build/toolchain/gcc_toolchain.gni b/build/toolchain/gcc_toolchain.gni
+index 0ad4537a302..3af38ae1c3f 100644
+--- a/build/toolchain/gcc_toolchain.gni
++++ b/build/toolchain/gcc_toolchain.gni
+@@ -286,20 +286,28 @@ template("gcc_toolchain") {
+     if (defined(invoker.readelf)) {
+       readelf = invoker.readelf
+     } else {
+       readelf = "readelf"
+     }
+     if (defined(invoker.nm)) {
+       nm = invoker.nm
+     } else {
+       nm = "nm"
+     }
++
++    cc = getenv("CC")
++    cxx = getenv("CXX")
++    ld = getenv("CXX")
++    readelf = getenv("READELF")
++    ar = getenv("AR")
++    nm = getenv("NM")
++
+     if (defined(invoker.dwp)) {
+       dwp_switch = " --dwp=\"${invoker.dwp}\""
+     } else {
+       dwp_switch = ""
+     }
+ 
+     if (defined(invoker.shlib_extension)) {
+       default_shlib_extension = invoker.shlib_extension
+     } else {
+       default_shlib_extension = shlib_extension
+-- 
+2.25.4
+
