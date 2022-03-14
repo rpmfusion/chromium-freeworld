@@ -30,7 +30,7 @@
 # lto issue with system libpng
 %global system_libpng 0
 %global system_libvpx 0
-%global system_libxml2 0
+%global system_libxml2 1
 # lto issue with system minizip
 %global system_minizip 0
 %global system_re2 1
