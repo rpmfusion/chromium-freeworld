@@ -30,12 +30,14 @@
 # lto issue with system libpng
 %global system_libpng 0
 %global system_libvpx 0
-%global system_libxml2 1
+# The libxml_utils code depends on the specific bundled libxml checkout
+%global system_libxml2 0
 # lto issue with system minizip
 %global system_minizip 0
 %global system_re2 1
 %global system_libwebp 1
 %global system_xslt 1
+%global system_snappy 1
 
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
@@ -159,6 +161,9 @@ BuildRequires:  pkgconfig(libxslt)
 %endif
 %if %{system_re2}
 BuildRequires:  re2-devel
+%endif
+%if %{system_snappy}
+BuildRequires:  snappy-devel
 %endif
 
 # Runtime Requirements
@@ -290,6 +295,9 @@ Patch1406:      chromium-rpm-fusion-brand.patch
 %endif
 %if %{system_re2}
     re2 \
+%endif
+%if %{system_snappy}
+    snappy \
 %endif
 %if %{system_minizip}
     zlib
