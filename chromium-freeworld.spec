@@ -5,6 +5,7 @@
 %global _smp_build_ncpus 6
 %endif
 %undefine _auto_set_build_flags
+%global use_clang 1
 #This can be any folder on out
 %global target out/Release
 ### Google API keys (see http://www.chromium.org/developers/how-tos/api-keys)
@@ -65,9 +66,13 @@ Source15:       LICENSE
 ########################################################################################
 #Compiler settings
 # Make sure we don't encounter any bug
+%if %{use_clang}
 BuildRequires:  clang, clang-tools-extra
 BuildRequires:  lld
 BuildRequires:  llvm
+%else
+BuildRequires:  gcc-c++
+%endif
 # Basic tools and libraries needed for building
 BuildRequires:  ninja-build, nodejs, bison, gperf, hwdata
 BuildRequires:  libatomic, flex, perl-Switch
@@ -203,6 +208,7 @@ Patch302:       chromium-java-only-allowed-in-android-builds.patch
 Patch303:       chromium-aarch64-cxxflags-addition.patch
 # Causes build error
 #Patch304:       chromium-clang-format.patch
+Patch305:       chromium-gcc-12-subzero-fix.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
 Patch401:       chromium-fix-vaapi-on-intel.patch
@@ -332,20 +338,29 @@ export PKG_CONFIG_PATH="%{_libdir}/compat-ffmpeg4/pkgconfig"
 ulimit -n 2048
 
 #export compilar variables
+%if %{use_clang}
 export CC="clang"
 export CXX="clang++"
 export AR="llvm-ar"
 export NM="llvm-nm"
 export READELF="llvm-readelf"
+%else
+export CC="gcc"
+export CXX="g++"
+export AR="ar"
+export NM="nm"
+export READELF="readelf"
+%endif
 
 export RANLIB="ranlib"
 export PATH="$PWD/third_party/depot_tools:$PATH"
 export CHROMIUM_RPATH="%{_libdir}/%{name}"
 
+%if %{use_clang}
 FLAGS='-Wno-unknown-warning-option'
-
 export CFLAGS="$FLAGS"
 export CXXFLAGS="$FLAGS"
+%endif
 
 CHROMIUM_GN_DEFINES=
 gn_arg() { CHROMIUM_GN_DEFINES="$CHROMIUM_GN_DEFINES $*"; }
@@ -405,11 +420,15 @@ gn_arg enable_widevine=true
 gn_arg rtc_use_pipewire=true
 gn_arg rtc_link_pipewire=true
 
+%if %{use_clang}
 gn_arg clang_base_path=\"%{_prefix}\"
 gn_arg is_clang=true
 gn_arg clang_use_chrome_plugins=false
 gn_arg use_lld=true
 gn_arg use_thin_lto=true
+%else
+gn_arg is_clang=false
+%endif
 gn_arg is_cfi=false
 gn_arg use_cfi_icall=false
 gn_arg chrome_pgo_phase=0
@@ -426,6 +445,11 @@ gn_arg 'google_api_key="%{api_key}"'
 tools/gn/bootstrap/bootstrap.py --gn-gen-args="$CHROMIUM_GN_DEFINES" --build-path=%{target}
 %{target}/gn --script-executable=%{__python3} gen --args="$CHROMIUM_GN_DEFINES" %{target}
 %ninja_build -C %{target} chrome chrome_sandbox
+
+%if !%{use_clang}
+# bug #827861, vk_swiftshader_icd.json not getting properly installed in out/Release
+sed -e 's|${ICD_LIBRARY_PATH}|./libvk_swiftshader.so|g' third_party/swiftshader/src/Vulkan/vk_swiftshader_icd.json.tmpl > %{target}/vk_swiftshader_icd.json
+%endif
 ######################################Install####################################
 %install
 mkdir -p %{buildroot}%{_bindir}
