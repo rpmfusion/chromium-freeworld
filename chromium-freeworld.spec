@@ -208,7 +208,6 @@ Patch302:       chromium-java-only-allowed-in-android-builds.patch
 Patch303:       chromium-aarch64-cxxflags-addition.patch
 # Causes build error
 #Patch304:       chromium-clang-format.patch
-Patch305:       chromium-gcc-12-subzero-fix.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
 Patch401:       chromium-fix-vaapi-on-intel.patch
