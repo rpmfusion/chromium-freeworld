@@ -28,13 +28,11 @@
 %global system_harfbuzz 0
 %global system_libjpeg 1
 %global system_libicu 0
-# lto issue with system libpng
-%global system_libpng 0
+%global system_libpng 1
 %global system_libvpx 0
 # The libxml_utils code depends on the specific bundled libxml checkout
 %global system_libxml2 0
-# lto issue with system minizip
-%global system_minizip 0
+%global system_minizip 1
 %global system_re2 1
 %global system_libwebp 1
 %global system_xslt 1
@@ -424,7 +422,7 @@ gn_arg clang_base_path=\"%{_prefix}\"
 gn_arg is_clang=true
 gn_arg clang_use_chrome_plugins=false
 gn_arg use_lld=true
-gn_arg use_thin_lto=true
+gn_arg use_thin_lto=false
 %else
 gn_arg is_clang=false
 %endif
