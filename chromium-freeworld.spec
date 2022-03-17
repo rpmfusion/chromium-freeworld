@@ -18,15 +18,15 @@
 %global __provides_exclude_from %{chromiumdir}/.*\\.so
 #######################################CONFIGS###########################################
 # System libraries to use.
-%global system_libdrm 1
+%global system_libdrm 0
 # Chrome upstream uses custom ffmpeg patches
 %global system_ffmpeg 0
-%global system_flac 1
-%global system_fontconfig 1
+%global system_flac 0
+%global system_fontconfig 0
 # fedora freetype is too old
 %global system_freetype 0
 %global system_harfbuzz 0
-%global system_libjpeg 1
+%global system_libjpeg 0
 %global system_libicu 0
 # lto issue with system libpng
 %global system_libpng 0
@@ -35,15 +35,15 @@
 %global system_libxml2 0
 # lto issue with system minizip
 %global system_minizip 0
-%global system_re2 1
-%global system_libwebp 1
-%global system_xslt 1
-%global system_snappy 1
+%global system_re2 0
+%global system_libwebp 0
+%global system_xslt 0
+%global system_snappy 0
 
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
 Version:        99.0.4844.74
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -564,6 +564,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Thu Mar 17 2022 Leigh Scott <leigh123linux@gmail.com> - 99.0.4844.74-2
+- Bundle libs
+
 * Tue Mar 15 2022 Leigh Scott <leigh123linux@gmail.com> - 99.0.4844.74-1
 - Update to 99.0.4844.74
 
