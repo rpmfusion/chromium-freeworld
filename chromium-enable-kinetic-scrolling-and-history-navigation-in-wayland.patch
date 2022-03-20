@@ -1,0 +1,87 @@
+diff --git a/ui/ozone/platform/wayland/host/wayland_event_source.cc b/ui/ozone/platform/wayland/host/wayland_event_source.cc
+index 74bc3db64353a..eb4e5a1ea41b5 100644
+--- a/ui/ozone/platform/wayland/host/wayland_event_source.cc
++++ b/ui/ozone/platform/wayland/host/wayland_event_source.cc
+@@ -266,18 +266,10 @@ void WaylandEventSource::OnPointerFrameEvent() {
+ 
+   int flags = pointer_flags_ | keyboard_modifiers_;
+ 
+-  static constexpr bool supports_trackpad_kinetic_scrolling =
+-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+-      true;
+-#else
+-      false;
+-#endif
+-
+   // Dispatch Fling event if pointer.axis_stop is notified and the recent
+   // pointer.axis events meets the criteria to start fling scroll.
+   if (current_pointer_frame_.dx == 0 && current_pointer_frame_.dy == 0 &&
+-      current_pointer_frame_.is_axis_stop &&
+-      supports_trackpad_kinetic_scrolling) {
++      current_pointer_frame_.is_axis_stop) {
+     gfx::Vector2dF initial_velocity = ComputeFlingVelocity();
+     float vx = initial_velocity.x();
+     float vy = initial_velocity.y();
+@@ -285,6 +277,11 @@ void WaylandEventSource::OnPointerFrameEvent() {
+         vx == 0 && vy == 0 ? ET_SCROLL_FLING_CANCEL : ET_SCROLL_FLING_START,
+         pointer_location_, pointer_location_, now, flags, vx, vy, vx, vy,
+         kGestureScrollFingerCount);
++#if BUILDFLAG(IS_LINUX)
++        if (event.type() == ET_SCROLL_FLING_START) {
++          is_fling_active_ = true;
++        }
++#endif
+     DispatchEvent(&event);
+     recent_pointer_frames_.clear();
+   } else if (current_pointer_frame_.axis_source) {
+@@ -299,6 +296,17 @@ void WaylandEventSource::OnPointerFrameEvent() {
+                    WL_POINTER_AXIS_SOURCE_FINGER ||
+                *current_pointer_frame_.axis_source ==
+                    WL_POINTER_AXIS_SOURCE_CONTINUOUS) {
++#if BUILDFLAG(IS_LINUX)
++      // Fling will be stopped if a new scroll event is received.
++      // This matches the behaviour of GTK and Firefox
++      if (is_fling_active_) {
++        is_fling_active_= false;
++        ScrollEvent event(
++            ET_SCROLL_FLING_CANCEL, pointer_location_, pointer_location_,
++            now, flags, 0, 0, 0, 0, kGestureScrollFingerCount);
++        DispatchEvent(&event);
++      }
++#endif
+       ScrollEvent event(ET_SCROLL, pointer_location_, pointer_location_,
+                         EventTimeForNow(), flags, current_pointer_frame_.dx,
+                         current_pointer_frame_.dy, current_pointer_frame_.dx,
+diff --git a/ui/ozone/platform/wayland/host/wayland_event_source.h b/ui/ozone/platform/wayland/host/wayland_event_source.h
+index b29d48a7ada6e..767899759369f 100644
+--- a/ui/ozone/platform/wayland/host/wayland_event_source.h
++++ b/ui/ozone/platform/wayland/host/wayland_event_source.h
+@@ -199,6 +199,11 @@ class WaylandEventSource : public PlatformEventSource,
+   // Front is newer, and back is older.
+   std::deque<PointerFrame> recent_pointer_frames_;
+ 
++#if BUILDFLAG(IS_LINUX)
++  // Status of fling.
++  bool is_fling_active_ = false;
++#endif
++
+   // Map that keeps track of the current touch points, associating touch IDs to
+   // to the surface/location where they happened.
+   base::flat_map<PointerId, std::unique_ptr<TouchPoint>> touch_points_;
+diff --git a/content/public/common/content_features.cc b/content/public/common/content_features.cc
+index af938c71de45e..16ce2f8429db0 100644
+--- a/content/public/common/content_features.cc
++++ b/content/public/common/content_features.cc
+@@ -927,10 +927,10 @@ const base::Feature kTouchpadAsyncPinchEvents{"TouchpadAsyncPinchEvents",
+                                               base::FEATURE_ENABLED_BY_DEFAULT};
+ 
+ // Allows swipe left/right from touchpad change browser navigation. Currently
+-// only enabled by default on CrOS, LaCrOS and Windows.
++// only enabled by default on CrOS, LaCrOS, Windows and Linux.
+ const base::Feature kTouchpadOverscrollHistoryNavigation {
+   "TouchpadOverscrollHistoryNavigation",
+-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
++#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+       base::FEATURE_ENABLED_BY_DEFAULT
+ #else
+       base::FEATURE_DISABLED_BY_DEFAULT
