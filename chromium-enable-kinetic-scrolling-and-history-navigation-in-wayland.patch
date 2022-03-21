@@ -1,8 +1,8 @@
 diff --git a/ui/ozone/platform/wayland/host/wayland_event_source.cc b/ui/ozone/platform/wayland/host/wayland_event_source.cc
-index 74bc3db64353a..eb4e5a1ea41b5 100644
+index 74bc3db643..fb4d7fa5be 100644
 --- a/ui/ozone/platform/wayland/host/wayland_event_source.cc
 +++ b/ui/ozone/platform/wayland/host/wayland_event_source.cc
-@@ -266,18 +266,10 @@ void WaylandEventSource::OnPointerFrameEvent() {
+@@ -266,25 +266,27 @@ void WaylandEventSource::OnPointerFrameEvent() {
  
    int flags = pointer_flags_ | keyboard_modifiers_;
  
@@ -22,19 +22,24 @@ index 74bc3db64353a..eb4e5a1ea41b5 100644
      gfx::Vector2dF initial_velocity = ComputeFlingVelocity();
      float vx = initial_velocity.x();
      float vy = initial_velocity.y();
-@@ -285,6 +277,11 @@ void WaylandEventSource::OnPointerFrameEvent() {
++#if !BUILDFLAG(IS_LINUX)
+     ScrollEvent event(
          vx == 0 && vy == 0 ? ET_SCROLL_FLING_CANCEL : ET_SCROLL_FLING_START,
          pointer_location_, pointer_location_, now, flags, vx, vy, vx, vy,
          kGestureScrollFingerCount);
-+#if BUILDFLAG(IS_LINUX)
-+        if (event.type() == ET_SCROLL_FLING_START) {
-+          is_fling_active_ = true;
-+        }
++#else
++    // ET_SCROLL_FLING_CANCEL is not triggered according to the Wayland
++    // protocol in the exo implementation. Therefore, it is not emitted on
++    // Linux
++    ScrollEvent event(
++        ET_SCROLL_FLING_START, pointer_location_, pointer_location_, now,
++        flags, vx, vy, vx, vy, kGestureScrollFingerCount);
++    is_fling_active_ = true;
 +#endif
      DispatchEvent(&event);
      recent_pointer_frames_.clear();
    } else if (current_pointer_frame_.axis_source) {
-@@ -299,6 +296,17 @@ void WaylandEventSource::OnPointerFrameEvent() {
+@@ -299,6 +301,17 @@ void WaylandEventSource::OnPointerFrameEvent() {
                     WL_POINTER_AXIS_SOURCE_FINGER ||
                 *current_pointer_frame_.axis_source ==
                     WL_POINTER_AXIS_SOURCE_CONTINUOUS) {
