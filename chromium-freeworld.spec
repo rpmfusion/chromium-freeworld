@@ -88,6 +88,7 @@ BuildRequires:  pkgconfig(libudev), pkgconfig(uuid)
 BuildRequires:  pkgconfig(xt)
 BuildRequires:  pkgconfig(xcb-proto)
 BuildRequires:  pkgconfig(gnome-keyring-1)
+BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libffi)
 BuildRequires:  expat-devel
 BuildRequires:  pciutils-devel
@@ -131,9 +132,6 @@ BuildRequires:  harfbuzz-devel
 %endif
 %if %{system_libicu}
 BuildRequires:  libicu-devel
-%endif
-%if %{system_libdrm}
-BuildRequires:  libdrm-devel
 %endif
 %if %{system_libjpeg}
 BuildRequires:  libjpeg-turbo-devel
