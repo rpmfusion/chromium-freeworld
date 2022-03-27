@@ -1,3 +1,4 @@
+%global debug_package %{nil}
 #Global Libraries
 %global menu_name Chromium (Freeworld)
 %global xdg_subdir chromium
@@ -517,6 +518,17 @@ for i in 24 32 48 64 128 256; do
 done
 install -m 644 %{SOURCE12} \
   %{buildroot}%{_datadir}/icons/hicolor/symbolic/apps/%{name}-symbolic.svg
+
+strip %{buildroot}%{chromiumdir}/%{name}
+strip %{buildroot}%{chromiumdir}/chrome-sandbox
+strip %{buildroot}%{chromiumdir}/chrome_crashpad_handler
+strip %{buildroot}%{chromiumdir}/libEGL.so
+strip %{buildroot}%{chromiumdir}/libGLESv2.so
+strip %{buildroot}%{chromiumdir}/libvk_swiftshader.so
+strip %{buildroot}%{chromiumdir}/libvulkan.so.1
+strip %{buildroot}%{chromiumdir}/swiftshader/libEGL.so
+strip %{buildroot}%{chromiumdir}/swiftshader/libGLESv2.so
+
 ####################################check##################################################
 %check
 appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appdata.xml"
@@ -560,8 +572,8 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %dir %{chromiumdir}/swiftshader
 %{chromiumdir}/swiftshader/libEGL.so
 %{chromiumdir}/swiftshader/libGLESv2.so
-%{chromiumdir}/libvk_swiftshader.so*
-%{chromiumdir}/libvulkan.so*
+%{chromiumdir}/libvk_swiftshader.so
+%{chromiumdir}/libvulkan.so.1
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
