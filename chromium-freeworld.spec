@@ -43,7 +43,7 @@
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
 Version:        99.0.4844.82
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -178,7 +178,7 @@ Provides:       chromium-vaapi = %{version}-%{release}
 Obsoletes:      chromium-vaapi < %{version}-%{release}
 #Some recommendations
 Recommends:     libva-utils
-%global debug_package %{nil}
+
 # This build should be only available to amd64
 ExclusiveArch:  x86_64 aarch64
 
@@ -562,6 +562,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Sun Mar 27 2022 Leigh Scott <leigh123linux@gmail.com> - 99.0.4844.82-2
+- Strip debugging
+
 * Mon Mar 21 2022 Leigh Scott <leigh123linux@gmail.com> - 99.0.4844.82-1
 - Update to 99.0.4844.82
 
