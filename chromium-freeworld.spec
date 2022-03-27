@@ -42,8 +42,8 @@
 
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        99.0.4844.82
-Release:        2%{?dist}
+Version:        99.0.4844.84
+Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -181,6 +181,9 @@ Recommends:     libva-utils
 
 # This build should be only available to amd64
 ExclusiveArch:  x86_64 aarch64
+
+# Debian patches:
+Patch101:       signin.patch
 
 # Gentoo patches:
 Patch201:       chromium-98-EnumTable-crash.patch
@@ -562,6 +565,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Sun Mar 27 2022 Leigh Scott <leigh123linux@gmail.com> - 99.0.4844.84-1
+- Update to 99.0.4844.84
+
 * Sun Mar 27 2022 Leigh Scott <leigh123linux@gmail.com> - 99.0.4844.82-2
 - Strip debugging
 
