@@ -6,7 +6,6 @@
 %global _smp_build_ncpus 6
 %endif
 %undefine _auto_set_build_flags
-%global use_clang 1
 #This can be any folder on out
 %global target out/Release
 ### Google API keys (see http://www.chromium.org/developers/how-tos/api-keys)
@@ -43,7 +42,7 @@
 
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        99.0.4844.84
+Version:        100.0.4896.60
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -51,7 +50,7 @@ URL:            https://www.chromium.org/Home
 Source0:        https://commondatastorage.googleapis.com/chromium-browser-official/chromium-%{version}.tar.xz
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-99-patchset-3
+%global patchset_revision chromium-100-patchset-4
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -65,15 +64,9 @@ Source15:       LICENSE
 #Our installation folder
 %global chromiumdir %{_libdir}/%{name}
 ########################################################################################
-#Compiler settings
-# Make sure we don't encounter any bug
-%if %{use_clang}
 BuildRequires:  clang, clang-tools-extra
 BuildRequires:  lld
 BuildRequires:  llvm
-%else
-BuildRequires:  gcc-c++
-%endif
 # Basic tools and libraries needed for building
 BuildRequires:  ninja-build, nodejs, bison, gperf, hwdata
 BuildRequires:  libatomic, flex, perl-Switch
@@ -144,11 +137,7 @@ BuildRequires:  libpng-devel
 BuildRequires:  libvpx-devel
 %endif
 %if %{system_ffmpeg}
-%if 0%{?fedora} && 0%{?fedora} > 35
-BuildRequires:  compat-ffmpeg4-devel
-%else
 BuildRequires:  ffmpeg-devel
-%endif
 BuildRequires:  opus-devel
 %endif
 %if %{system_libwebp}
@@ -183,19 +172,12 @@ Recommends:     libva-utils
 # This build should be only available to amd64
 ExclusiveArch:  x86_64 aarch64
 
-# Debian patches:
-Patch101:       signin.patch
-
 # Gentoo patches:
 Patch201:       chromium-98-EnumTable-crash.patch
 Patch202:       chromium-InkDropHost-crash.patch
-Patch203:       chromium-98-system-libdrm.patch
-Patch1204:      chromium-glibc-2.34-r1.patch
 
 # Arch Linux patches:
 Patch220:       webcodecs-stop-using-AudioOpusEncoder.patch
-Patch1226:      chromium-93-ffmpeg-4.4.patch
-Patch1227:      unbundle-ffmpeg-av_stream_get_first_dts.patch
 Patch1228:      add-a-TODO-about-a-missing-pnacl-flag.patch
 Patch1229:      use-ffile-compilation-dir.patch
 
@@ -208,8 +190,6 @@ Patch300:       chromium-py3-bootstrap.patch
 Patch301:       chromium-gcc11.patch
 Patch302:       chromium-java-only-allowed-in-android-builds.patch
 Patch303:       chromium-aarch64-cxxflags-addition.patch
-# Causes build error
-#Patch304:       chromium-clang-format.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
 Patch401:       chromium-fix-vaapi-on-intel.patch
@@ -219,7 +199,7 @@ Patch404:       chromium-md5-based-build-id.patch
 Patch405:       chromium-names.patch
 Patch406:       gcc12.patch
 Patch407:       allow-to-override-clang-through-env-variables.patch
-Patch1406:      chromium-rpm-fusion-brand.patch
+Patch408:       chromium-rpm-fusion-brand.patch
 
 %description
 %{name} is an open-source web browser, powered by WebKit (Blink)
@@ -236,28 +216,19 @@ Patch1406:      chromium-rpm-fusion-brand.patch
   %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
 
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
-%patchset_apply chromium-99-AutofillAssistantModelExecutor-NoDestructor.patch
-
+%patchset_apply chromium-100-GLImplementationParts-constexpr.patch
+%patchset_apply chromium-100-InMilliseconds-constexpr.patch
+%patchset_apply chromium-100-macro-typo.patch
+%patchset_apply chromium-100-SCTHashdanceMetadata-move.patch
 
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
 
 # Manually apply patches that need an ifdef
-%if 0%{?fedora} >= 35
-%patch1204 -p1
-%endif
-
-%if %{system_ffmpeg}
-%patch1226 -p1
-%patch1227 -p1
-%endif
-
 %if 0%{?fedora} < 35
 %patch1228 -Rp1
 %patch1229 -Rp1
 %endif
-
-%patch1406 -p1
 
 ./build/linux/unbundle/replace_gn_files.py --system-libraries \
 %if %{system_ffmpeg}
@@ -332,36 +303,23 @@ ln -s %{_bindir}/ninja third_party/depot_tools/ninja
 ln -s %{_bindir}/python3 third_party/depot_tools/python
 
 %build
-%if 0%{?fedora} && 0%{?fedora} > 35
-export PKG_CONFIG_PATH="%{_libdir}/compat-ffmpeg4/pkgconfig"
-%endif
 # Final link uses lots of file descriptors.
 ulimit -n 2048
 
 #export compilar variables
-%if %{use_clang}
 export CC="clang"
 export CXX="clang++"
 export AR="llvm-ar"
 export NM="llvm-nm"
 export READELF="llvm-readelf"
-%else
-export CC="gcc"
-export CXX="g++"
-export AR="ar"
-export NM="nm"
-export READELF="readelf"
-%endif
 
 export RANLIB="ranlib"
 export PATH="$PWD/third_party/depot_tools:$PATH"
 export CHROMIUM_RPATH="%{_libdir}/%{name}"
 
-%if %{use_clang}
 FLAGS='-Wno-unknown-warning-option'
 export CFLAGS="$FLAGS"
 export CXXFLAGS="$FLAGS"
-%endif
 
 CHROMIUM_GN_DEFINES=
 gn_arg() { CHROMIUM_GN_DEFINES="$CHROMIUM_GN_DEFINES $*"; }
@@ -421,15 +379,11 @@ gn_arg enable_widevine=true
 gn_arg rtc_use_pipewire=true
 gn_arg rtc_link_pipewire=true
 
-%if %{use_clang}
 gn_arg clang_base_path=\"%{_prefix}\"
 gn_arg is_clang=true
 gn_arg clang_use_chrome_plugins=false
 gn_arg use_lld=true
 gn_arg use_thin_lto=true
-%else
-gn_arg is_clang=false
-%endif
 gn_arg is_cfi=false
 gn_arg use_cfi_icall=false
 gn_arg chrome_pgo_phase=0
@@ -447,10 +401,6 @@ tools/gn/bootstrap/bootstrap.py --gn-gen-args="$CHROMIUM_GN_DEFINES" --build-pat
 %{target}/gn --script-executable=%{__python3} gen --args="$CHROMIUM_GN_DEFINES" %{target}
 %ninja_build -C %{target} chrome chrome_sandbox
 
-%if !%{use_clang}
-# bug #827861, vk_swiftshader_icd.json not getting properly installed in out/Release
-sed -e 's|${ICD_LIBRARY_PATH}|./libvk_swiftshader.so|g' third_party/swiftshader/src/Vulkan/vk_swiftshader_icd.json.tmpl > %{target}/vk_swiftshader_icd.json
-%endif
 ######################################Install####################################
 %install
 mkdir -p %{buildroot}%{_bindir}
@@ -577,6 +527,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Wed Mar 30 2022 Leigh Scott <leigh123linux@gmail.com> - 100.0.4896.60-1
+- Update to 100.0.4896.60
+
 * Sun Mar 27 2022 Leigh Scott <leigh123linux@gmail.com> - 99.0.4844.84-1
 - Update to 99.0.4844.84
 
