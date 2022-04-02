@@ -361,7 +361,6 @@ gn_arg use_system_wayland_scanner=true
 gn_arg use_bundled_weston=false
 
 %ifarch aarch64
-gn_arg use_v4l2_codec=true
 gn_arg 'target_cpu="arm64"'
 %endif
 
