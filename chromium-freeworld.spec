@@ -69,7 +69,7 @@ BuildRequires:  lld
 BuildRequires:  llvm
 # Basic tools and libraries needed for building
 BuildRequires:  ninja-build, nodejs, bison, gperf, hwdata
-BuildRequires:  libatomic, flex, perl-Switch
+BuildRequires:  libatomic, flex, perl-Switch, elfutils
 BuildRequires:  libcap-devel, cups-devel, alsa-lib-devel
 BuildRequires:  mesa-libGL-devel, mesa-libEGL-devel
 # Pipewire need this.
@@ -296,7 +296,7 @@ mkdir -p third_party/node/linux/node-linux-x64/bin
 ln -s %{_bindir}/node third_party/node/linux/node-linux-x64/bin/node
 
 mkdir -p buildtools/third_party/eu-strip/bin
-ln -sf %{_bindir}/strip buildtools/third_party/eu-strip/bin/eu-strip
+ln -sf %{_bindir}/eu-strip buildtools/third_party/eu-strip/bin/eu-strip
 
 rm -f -- third_party/depot_tools/ninja
 ln -s %{_bindir}/ninja third_party/depot_tools/ninja
