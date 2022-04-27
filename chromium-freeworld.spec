@@ -42,7 +42,7 @@
 
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        100.0.4896.127
+Version:        101.0.4951.41
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -50,7 +50,7 @@ URL:            https://www.chromium.org/Home
 Source0:        https://commondatastorage.googleapis.com/chromium-browser-official/chromium-%{version}.tar.xz
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-100-patchset-4
+%global patchset_revision chromium-101-patchset-4
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -177,7 +177,6 @@ Patch201:       chromium-98-EnumTable-crash.patch
 Patch202:       chromium-InkDropHost-crash.patch
 
 # Arch Linux patches:
-Patch220:       webcodecs-stop-using-AudioOpusEncoder.patch
 Patch1228:      add-a-TODO-about-a-missing-pnacl-flag.patch
 Patch1229:      use-ffile-compilation-dir.patch
 
@@ -216,10 +215,7 @@ Patch408:       chromium-rpm-fusion-brand.patch
   %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
 
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
-%patchset_apply chromium-100-GLImplementationParts-constexpr.patch
-%patchset_apply chromium-100-InMilliseconds-constexpr.patch
-%patchset_apply chromium-100-macro-typo.patch
-%patchset_apply chromium-100-SCTHashdanceMetadata-move.patch
+%patchset_apply chromium-101-segmentation_platform-type.patch
 
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
@@ -527,6 +523,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Wed Apr 27 2022 Leigh Scott <leigh123linux@gmail.com> - 101.0.4951.41-1
+- Update to 101.0.4951.41
+
 * Fri Apr 15 2022 Leigh Scott <leigh123linux@gmail.com> - 100.0.4896.127-1
 - Update to 100.0.4896.127
 
