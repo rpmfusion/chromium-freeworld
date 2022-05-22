@@ -421,7 +421,7 @@ install -m 644 chrome.1 %{buildroot}%{_mandir}/man1/%{name}.1
 sed \
   -e "s|@@MENUNAME@@|%{menu_name}|g" \
   -e "s|@@PACKAGE@@|%{name}|g" \
-  -e "s|@@USR_BIN_SYMLINK_NAME@@|%{name}|g" \
+  -e "s|%{_bindir}/@@USR_BIN_SYMLINK_NAME@@|%{name}|g" \
   chrome/installer/linux/common/desktop.template >%{name}.desktop
 desktop-file-install --dir=%{buildroot}%{_datadir}/applications %{name}.desktop
 sed \
