@@ -177,6 +177,7 @@ Patch201:       chromium-98-EnumTable-crash.patch
 Patch202:       chromium-InkDropHost-crash.patch
 
 # Arch Linux patches:
+Patch227:       remove-no-opaque-pointers-flag.patch
 Patch1228:      add-a-TODO-about-a-missing-pnacl-flag.patch
 Patch1229:      use-ffile-compilation-dir.patch
 
@@ -199,7 +200,6 @@ Patch405:       chromium-names.patch
 Patch406:       gcc12.patch
 Patch407:       allow-to-override-clang-through-env-variables.patch
 Patch408:       chromium-rpm-fusion-brand.patch
-Patch409:       clang_fix.patch
 
 %description
 %{name} is an open-source web browser, powered by WebKit (Blink)
