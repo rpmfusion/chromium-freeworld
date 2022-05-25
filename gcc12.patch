@@ -18,23 +18,3 @@
  
  #if defined(__ELF__)  // defined by gcc
  #if defined(__OpenBSD__)
---- a/net/base/address_list.h
-+++ b/net/base/address_list.h
-@@ -10,6 +10,7 @@
- #include <string>
- #include <utility>
- #include <vector>
-+#include <tuple>
- 
- #include "base/compiler_specific.h"
- #include "net/base/ip_endpoint.h"
---- a/media/capabilities/webrtc_video_stats_db.h
-+++ b/media/capabilities/webrtc_video_stats_db.h
-@@ -7,6 +7,7 @@
- 
- #include <memory>
- #include <string>
-+#include <vector>
- 
- #include "base/callback_forward.h"
- #include "base/check.h"

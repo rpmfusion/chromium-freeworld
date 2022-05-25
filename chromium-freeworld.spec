@@ -42,7 +42,7 @@
 
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        101.0.4951.64
+Version:        102.0.5005.61
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -50,7 +50,7 @@ URL:            https://www.chromium.org/Home
 Source0:        https://commondatastorage.googleapis.com/chromium-browser-official/chromium-%{version}.tar.xz
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-101-patchset-4
+%global patchset_revision chromium-102-patchset-6
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -69,7 +69,7 @@ BuildRequires:  lld
 BuildRequires:  llvm
 # Basic tools and libraries needed for building
 BuildRequires:  ninja-build, nodejs, bison, gperf, hwdata
-BuildRequires:  libatomic, flex, perl-Switch, elfutils
+BuildRequires:  libatomic, flex, perl-Switch, elfutils, git
 BuildRequires:  libcap-devel, cups-devel, alsa-lib-devel
 BuildRequires:  mesa-libGL-devel, mesa-libEGL-devel
 # Pipewire need this.
@@ -199,6 +199,7 @@ Patch405:       chromium-names.patch
 Patch406:       gcc12.patch
 Patch407:       allow-to-override-clang-through-env-variables.patch
 Patch408:       chromium-rpm-fusion-brand.patch
+Patch409:       clang_fix.patch
 
 %description
 %{name} is an open-source web browser, powered by WebKit (Blink)
@@ -215,7 +216,9 @@ Patch408:       chromium-rpm-fusion-brand.patch
   %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
 
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
-%patchset_apply chromium-101-segmentation_platform-type.patch
+%patchset_apply chromium-102-fenced_frame_utils-include.patch
+%patchset_apply chromium-102-regex_pattern-array.patch
+%patchset_apply chromium-102-swiftshader-template-instantiation.patch
 
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
@@ -402,7 +405,6 @@ tools/gn/bootstrap/bootstrap.py --gn-gen-args="$CHROMIUM_GN_DEFINES" --build-pat
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{chromiumdir}/locales
 mkdir -p %{buildroot}%{chromiumdir}/MEIPreload
-mkdir -p %{buildroot}%{chromiumdir}/swiftshader
 mkdir -p %{buildroot}%{_mandir}/man1
 mkdir -p %{buildroot}%{_metainfodir}
 mkdir -p %{buildroot}%{_datadir}/applications
@@ -444,7 +446,6 @@ install -m 644 %{target}/*.pak %{buildroot}%{chromiumdir}/
 install -m 644 %{target}/locales/*.pak %{buildroot}%{chromiumdir}/locales/
 install -m 755 %{target}/xdg*  %{buildroot}%{chromiumdir}/
 install -m 644 %{target}/MEIPreload/* %{buildroot}%{chromiumdir}/MEIPreload/
-install -m 755 %{target}/swiftshader/*.so %{buildroot}%{chromiumdir}/swiftshader/
 install -m 755 %{target}/libvk_swiftshader.so %{buildroot}%{chromiumdir}/
 install -m 755 %{target}/libvulkan.so.1 %{buildroot}%{chromiumdir}/
 install -m 644 %{target}/vk_swiftshader_icd.json %{buildroot}%{chromiumdir}/
@@ -472,8 +473,6 @@ strip %{buildroot}%{chromiumdir}/libEGL.so
 strip %{buildroot}%{chromiumdir}/libGLESv2.so
 strip %{buildroot}%{chromiumdir}/libvk_swiftshader.so
 strip %{buildroot}%{chromiumdir}/libvulkan.so.1
-strip %{buildroot}%{chromiumdir}/swiftshader/libEGL.so
-strip %{buildroot}%{chromiumdir}/swiftshader/libGLESv2.so
 
 ####################################check##################################################
 %check
@@ -515,14 +514,14 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/MEIPreload/preloaded_data.pb
 %dir %{chromiumdir}/locales
 %{chromiumdir}/locales/*.pak
-%dir %{chromiumdir}/swiftshader
-%{chromiumdir}/swiftshader/libEGL.so
-%{chromiumdir}/swiftshader/libGLESv2.so
 %{chromiumdir}/libvk_swiftshader.so
 %{chromiumdir}/libvulkan.so.1
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Tue May 24 2022 Leigh Scott <leigh123linux@gmail.com> - 102.0.5005.61-1
+- Update to 102.0.5005.61
+
 * Wed May 11 2022 Leigh Scott <leigh123linux@gmail.com> - 101.0.4951.64-1
 - Update to 101.0.4951.64
 
