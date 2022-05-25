@@ -170,7 +170,7 @@ Obsoletes:      chromium-vaapi < %{version}-%{release}
 Recommends:     libva-utils
 
 # This build should be only available to amd64
-ExclusiveArch:  x86_64 aarch64
+ExclusiveArch:  x86_64
 
 # Gentoo patches:
 Patch201:       chromium-98-EnumTable-crash.patch
