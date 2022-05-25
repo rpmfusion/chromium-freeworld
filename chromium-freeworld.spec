@@ -69,7 +69,7 @@ BuildRequires:  lld
 BuildRequires:  llvm
 # Basic tools and libraries needed for building
 BuildRequires:  ninja-build, nodejs, bison, gperf, hwdata
-BuildRequires:  libatomic, flex, perl-Switch, elfutils, git
+BuildRequires:  libatomic, flex, perl-Switch, elfutils, git-core
 BuildRequires:  libcap-devel, cups-devel, alsa-lib-devel
 BuildRequires:  mesa-libGL-devel, mesa-libEGL-devel
 # Pipewire need this.
