@@ -43,7 +43,7 @@
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
 Version:        102.0.5005.61
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -170,7 +170,7 @@ Obsoletes:      chromium-vaapi < %{version}-%{release}
 Recommends:     libva-utils
 
 # This build should be only available to amd64
-ExclusiveArch:  x86_64
+ExclusiveArch:  x86_64 %{arm64}
 
 # Gentoo patches:
 Patch201:       chromium-98-EnumTable-crash.patch
@@ -359,10 +359,6 @@ gn_arg use_system_libwayland=true
 gn_arg use_system_wayland_scanner=true
 gn_arg use_bundled_weston=false
 
-%ifarch aarch64
-gn_arg 'target_cpu="arm64"'
-%endif
-
 # ffmpeg
 gn_arg ffmpeg_branding=\"Chrome\"
 gn_arg proprietary_codecs=true
@@ -382,7 +378,12 @@ gn_arg clang_base_path=\"%{_prefix}\"
 gn_arg is_clang=true
 gn_arg clang_use_chrome_plugins=false
 gn_arg use_lld=true
+%ifarch %{arm64}
+gn_arg 'target_cpu="arm64"'
+gn_arg use_thin_lto=false
+%else
 gn_arg use_thin_lto=true
+%endif
 gn_arg is_cfi=false
 gn_arg use_cfi_icall=false
 gn_arg chrome_pgo_phase=0
@@ -519,6 +520,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Thu May 26 2022 Leigh Scott <leigh123linux@gmail.com> - 102.0.5005.61-2
+- Tweak aarch64 build
+
 * Tue May 24 2022 Leigh Scott <leigh123linux@gmail.com> - 102.0.5005.61-1
 - Update to 102.0.5005.61
 
