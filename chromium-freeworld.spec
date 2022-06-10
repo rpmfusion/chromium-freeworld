@@ -42,8 +42,8 @@
 
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        102.0.5005.61
-Release:        2%{?dist}
+Version:        102.0.5005.115
+Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -520,6 +520,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Thu Jun 09 2022 Leigh Scott <leigh123linux@gmail.com> - 102.0.5005.115-1
+- Update to 102.0.5005.115
+
 * Thu May 26 2022 Leigh Scott <leigh123linux@gmail.com> - 102.0.5005.61-2
 - Tweak aarch64 build
 
