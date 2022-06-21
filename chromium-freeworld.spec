@@ -42,7 +42,7 @@
 
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        102.0.5005.115
+Version:        103.0.5060.53
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -50,7 +50,7 @@ URL:            https://www.chromium.org/Home
 Source0:        https://commondatastorage.googleapis.com/chromium-browser-official/chromium-%{version}.tar.xz
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-102-patchset-6
+%global patchset_revision chromium-103-patchset-4
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -178,12 +178,8 @@ Patch202:       chromium-InkDropHost-crash.patch
 
 # Arch Linux patches:
 Patch227:       remove-no-opaque-pointers-flag.patch
-Patch1228:      add-a-TODO-about-a-missing-pnacl-flag.patch
-Patch1229:      use-ffile-compilation-dir.patch
 
 # Suse patches:
-Patch232:       chromium-91-sql-standard-layout-type.patch
-Patch233:       chromium-clang-nomerge.patch
 
 # Fedora patches:
 Patch300:       chromium-py3-bootstrap.patch
@@ -197,9 +193,8 @@ Patch402:       chromium-enable-widevine.patch
 Patch403:       chromium-manpage.patch
 Patch404:       chromium-md5-based-build-id.patch
 Patch405:       chromium-names.patch
-Patch406:       gcc12.patch
-Patch407:       allow-to-override-clang-through-env-variables.patch
-Patch408:       chromium-rpm-fusion-brand.patch
+Patch406:       allow-to-override-clang-through-env-variables.patch
+Patch407:       chromium-rpm-fusion-brand.patch
 
 %description
 %{name} is an open-source web browser, powered by WebKit (Blink)
@@ -216,18 +211,14 @@ Patch408:       chromium-rpm-fusion-brand.patch
   %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
 
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
-%patchset_apply chromium-102-fenced_frame_utils-include.patch
-%patchset_apply chromium-102-regex_pattern-array.patch
-%patchset_apply chromium-102-swiftshader-template-instantiation.patch
+%patchset_apply chromium-103-FrameLoadRequest-type.patch
+%patchset_apply chromium-103-SubstringSetMatcher-packed.patch
+%patchset_apply chromium-103-VirtualCursor-std-layout.patch
 
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
 
 # Manually apply patches that need an ifdef
-%if 0%{?fedora} < 35
-%patch1228 -Rp1
-%patch1229 -Rp1
-%endif
 
 ./build/linux/unbundle/replace_gn_files.py --system-libraries \
 %if %{system_ffmpeg}
@@ -520,6 +511,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Tue Jun 21 2022 Leigh Scott <leigh123linux@gmail.com> - 103.0.5060.53-1
+- Update to 103.0.5060.53
+
 * Thu Jun 09 2022 Leigh Scott <leigh123linux@gmail.com> - 102.0.5005.115-1
 - Update to 102.0.5005.115
 
