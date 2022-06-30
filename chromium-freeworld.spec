@@ -195,6 +195,7 @@ Patch404:       chromium-md5-based-build-id.patch
 Patch405:       chromium-names.patch
 Patch406:       allow-to-override-clang-through-env-variables.patch
 Patch407:       chromium-rpm-fusion-brand.patch
+Patch408:       fix_py311.patch
 
 %description
 %{name} is an open-source web browser, powered by WebKit (Blink)
