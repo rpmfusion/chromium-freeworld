@@ -42,7 +42,7 @@
 
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        103.0.5060.134
+Version:        104.0.5112.79
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -50,7 +50,7 @@ URL:            https://www.chromium.org/Home
 Source0:        https://commondatastorage.googleapis.com/chromium-browser-official/chromium-%{version}.tar.xz
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-103-patchset-4
+%global patchset_revision chromium-104-patchset-2
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -214,9 +214,8 @@ Patch408:       fix_py311.patch
   %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
 
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
-%patchset_apply chromium-103-FrameLoadRequest-type.patch
-%patchset_apply chromium-103-SubstringSetMatcher-packed.patch
 %patchset_apply chromium-103-VirtualCursor-std-layout.patch
+%patchset_apply chromium-104-ContentRendererClient-type.patch
 
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
@@ -281,7 +280,6 @@ sed -i 's|//third_party/usb_ids|/usr/share/hwdata|g' \
     services/device/public/cpp/usb/BUILD.gn
 
 sed -i \
-	-e 's/"-ffile-compilation-dir=."//g' \
 	-e 's/"-no-canonical-prefixes"//g' \
 	build/config/compiler/BUILD.gn
 
@@ -290,10 +288,6 @@ ln -s %{_bindir}/node third_party/node/linux/node-linux-x64/bin/node
 
 mkdir -p buildtools/third_party/eu-strip/bin
 ln -sf %{_bindir}/eu-strip buildtools/third_party/eu-strip/bin/eu-strip
-
-rm -f -- third_party/depot_tools/ninja
-ln -s %{_bindir}/ninja third_party/depot_tools/ninja
-ln -s %{_bindir}/python3 third_party/depot_tools/python
 
 %build
 # Final link uses lots of file descriptors.
@@ -514,6 +508,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Tue Aug 02 2022 Leigh Scott <leigh123linux@gmail.com> - 104.0.5112.79-1
+- Update to 104.0.5112.79
+
 * Wed Jul 20 2022 Leigh Scott <leigh123linux@gmail.com> - 103.0.5060.134-1
 - Update to 103.0.5060.134
 
