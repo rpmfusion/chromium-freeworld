@@ -289,6 +289,9 @@ ln -s %{_bindir}/node third_party/node/linux/node-linux-x64/bin/node
 mkdir -p buildtools/third_party/eu-strip/bin
 ln -sf %{_bindir}/eu-strip buildtools/third_party/eu-strip/bin/eu-strip
 
+rm -f -- third_party/depot_tools/ninja
+ln -s %{_bindir}/ninja third_party/depot_tools/ninja
+
 %build
 # Final link uses lots of file descriptors.
 ulimit -n 2048
