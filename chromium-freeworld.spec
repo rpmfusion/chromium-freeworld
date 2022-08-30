@@ -42,7 +42,7 @@
 
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        104.0.5112.101
+Version:        105.0.5195.52
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -50,7 +50,7 @@ URL:            https://www.chromium.org/Home
 Source0:        https://commondatastorage.googleapis.com/chromium-browser-official/chromium-%{version}.tar.xz
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-104-patchset-2
+%global patchset_revision chromium-105-patchset-1
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -215,7 +215,11 @@ Patch408:       fix_py311.patch
 
 %patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
 %patchset_apply chromium-103-VirtualCursor-std-layout.patch
-%patchset_apply chromium-104-ContentRendererClient-type.patch
+%patchset_apply chromium-105-AdjustMaskLayerGeometry-ceilf.patch
+%patchset_apply chromium-105-Bitmap-include.patch
+%patchset_apply chromium-105-browser_finder-include.patch
+%patchset_apply chromium-105-raw_ptr-noexcept.patch
+%patchset_apply chromium-105-Trap-raw_ptr.patch
 
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
@@ -369,6 +373,7 @@ gn_arg clang_base_path=\"%{_prefix}\"
 gn_arg is_clang=true
 gn_arg clang_use_chrome_plugins=false
 gn_arg use_lld=true
+gn_arg use_v4l2_codec=true
 %ifarch %{arm64}
 gn_arg 'target_cpu="arm64"'
 gn_arg use_thin_lto=false
@@ -511,6 +516,10 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Tue Aug 30 2022 Leigh Scott <leigh123linux@gmail.com> - 105.0.5195.52-1
+- Update to 105.0.5195.52
+- Enable V4L2 decoders support for aarch64 (rfbz#6261)
+
 * Wed Aug 17 2022 Leigh Scott <leigh123linux@gmail.com> - 104.0.5112.101-1
 - Update to 104.0.5112.101
 
