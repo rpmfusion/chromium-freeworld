@@ -177,7 +177,7 @@ Patch201:       chromium-98-EnumTable-crash.patch
 Patch202:       chromium-InkDropHost-crash.patch
 
 # Arch Linux patches:
-Patch227:       remove-no-opaque-pointers-flag.patch
+Patch250:       angle-wayland-include-protocol.patch
 
 # Suse patches:
 
@@ -186,8 +186,7 @@ Patch300:       chromium-py3-bootstrap.patch
 Patch301:       chromium-gcc11.patch
 Patch302:       chromium-java-only-allowed-in-android-builds.patch
 Patch303:       chromium-aarch64-cxxflags-addition.patch
-Patch304:       chromium-python-six-1.16.0.patch
-Patch305:       chromium-update-rjsmin-to-1.2.0.patch
+Patch304:       chromium-update-rjsmin-to-1.2.0.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
 Patch401:       chromium-fix-vaapi-on-intel.patch
@@ -213,7 +212,6 @@ Patch408:       fix_py311.patch
   printf "Applying %%s\\n" %{1} \
   %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
 
-%patchset_apply chromium-78-protobuf-RepeatedPtrField-export.patch
 %patchset_apply chromium-103-VirtualCursor-std-layout.patch
 %patchset_apply chromium-105-AdjustMaskLayerGeometry-ceilf.patch
 %patchset_apply chromium-105-Bitmap-include.patch
@@ -373,7 +371,6 @@ gn_arg clang_base_path=\"%{_prefix}\"
 gn_arg is_clang=true
 gn_arg clang_use_chrome_plugins=false
 gn_arg use_lld=true
-gn_arg use_v4l2_codec=true
 %ifarch %{arm64}
 gn_arg 'target_cpu="arm64"'
 gn_arg use_thin_lto=false
@@ -518,7 +515,6 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %changelog
 * Tue Aug 30 2022 Leigh Scott <leigh123linux@gmail.com> - 105.0.5195.52-1
 - Update to 105.0.5195.52
-- Enable V4L2 decoders support for aarch64 (rfbz#6261)
 
 * Wed Aug 17 2022 Leigh Scott <leigh123linux@gmail.com> - 104.0.5112.101-1
 - Update to 104.0.5112.101
