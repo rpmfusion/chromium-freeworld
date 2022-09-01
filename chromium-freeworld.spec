@@ -43,7 +43,7 @@
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
 Version:        105.0.5195.52
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -332,7 +332,6 @@ gn_arg use_aura=true
 gn_arg use_cups=true
 gn_arg use_kerberos=true
 gn_arg use_gold=false
-gn_arg use_vaapi=true
 gn_arg optimize_webui=false
 %if %{system_freetype}
 gn_arg use_system_freetype=true
@@ -372,10 +371,13 @@ gn_arg is_clang=true
 gn_arg clang_use_chrome_plugins=false
 gn_arg use_lld=true
 %ifarch %{arm64}
+gn_arg use_v4l2_codec=true
+gn_arg use_vaapi=false
 gn_arg 'target_cpu="arm64"'
 gn_arg use_thin_lto=false
 %else
 gn_arg use_thin_lto=true
+gn_arg use_vaapi=true
 %endif
 gn_arg is_cfi=false
 gn_arg use_cfi_icall=false
@@ -513,6 +515,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Thu Sep 01 2022 Leigh Scott <leigh123linux@gmail.com> - 105.0.5195.52-2
+- Enable v4l2 and disable vaapi for aarch64
+
 * Tue Aug 30 2022 Leigh Scott <leigh123linux@gmail.com> - 105.0.5195.52-1
 - Update to 105.0.5195.52
 
