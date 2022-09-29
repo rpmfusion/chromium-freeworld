@@ -1,0 +1,10 @@
+--- a/extensions/renderer/bindings/argument_spec.h	2022-09-26 16:47:54.000000000 +0100
++++ b/extensions/renderer/bindings/argument_spec.h	2022-09-28 22:08:06.957341472 +0100
+@@ -5,6 +5,7 @@
+ #ifndef EXTENSIONS_RENDERER_BINDINGS_ARGUMENT_SPEC_H_
+ #define EXTENSIONS_RENDERER_BINDINGS_ARGUMENT_SPEC_H_
+ 
++#include <cmath>
+ #include <map>
+ #include <memory>
+ #include <set>
