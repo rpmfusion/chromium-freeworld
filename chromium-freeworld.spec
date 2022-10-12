@@ -42,7 +42,7 @@
 
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        106.0.5249.103
+Version:        106.0.5249.119
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -513,6 +513,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Wed Oct 12 2022 Leigh Scott <leigh123linux@gmail.com> - 106.0.5249.119-1
+- Update to 106.0.5249.119
+
 * Fri Oct 07 2022 Leigh Scott <leigh123linux@gmail.com> - 106.0.5249.103-1
 - Update to 106.0.5249.103
 
@@ -536,124 +539,4 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 
 * Tue Aug 30 2022 Leigh Scott <leigh123linux@gmail.com> - 105.0.5195.52-1
 - Update to 105.0.5195.52
-
-* Wed Aug 17 2022 Leigh Scott <leigh123linux@gmail.com> - 104.0.5112.101-1
-- Update to 104.0.5112.101
-
-* Tue Aug 02 2022 Leigh Scott <leigh123linux@gmail.com> - 104.0.5112.79-1
-- Update to 104.0.5112.79
-
-* Wed Jul 20 2022 Leigh Scott <leigh123linux@gmail.com> - 103.0.5060.134-1
-- Update to 103.0.5060.134
-
-* Sat Jul 09 2022 Leigh Scott <leigh123linux@gmail.com> - 103.0.5060.114-1
-- Update to 103.0.5060.114
-
-* Tue Jun 21 2022 Leigh Scott <leigh123linux@gmail.com> - 103.0.5060.53-1
-- Update to 103.0.5060.53
-
-* Thu Jun 09 2022 Leigh Scott <leigh123linux@gmail.com> - 102.0.5005.115-1
-- Update to 102.0.5005.115
-
-* Thu May 26 2022 Leigh Scott <leigh123linux@gmail.com> - 102.0.5005.61-2
-- Tweak aarch64 build
-
-* Tue May 24 2022 Leigh Scott <leigh123linux@gmail.com> - 102.0.5005.61-1
-- Update to 102.0.5005.61
-
-* Wed May 11 2022 Leigh Scott <leigh123linux@gmail.com> - 101.0.4951.64-1
-- Update to 101.0.4951.64
-
-* Mon May 02 2022 Leigh Scott <leigh123linux@gmail.com> - 101.0.4951.54-1
-- Update to 101.0.4951.54
-
-* Wed Apr 27 2022 Leigh Scott <leigh123linux@gmail.com> - 101.0.4951.41-1
-- Update to 101.0.4951.41
-
-* Fri Apr 15 2022 Leigh Scott <leigh123linux@gmail.com> - 100.0.4896.127-1
-- Update to 100.0.4896.127
-
-* Mon Apr 11 2022 Leigh Scott <leigh123linux@gmail.com> - 100.0.4896.88-1
-- Update to 100.0.4896.88
-
-* Tue Apr 05 2022 Leigh Scott <leigh123linux@gmail.com> - 100.0.4896.75-1
-- Update to 100.0.4896.75
-
-* Wed Mar 30 2022 Leigh Scott <leigh123linux@gmail.com> - 100.0.4896.60-1
-- Update to 100.0.4896.60
-
-* Sun Mar 27 2022 Leigh Scott <leigh123linux@gmail.com> - 99.0.4844.84-1
-- Update to 99.0.4844.84
-
-* Sun Mar 27 2022 Leigh Scott <leigh123linux@gmail.com> - 99.0.4844.82-2
-- Strip debugging
-
-* Mon Mar 21 2022 Leigh Scott <leigh123linux@gmail.com> - 99.0.4844.82-1
-- Update to 99.0.4844.82
-
-* Thu Mar 17 2022 Leigh Scott <leigh123linux@gmail.com> - 99.0.4844.74-2
-- Bundle libs
-
-* Tue Mar 15 2022 Leigh Scott <leigh123linux@gmail.com> - 99.0.4844.74-1
-- Update to 99.0.4844.74
-
-* Mon Mar 14 2022 Leigh Scott <leigh123linux@gmail.com> - 99.0.4844.51-2
-- Test spec file changes
-
-* Wed Mar 02 2022 Leigh Scott <leigh123linux@gmail.com> - 99.0.4844.51-1
-- Update to 99.0.4844.51
-
-* Sat Feb 19 2022 Leigh Scott <leigh123linux@gmail.com> - 98.0.4758.102-2
-- Use compat-ffmpeg4 for f36+
-
-* Thu Feb 17 2022 Leigh Scott <leigh123linux@gmail.com> - 98.0.4758.102-1
-- Update to 98.0.4758.102
-
-* Wed Feb 02 2022 Leigh Scott <leigh123linux@gmail.com> - 98.0.4758.80-1
-- Update to 98.0.4758.80
-
-* Thu Jan 20 2022 Leigh Scott <leigh123linux@gmail.com> - 97.0.4692.99-1
-- Update to 97.0.4692.99
-
-* Wed Jan 05 2022 Leigh Scott <leigh123linux@gmail.com> - 97.0.4692.71-1
-- Update to 97.0.4692.71
-
-* Tue Dec 14 2021 Leigh Scott <leigh123linux@gmail.com> - 96.0.4664.110-1
-- Update to 96.0.4664.110
-
-* Tue Dec 07 2021 Leigh Scott <leigh123linux@gmail.com> - 96.0.4664.93-1
-- Update to 96.0.4664.93
-
-* Mon Nov 15 2021 Leigh Scott <leigh123linux@gmail.com> - 96.0.4664.45-1
-- Update to 96.0.4664.45
-
-* Tue Nov 09 2021 Leigh Scott <leigh123linux@gmail.com> - 95.0.4638.69-2
-- Rebuilt for new ffmpeg snapshot
-
-* Fri Oct 29 2021 Leigh Scott <leigh123linux@gmail.com> - 95.0.4638.69-1
-- Update to 95.0.4638.69
-
-* Tue Oct 19 2021 Leigh Scott <leigh123linux@gmail.com> - 95.0.4638.54-1
-- Update to 95.0.4638.54
-
-* Thu Oct 07 2021 Leigh Scott <leigh123linux@gmail.com> - 94.0.4606.81-1
-- Update to 94.0.4606.81
-
-* Thu Sep 30 2021 Leigh Scott <leigh123linux@gmail.com> - 94.0.4606.71-1
-- Update to 94.0.4606.71
-
-* Wed Sep 22 2021 Leigh Scott <leigh123linux@gmail.com> - 94.0.4606.61-1
-- Update to 94.0.4606.61
-
-* Tue Sep 14 2021 Leigh Scott <leigh123linux@gmail.com> - 93.0.4577.82-1
-- Update to 93.0.4577.82
-
-* Sat Sep 11 2021 Leigh Scott <leigh123linux@gmail.com> - 93.0.4577.63-3
-- Use clang to compile
-
-* Fri Sep 03 2021 Leigh Scott <leigh123linux@gmail.com> - 93.0.4577.63-2
-- Enable aarch64 build
-
-* Wed Sep 01 2021 Leigh Scott <leigh123linux@gmail.com> - 93.0.4577.63-1
-- Update to 93.0.4577.63
 
