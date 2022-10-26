@@ -365,14 +365,12 @@ gn_arg is_clang=true
 gn_arg clang_use_chrome_plugins=false
 gn_arg use_lld=true
 %ifarch %{arm64}
-gn_arg use_v4l2_codec=true
-gn_arg use_vaapi=false
 gn_arg 'target_cpu="arm64"'
 gn_arg use_thin_lto=false
 %else
 gn_arg use_thin_lto=true
-gn_arg use_vaapi=true
 %endif
+gn_arg use_vaapi=true
 gn_arg is_cfi=false
 gn_arg use_cfi_icall=false
 gn_arg chrome_pgo_phase=0
@@ -511,6 +509,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %changelog
 * Tue Oct 25 2022 Leigh Scott <leigh123linux@gmail.com> - 107.0.5304.68-1
 - Update to 107.0.5304.68
+- Disable v4l2 for aarch64 due to missing header file linux/media/av1-ctrls.h
 
 * Wed Oct 12 2022 Leigh Scott <leigh123linux@gmail.com> - 106.0.5249.119-1
 - Update to 106.0.5249.119
