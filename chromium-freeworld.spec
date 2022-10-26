@@ -42,7 +42,7 @@
 
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        106.0.5249.119
+Version:        107.0.5304.68
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -50,7 +50,7 @@ URL:            https://www.chromium.org/Home
 Source0:        https://commondatastorage.googleapis.com/chromium-browser-official/chromium-%{version}.tar.xz
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-106-patchset-3
+%global patchset_revision chromium-107-patchset-1
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -103,6 +103,8 @@ BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(wayland-server)
+BuildRequires:  pkgconfig(Qt5Core)
+BuildRequires:  pkgconfig(Qt5Widgets)
 
 BuildRequires:  python3-devel
 BuildRequires:  python-unversioned-command
@@ -196,8 +198,7 @@ Patch404:       chromium-md5-based-build-id.patch
 Patch405:       chromium-names.patch
 Patch406:       allow-to-override-clang-through-env-variables.patch
 Patch407:       chromium-rpm-fusion-brand.patch
-Patch408:       fix_py311.patch
-Patch409:       add_missing_include.patch
+Patch408:       add_missing_include.patch
 
 %description
 %{name} is an open-source web browser, powered by WebKit (Blink)
@@ -214,9 +215,6 @@ Patch409:       add_missing_include.patch
   %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
 
 %patchset_apply chromium-103-VirtualCursor-std-layout.patch
-%patchset_apply chromium-106-AutofillPopupControllerImpl-namespace.patch
-%patchset_apply chromium-106-LinuxInputMethodContext-include.patch
-%patchset_apply chromium-106-ReverseBeaconTimeoutSorter-constexpr.patch
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
 
@@ -345,9 +343,7 @@ gn_arg system_libdir=\"%{_lib}\"
 gn_arg use_allocator=\"none\"
 gn_arg use_icf=false
 gn_arg enable_js_type_check=false
-gn_arg use_system_libwayland=true
-gn_arg use_system_wayland_scanner=true
-gn_arg use_bundled_weston=false
+gn_arg use_system_libffi=true
 
 # ffmpeg
 gn_arg ffmpeg_branding=\"Chrome\"
@@ -513,6 +509,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Tue Oct 25 2022 Leigh Scott <leigh123linux@gmail.com> - 107.0.5304.68-1
+- Update to 107.0.5304.68
+
 * Wed Oct 12 2022 Leigh Scott <leigh123linux@gmail.com> - 106.0.5249.119-1
 - Update to 106.0.5249.119
 
