@@ -1,0 +1,8 @@
+--- a/ui/qt/moc_wrapper.py
++++ b/ui/qt/moc_wrapper.py
+@@ -7,4 +7,4 @@ import subprocess
+ import sys
+ 
+ 
+-subprocess.check_call(["moc", sys.argv[1], "-o", sys.argv[2]])
++subprocess.check_call(["moc-qt5", sys.argv[1], "-o", sys.argv[2]])

@@ -42,7 +42,7 @@
 
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        107.0.5304.121
+Version:        108.0.5359.71
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -50,7 +50,7 @@ URL:            https://www.chromium.org/Home
 Source0:        https://commondatastorage.googleapis.com/chromium-browser-official/chromium-%{version}.tar.xz
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-107-patchset-1
+%global patchset_revision chromium-108-patchset-2
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -175,7 +175,7 @@ Recommends:     libva-utils
 ExclusiveArch:  x86_64 %{arm64}
 
 # Gentoo patches:
-Patch201:       chromium-98-EnumTable-crash.patch
+Patch201:       chromium-108-EnumTable-crash.patch
 Patch202:       chromium-InkDropHost-crash.patch
 
 # Arch Linux patches:
@@ -185,10 +185,9 @@ Patch250:       angle-wayland-include-protocol.patch
 
 # Fedora patches:
 Patch300:       chromium-py3-bootstrap.patch
-Patch301:       chromium-gcc11.patch
-Patch302:       chromium-java-only-allowed-in-android-builds.patch
-Patch303:       chromium-aarch64-cxxflags-addition.patch
-Patch304:       chromium-update-rjsmin-to-1.2.0.patch
+Patch301:       chromium-java-only-allowed-in-android-builds.patch
+Patch302:       chromium-aarch64-cxxflags-addition.patch
+Patch303:       chromium-update-rjsmin-to-1.2.0.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
 Patch401:       chromium-fix-vaapi-on-intel.patch
@@ -199,6 +198,7 @@ Patch405:       chromium-names.patch
 Patch406:       allow-to-override-clang-through-env-variables.patch
 Patch407:       chromium-rpm-fusion-brand.patch
 Patch408:       add_missing_include.patch
+Patch409:       moc_name.patch
 
 %description
 %{name} is an open-source web browser, powered by WebKit (Blink)
@@ -215,6 +215,8 @@ Patch408:       add_missing_include.patch
   %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
 
 %patchset_apply chromium-103-VirtualCursor-std-layout.patch
+%patchset_apply chromium-108-crashpad-template.patch
+
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
 
@@ -507,6 +509,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Wed Nov 30 2022 Leigh Scott <leigh123linux@gmail.com> - 108.0.5359.71-1
+- Update to 108.0.5359.71
+
 * Thu Nov 24 2022 Leigh Scott <leigh123linux@gmail.com> - 107.0.5304.121-1
 - Update to 107.0.5304.121
 
