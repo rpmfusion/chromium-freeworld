@@ -42,7 +42,7 @@
 
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        109.0.5414.119
+Version:        110.0.5481.77
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -50,7 +50,7 @@ URL:            https://www.chromium.org/Home
 Source0:        https://commondatastorage.googleapis.com/chromium-browser-official/chromium-%{version}.tar.xz
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-109-patchset-1
+%global patchset_revision chromium-110-patchset-4
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -179,7 +179,7 @@ Patch201:       chromium-108-EnumTable-crash.patch
 Patch202:       chromium-InkDropHost-crash.patch
 
 # Arch Linux patches:
-Patch250:       angle-wayland-include-protocol.patch
+Patch250:       v8-move-the-Stack-object-from-ThreadLocalTop.patch
 
 # Suse patches:
 
@@ -216,6 +216,10 @@ Patch409:       moc_name.patch
   %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
 
 %patchset_apply chromium-103-VirtualCursor-std-layout.patch
+%patchset_apply chromium-110-NativeThemeBase-fabs.patch
+%patchset_apply chromium-110-CredentialUIEntry-const.patch
+%patchset_apply chromium-110-DarkModeLABColorSpace-pow.patch
+%patchset_apply chromium-110-dpf-arm64.patch
 
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
@@ -508,6 +512,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Wed Feb 08 2023 Leigh Scott <leigh123linux@gmail.com> - 110.0.5481.77-1
+- Update to 110.0.5481.77
+
 * Wed Jan 25 2023 Leigh Scott <leigh123linux@gmail.com> - 109.0.5414.119-1
 - Update to 109.0.5414.119
 
