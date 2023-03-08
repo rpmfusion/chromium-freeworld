@@ -1,4 +1,5 @@
 %global debug_package %{nil}
+%global _default_patch_fuzz 2
 #Global Libraries
 %global menu_name Chromium (Freeworld)
 %global xdg_subdir chromium
@@ -42,7 +43,7 @@
 
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
-Version:        110.0.5481.177
+Version:        111.0.5563.64
 Release:        1%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
@@ -50,7 +51,7 @@ URL:            https://www.chromium.org/Home
 Source0:        https://commondatastorage.googleapis.com/chromium-browser-official/chromium-%{version}.tar.xz
 
 # Patchset composed by Stephan Hartmann.
-%global patchset_revision chromium-110-patchset-4
+%global patchset_revision chromium-111-patchset-2
 Source1:        https://github.com/stha09/chromium-patches/archive/%{patchset_revision}/chromium-patches-%{patchset_revision}.tar.gz
 
 # The following two source files are copied and modified from the chromium source
@@ -176,10 +177,8 @@ ExclusiveArch:  x86_64 %{arm64}
 
 # Gentoo patches:
 Patch201:       chromium-108-EnumTable-crash.patch
-Patch202:       chromium-InkDropHost-crash.patch
 
 # Arch Linux patches:
-Patch250:       v8-move-the-Stack-object-from-ThreadLocalTop.patch
 
 # Suse patches:
 
@@ -188,7 +187,8 @@ Patch300:       chromium-py3-bootstrap.patch
 Patch301:       chromium-java-only-allowed-in-android-builds.patch
 Patch302:       chromium-aarch64-cxxflags-addition.patch
 Patch303:       chromium-update-rjsmin-to-1.2.0.patch
-Patch304:       chromium-109-gcc13.patch
+Patch304:       chromium-108-enable-allowqt.patch
+Patch305:       chromium-109-gcc13.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
 Patch401:       chromium-fix-vaapi-on-intel.patch
@@ -216,10 +216,6 @@ Patch409:       moc_name.patch
   %{__scm_apply_patch -p1} <%{patchset_root}/%{1}
 
 %patchset_apply chromium-103-VirtualCursor-std-layout.patch
-%patchset_apply chromium-110-NativeThemeBase-fabs.patch
-%patchset_apply chromium-110-CredentialUIEntry-const.patch
-%patchset_apply chromium-110-DarkModeLABColorSpace-pow.patch
-%patchset_apply chromium-110-dpf-arm64.patch
 
 # Apply patches up to #1000 from this spec.
 %autopatch -M1000 -p1
@@ -330,6 +326,7 @@ gn_arg use_gio=true
 gn_arg use_glib=true
 gn_arg use_libpci=true
 gn_arg use_pulseaudio=true
+gn_arg use_qt=true
 gn_arg use_aura=true
 gn_arg use_cups=true
 gn_arg use_kerberos=true
@@ -430,6 +427,7 @@ install -m 4755 %{target}/chrome_sandbox %{buildroot}%{chromiumdir}/chrome-sandb
 install -m 755 %{target}/chrome_crashpad_handler %{buildroot}%{chromiumdir}/
 install -m 755 %{target}/libEGL.so %{buildroot}%{chromiumdir}/
 install -m 755 %{target}/libGLESv2.so %{buildroot}%{chromiumdir}/
+install -m 755 %{target}/libqt5_shim.so %{buildroot}%{chromiumdir}/
 %if !%{system_libicu}
 install -m 644 %{target}/icudtl.dat %{buildroot}%{chromiumdir}/
 %endif
@@ -464,6 +462,7 @@ strip %{buildroot}%{chromiumdir}/chrome-sandbox
 strip %{buildroot}%{chromiumdir}/chrome_crashpad_handler
 strip %{buildroot}%{chromiumdir}/libEGL.so
 strip %{buildroot}%{chromiumdir}/libGLESv2.so
+strip %{buildroot}%{chromiumdir}/libqt5_shim.so
 strip %{buildroot}%{chromiumdir}/libvk_swiftshader.so
 strip %{buildroot}%{chromiumdir}/libvulkan.so.1
 
@@ -494,6 +493,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/chrome_crashpad_handler
 %{chromiumdir}/libEGL.so
 %{chromiumdir}/libGLESv2.so
+%{chromiumdir}/libqt5_shim.so
 %if !%{system_libicu}
 %{chromiumdir}/icudtl.dat
 %endif
@@ -512,6 +512,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Wed Mar 08 2023 Leigh Scott <leigh123linux@gmail.com> - 111.0.5563.64-1
+- Update to 111.0.5563.64
+
 * Wed Feb 22 2023 Leigh Scott <leigh123linux@gmail.com> - 110.0.5481.177-1
 - Update to 110.0.5481.177
 
