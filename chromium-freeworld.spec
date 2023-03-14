@@ -432,7 +432,6 @@ install -m 755 %{target}/libqt5_shim.so %{buildroot}%{chromiumdir}/
 install -m 644 %{target}/icudtl.dat %{buildroot}%{chromiumdir}/
 %endif
 install -m 644 %{target}/v8_context_snapshot.bin %{buildroot}%{chromiumdir}/
-install -m 644 %{target}/snapshot_blob.bin %{buildroot}%{chromiumdir}/
 install -m 644 %{target}/*.pak %{buildroot}%{chromiumdir}/
 install -m 644 %{target}/locales/*.pak %{buildroot}%{chromiumdir}/locales/
 install -m 755 %{target}/xdg*  %{buildroot}%{chromiumdir}/
@@ -498,7 +497,6 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/icudtl.dat
 %endif
 %{chromiumdir}/v8_context_snapshot.bin
-%{chromiumdir}/snapshot_blob.bin
 %{chromiumdir}/*.pak
 %{chromiumdir}/xdg-mime
 %{chromiumdir}/xdg-settings
