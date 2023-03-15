@@ -187,7 +187,8 @@ Patch300:       chromium-py3-bootstrap.patch
 Patch301:       chromium-java-only-allowed-in-android-builds.patch
 Patch302:       chromium-aarch64-cxxflags-addition.patch
 Patch303:       chromium-update-rjsmin-to-1.2.0.patch
-Patch304:       chromium-109-gcc13.patch
+Patch304:       chromium-fedora-user-agent.patch
+Patch305:       chromium-109-gcc13.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
 Patch401:       chromium-fix-vaapi-on-intel.patch
