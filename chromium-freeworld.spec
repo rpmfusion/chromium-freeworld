@@ -19,32 +19,37 @@
 %global __provides_exclude_from %{chromiumdir}/.*\\.so
 #######################################CONFIGS###########################################
 # System libraries to use.
-%global system_libdrm 0
+%global system_libdrm 1
+%if 0%{?fedora} == 36
+%global system_aom 0
+%else
+%global system_aom 1
+%endif
 # Chrome upstream uses custom ffmpeg patches
-%global system_ffmpeg 0
-%global system_flac 0
-%global system_fontconfig 0
+%global system_ffmpeg 1
+%global system_flac 1
+%global system_fontconfig 1
 # fedora freetype is too old
-%global system_freetype 0
+%global system_freetype 1
 %global system_harfbuzz 0
-%global system_libjpeg 0
+%global system_libjpeg 1
 %global system_libicu 0
 # lto issue with system libpng
-%global system_libpng 0
+%global system_libpng 1
 %global system_libvpx 0
 # The libxml_utils code depends on the specific bundled libxml checkout
 %global system_libxml2 0
 # lto issue with system minizip
-%global system_minizip 0
+%global system_minizip 1
 %global system_re2 0
-%global system_libwebp 0
-%global system_xslt 0
-%global system_snappy 0
+%global system_libwebp 1
+%global system_xslt 1
+%global system_snappy 1
 
 ##############################Package Definitions######################################
 Name:           chromium-freeworld
 Version:        111.0.5563.110
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Chromium built with all freeworld codecs and VA-API support
 License:        BSD and LGPLv2+ and ASL 2.0 and IJG and MIT and GPLv2+ and ISC and OpenSSL and (MPLv1.1 or GPLv2 or LGPLv2)
 URL:            https://www.chromium.org/Home
@@ -117,7 +122,11 @@ BuildRequires:  python3-markupsafe
 BuildRequires:  python3-ply
 BuildRequires:  python3-simplejson
 BuildRequires:  python3-six
+BuildRequires:  zlib-devel
 # replace_gn_files.py --system-libraries
+%if %{system_aom}
+BuildRequires: libaom-devel
+%endif
 %if %{system_flac}
 BuildRequires:  flac-devel
 %endif
@@ -166,6 +175,9 @@ BuildRequires:  snappy-devel
 Requires:       hicolor-icon-theme
 # GTK modules it expects to find for some reason.
 Requires:       libcanberra-gtk3%{_isa}
+# Chromium needs an explicit Requires: minizip-compat
+# We put it here to cover headless too.
+Requires:       minizip-compat%{_isa}
 # Make sure chromium-freeworld replaces chromium-vaapi
 Provides:       chromium-vaapi = %{version}-%{release}
 Obsoletes:      chromium-vaapi < %{version}-%{release}
@@ -189,6 +201,15 @@ Patch302:       chromium-aarch64-cxxflags-addition.patch
 Patch303:       chromium-update-rjsmin-to-1.2.0.patch
 Patch304:       chromium-fedora-user-agent.patch
 Patch305:       chromium-109-gcc13.patch
+Patch306:       chromium-109-disable-GlobalMediaControlsCastStartStop.patch
+Patch1300:      chromium-109-system-minizip-header-fix.patch
+Patch1301:      chromium-no-zlib-mangle.patch
+Patch1302:      chromium-unbundle-zlib.patch
+Patch1303:      chromium-107-ffmpeg-duration.patch
+Patch1304:      chromium-107-proprietary-codecs.patch
+Patch1305:      chromium-108-ffmpeg-first_dts.patch
+Patch1306:      chromium-108-ffmpeg-revert-new-channel-layout-api.patch
+Patch1307:      chromium-108-system-opus.patch
 
 # RPM Fusion patches [free/chromium-freeworld]:
 Patch401:       chromium-fix-vaapi-on-intel.patch
@@ -221,8 +242,23 @@ Patch409:       moc_name.patch
 %autopatch -M1000 -p1
 
 # Manually apply patches that need an ifdef
+%if %{system_minizip}
+%patch -P1300 -p1
+%patch -P1301 -p1
+%patch -P1302 -p1
+%endif
+%if %{system_ffmpeg}
+%patch -P1303 -p1
+%patch -P1304 -p1
+%patch -P1305 -p1
+%patch -P1306 -p1
+%patch -P1307 -p1
+%endif
 
 ./build/linux/unbundle/replace_gn_files.py --system-libraries \
+%if %{system_aom}
+	libaom \
+%endif
 %if %{system_ffmpeg}
     ffmpeg \
     opus \
@@ -283,6 +319,10 @@ sed -i \
 	-e 's/"-no-canonical-prefixes"//g' \
 	build/config/compiler/BUILD.gn
 
+sed -i \
+       's|OFFICIAL_BUILD|GOOGLE_CHROME_BUILD|g' \
+       tools/generate_shim_headers/generate_shim_headers.py
+
 mkdir -p third_party/node/linux/node-linux-x64/bin
 ln -s %{_bindir}/node third_party/node/linux/node-linux-x64/bin/node
 
@@ -307,84 +347,91 @@ export RANLIB="ranlib"
 export PATH="$PWD/third_party/depot_tools:$PATH"
 export CHROMIUM_RPATH="%{_libdir}/%{name}"
 
-FLAGS='-Wno-unknown-warning-option'
+FLAGS=' -Wno-unknown-warning-option -Wno-deprecated-declarations'
 export CFLAGS="$FLAGS"
 export CXXFLAGS="$FLAGS"
 
-CHROMIUM_GN_DEFINES=
-gn_arg() { CHROMIUM_GN_DEFINES="$CHROMIUM_GN_DEFINES $*"; }
+CHROMIUM_GN_DEFINES=""
 
-gn_arg 'rpm_fusion_package_name="%{name}"'
-gn_arg 'rpm_fusion_menu_name="%{menu_name}"'
-gn_arg custom_toolchain=\"//build/toolchain/linux/unbundle:default\"
-gn_arg host_toolchain=\"//build/toolchain/linux/unbundle:default\"
-gn_arg is_official_build=true
-gn_arg disable_fieldtrial_testing_config=true
-gn_arg use_custom_libcxx=false
-gn_arg use_sysroot=false
-gn_arg use_gio=true
-gn_arg use_glib=true
-gn_arg use_libpci=true
-gn_arg use_pulseaudio=true
-gn_arg use_qt=true
-gn_arg use_aura=true
-gn_arg use_cups=true
-gn_arg use_kerberos=true
-gn_arg use_gold=false
-gn_arg optimize_webui=false
+CHROMIUM_GN_DEFINES+=' rpm_fusion_package_name="%{name}"'
+CHROMIUM_GN_DEFINES+=' rpm_fusion_menu_name="%{menu_name}"'
+CHROMIUM_GN_DEFINES+=' custom_toolchain="//build/toolchain/linux/unbundle:default"'
+CHROMIUM_GN_DEFINES+=' host_toolchain="//build/toolchain/linux/unbundle:default"'
+CHROMIUM_GN_DEFINES+=' target_os="linux"'
+CHROMIUM_GN_DEFINES+=' current_os="linux"'
+CHROMIUM_GN_DEFINES+=' is_official_build=true'
+CHROMIUM_GN_DEFINES+=' disable_fieldtrial_testing_config=true'
+CHROMIUM_GN_DEFINES+=' use_custom_libcxx=false'
+CHROMIUM_GN_DEFINES+=' use_sysroot=false'
+CHROMIUM_GN_DEFINES+=' use_gio=true'
+CHROMIUM_GN_DEFINES+=' use_libpci=true'
+CHROMIUM_GN_DEFINES+=' use_pulseaudio=true'
+CHROMIUM_GN_DEFINES+=' use_qt=true'
+CHROMIUM_GN_DEFINES+=' use_aura=true'
+CHROMIUM_GN_DEFINES+=' use_cups=true'
+CHROMIUM_GN_DEFINES+=' use_kerberos=true'
+CHROMIUM_GN_DEFINES+=' use_gold=false'
+CHROMIUM_GN_DEFINES+=' optimize_webui=false'
 %if %{system_freetype}
-gn_arg use_system_freetype=true
+CHROMIUM_GN_DEFINES+=' use_system_freetype=true'
 %endif
 %if %{system_harfbuzz}
-gn_arg use_system_harfbuzz=true
+CHROMIUM_GN_DEFINES+=' use_system_harfbuzz=true'
 %endif
-gn_arg link_pulseaudio=true
-gn_arg enable_hangout_services_extension=true
-gn_arg treat_warnings_as_errors=false
-gn_arg fatal_linker_warnings=false
-gn_arg system_libdir=\"%{_lib}\"
-gn_arg use_icf=false
-gn_arg enable_js_type_check=false
-gn_arg use_system_libffi=true
+CHROMIUM_GN_DEFINES+=' link_pulseaudio=true'
+CHROMIUM_GN_DEFINES+=' enable_hangout_services_extension=true'
+CHROMIUM_GN_DEFINES+=' treat_warnings_as_errors=false'
+CHROMIUM_GN_DEFINES+=' fatal_linker_warnings=false'
+CHROMIUM_GN_DEFINES+=' system_libdir="%{_lib}"'
+CHROMIUM_GN_DEFINES+=' use_icf=false'
+CHROMIUM_GN_DEFINES+=' enable_js_type_check=false'
+CHROMIUM_GN_DEFINES+=' use_system_libffi=true'
 
 # ffmpeg
-gn_arg ffmpeg_branding=\"Chrome\"
-gn_arg proprietary_codecs=true
+CHROMIUM_GN_DEFINES+=' ffmpeg_branding="Chrome"'
+CHROMIUM_GN_DEFINES+=' proprietary_codecs=true'
+CHROMIUM_GN_DEFINES+=' is_component_ffmpeg=true'
+CHROMIUM_GN_DEFINES+=' enable_ffmpeg_video_decoders=true'
+CHROMIUM_GN_DEFINES+=' media_use_ffmpeg=true'
 
 # Remove debug
-gn_arg is_debug=false
-gn_arg symbol_level=0
+CHROMIUM_GN_DEFINES+=' is_debug=false'
+CHROMIUM_GN_DEFINES+=' symbol_level=0'
+CHROMIUM_GN_DEFINES+=' blink_symbol_level=0'
+CHROMIUM_GN_DEFINES+=' v8_symbol_level=0'
+CHROMIUM_GN_DEFINES+=' build_dawn_tests=false'
+CHROMIUM_GN_DEFINES+=' enable_perfetto_unittests=false'
+CHROMIUM_GN_DEFINES+=' enable_iterator_debugging=false'
 
-gn_arg enable_nacl=false
-gn_arg is_component_build=false
-gn_arg enable_widevine=true
+CHROMIUM_GN_DEFINES+=' enable_nacl=false'
+CHROMIUM_GN_DEFINES+=' enable_widevine=true'
+CHROMIUM_GN_DEFINES+=' rtc_use_pipewire=true'
+CHROMIUM_GN_DEFINES+=' rtc_link_pipewire=true'
 
-gn_arg rtc_use_pipewire=true
-gn_arg rtc_link_pipewire=true
-
-gn_arg clang_base_path=\"%{_prefix}\"
-gn_arg is_clang=true
-gn_arg clang_use_chrome_plugins=false
-gn_arg use_lld=true
+CHROMIUM_GN_DEFINES+=' clang_base_path="%{_prefix}"'
+CHROMIUM_GN_DEFINES+=' is_clang=true'
+CHROMIUM_GN_DEFINES+=' clang_use_chrome_plugins=false'
+CHROMIUM_GN_DEFINES+=' use_lld=true'
 %ifarch %{arm64}
-gn_arg 'target_cpu="arm64"'
-gn_arg use_thin_lto=false
-%else
-gn_arg use_thin_lto=true
+CHROMIUM_GN_DEFINES+=' target_cpu="arm64"'
 %endif
-gn_arg use_vaapi=true
-gn_arg is_cfi=false
-gn_arg use_cfi_icall=false
-gn_arg chrome_pgo_phase=0
+CHROMIUM_GN_DEFINES+=' use_thin_lto=false'
+CHROMIUM_GN_DEFINES+=' use_vaapi=true'
+CHROMIUM_GN_DEFINES+=' is_cfi=false'
+CHROMIUM_GN_DEFINES+=' use_cfi_icall=false'
+CHROMIUM_GN_DEFINES+=' chrome_pgo_phase=0'
 
 %if %{system_libicu}
-gn_arg icu_use_data_file=false
+CHROMIUM_GN_DEFINES+=' icu_use_data_file=false'
 %endif
 
-gn_arg enable_vulkan=true
+CHROMIUM_GN_DEFINES+=' enable_vr=false'
+CHROMIUM_GN_DEFINES+=' enable_vulkan=true'
 
-gn_arg 'google_api_key="%{api_key}"'
+CHROMIUM_GN_DEFINES+=' google_api_key="%{api_key}"'
 
+	
+export CHROMIUM_GN_DEFINES
 
 tools/gn/bootstrap/bootstrap.py --gn-gen-args="$CHROMIUM_GN_DEFINES" --build-path=%{target}
 %{target}/gn --script-executable=%{__python3} gen --args="$CHROMIUM_GN_DEFINES" %{target}
@@ -510,6 +557,9 @@ appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{name}.appda
 %{chromiumdir}/vk_swiftshader_icd.json
 #########################################changelogs#################################################
 %changelog
+* Thu Mar 23 2023 Leigh Scott <leigh123linux@gmail.com> - 111.0.5563.110-2
+- Build with system libs
+
 * Tue Mar 21 2023 Leigh Scott <leigh123linux@gmail.com> - 111.0.5563.110-1
 - Update to 111.0.5563.110
 
